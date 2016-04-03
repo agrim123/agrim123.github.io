@@ -1,4 +1,14 @@
 .social-media-icons{
 width:7%;
 }
+.floating-div .row{
+	padding-top:10px;
+}
+.floating-div{
+	background-color: white;
+	margin-left: 20px;
+	text-align: center;
+	
+    padding-bottom: 15px;
+}
  
