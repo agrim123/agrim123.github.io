@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.css">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script type="text/javascript" src="js/script.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/jquery.datetimepicker.css"/>
+	<script src="./jquery.js"></script>
+	<script src="js/jquery.datetimepicker.full.js"></script>
+	<title>
+		Portal - Login Page
+	</title>
+</head>
+<body>
+	<div id="wrapper">
+		<header>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-7" style="font-size: 18px;">
+						<i class="fa fa-windows" aria-hidden="true"></i>
+						Institute Name
+					</div>
+					<div class="col-md-5">
+						<input type="text" class="header-search"></input>
+						<i class="fa fa-search" aria-hidden="true" style="float: left; margin-left: 10px;"></i>
+						<div class="image-teacher" style="   margin-left: 15px;">
+						</div>
+						<div style="padding: 3px 0px 0px 240px;">
+							Akshay Jain
+							&nbsp&nbsp&nbsp&nbsp
+							<i class="fa fa-bell" aria-hidden="true"></i>&nbsp
+							<i class="fa fa-cog" aria-hidden="true"></i>
+						</div>					
+					</div>
+
+				</div>
+			</header>
+		<div class="subheader">
+				<div class="container" style="padding-right: 95px;">
+					<a href="home.html" style="padding-left: 10px">Home</a>
+					<div class="btn-group">
+						<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="    padding: 5px 10px;
+						font-size: 14px;">
+						<a href="myclasses.html">My Classes</a>
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" style="padding: 5px 10px 10px 10px;">
+						<li style="padding-top: 6px;"><a href="myclass7.html">7A Mathematics</a></li>
+						<li style="padding-top: 6px;"><a href="myclass7.html">7A Mathematics</a></li>
+					</ul>
+				</div>
+				<a href="groups.html">Groups</a>
+				<a href="resources.html" style="padding-left: 10px">Resources</a>
+			</div>
+		</div>
+		<div class="content">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12" style="color: #24B7E5;font-size:22px;padding-top: 10px;padding-bottom: 10px;">
+						YOUR NOTES
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						Home / Notes
+					</div>
+				</div>
+				<div class="row" style="border-bottom: 1px solid gray;padding-top: 10px;padding-bottom: 10px;">
+					<div class="col-md-6" style="color: #24B7E5;font-size: 22px;">
+						Notes&nbsp&nbsp&nbsp<button class="btn" style="    width: 150px;
+						background-color: orange;
+						color: white;"data-toggle="modal" data-target="#myModal">Add New</button>
+						<!-- Modal -->
+						<div class="modal fade" id="myModal" role="dialog" style="color: black">
+							<div class="modal-dialog" style="font-size: 15px;">
+
+								<!-- Modal content-->
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title">Add New Note</h4>
+									</div>
+									<div class="modal-body">
+										<textarea></textarea><br />
+										<input type="checkbox"></input>&nbsp Reminder &nbsp&nbsp<input type="text" value="" id="datetimepicker"/>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-success" data-dismiss="modal">Add Note</button>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6" style="text-align: right;">
+						<div class="btn-group">
+							<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="    width: 220px;">
+								Present&nbsp<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li>abc</li>
+								<li>def</li>
+								<li>ghi</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="padding-top: 20px;">
+					<div id="notes" class="col-md-3">
+						<div class="notes-heading" style="border-left: 7px solid red;">
+							<p>Class 6A Assignment</p>
+							<p style="color: red; ">Important</p>
+						</div>
+						<div class="notes-content">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+							consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+							cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+							proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</div>
+						<div class="notes-footer">
+							<i class="fa fa-clock-o" aria-hidden="true"></i>
+							<i class="fa fa-trash" aria-hidden="true"></i>
+						</div>
+					</div>
+					<div id="notes" class="col-md-3 col-md-offset-1">
+						<div class="notes-heading" style="border-left: 7px solid orange;">
+							<p>Class 6A Assignment</p>
+							<p style="color: orange;">Reminder</p>
+						</div>
+						<div class="notes-content">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+							consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+							cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+							proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</div>
+						<div class="notes-footer">
+							<i class="fa fa-trash" aria-hidden="true"></i>
+						</div>
+					</div>
+					<div id="notes" class="col-md-3 col-md-offset-1">
+						<div class="notes-heading" style="border-left: 7px solid green;">
+							<p>Class 6A Assignment</p>
+							<p style="color: green;">Note</p>
+						</div>
+						<div class="notes-content">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+							consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+							cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+							proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</div>
+						<div class="notes-footer">
+							<i class="fa fa-trash" aria-hidden="true"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<footer>
+				<div class="container">
+					<div class="row" style="border-top:1px solid gray;width:100%;padding-top:10px;">
+						<div class="col-md-12">
+							<a href="#">(c)Eduknack</a>
+							<a href="#" style="padding-left:50px;">Contact</a>
+							<a href="#" style="padding-left:50px;">About</a>
+
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</body>
+	</html>
