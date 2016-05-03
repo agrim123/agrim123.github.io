@@ -160,3 +160,9 @@ a:active{
 	background-color: #F2F2F2;
 	text-align: center;
 }
+.btn-success a{
+	color: white;
+}
+.btn-success a:hover{
+	text-decoration: none;
+}

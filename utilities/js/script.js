@@ -11,6 +11,19 @@ $(document).ready(function(){
 			});
 		}
 	});
+		$(".summative").click(function(){
+		$(this).addClass('active-assessment');
+		$(".formative").removeClass('active-assessment');
+		$(".summative-box").show();
+		$(".formative-box").hide();
+		
+	});
+	$(".formative").click(function(){
+		$(".formative").addClass("active-assessment");
+		$(".summative").removeClass('active-assessment');
+		$(".formative-box").show();
+		$(".summative-box").hide();
+	});
 	$(".stats,.news,.suggest").click(function () {
 
 		$header = $(this);
@@ -26,7 +39,7 @@ $(document).ready(function(){
         });*/
     });
 });
-/*	$.datetimepicker.setLocale('en');
+	$.datetimepicker.setLocale('en');
 
 	$('#datetimepicker_format').datetimepicker({value:'2015/04/15 05:03', format: $("#datetimepicker_format_value").val()});
 	console.log($('#datetimepicker_format').datetimepicker('getValue'));
@@ -158,20 +171,8 @@ $(document).ready(function(){
 			return [true, ""];
 		}
 	});
-	$('#datetimepicker_dark').datetimepicker({theme:'dark'});*/
+	$('#datetimepicker_dark').datetimepicker({theme:'dark'});
 
-	$(".summative").click(function(){
-		$(this).addClass('active-assessment');
-		$(".formative").removeClass('active-assessment');
-		$(".summative-box").show();
-		$(".formative-box").hide();
-		
-	});
-	$(".formative").click(function(){
-		$(".formative").addClass("active-assessment");
-		$(".summative").removeClass('active-assessment');
-		$(".formative-box").show();
-		$(".summative-box").hide();
-	});
+
 
 });
