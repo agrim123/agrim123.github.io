@@ -149,6 +149,7 @@ a{
 a:hover{
 	
 	color:#24B7E5;
+	text-decoration: none;
 	
 }
 a:active{
@@ -165,4 +166,14 @@ a:active{
 }
 .btn-success a:hover{
 	text-decoration: none;
+}
+.panel-heading{
+	border:none;
+	border-color: #F5F7FA;
+}
+.panel-body{
+	padding: 0px;
+}
+.content-div{
+	
 }
