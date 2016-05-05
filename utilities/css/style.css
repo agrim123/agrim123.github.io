@@ -177,3 +177,14 @@ a:active{
 .content-div{
 	
 }
+
+*, *:before, *:after {
+-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+
+#tooltip1 { position: relative; }
+#tooltip1 a span {     margin-left: -62%;
+    display: none;
+    color: #461F1F;
+    margin-top: 25%;color: #FFFFFF; }
+#tooltip1 a:hover span { display: block; position: absolute; width: 200px; background: #F5F7FA; height: 50px; left: 100px; top: -10px; color: black; padding: 0 5px; }
