@@ -3,7 +3,7 @@ $(document).ready(function() {
 		var user_id = $(".user-id").val();
 		var pass = $(".password").val();
 		if (user_id == "teacher123" && pass == "teacher123") {
-			window.location = "utilities/home.html";
+			window.location = "home.html";
 		} else {
 			$(".alert-row").css({
 				"display": "block"
