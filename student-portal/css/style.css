@@ -1,9 +1,12 @@
 body{
 	overflow-x:hidden;
 }
-html, body {height: 100%;}
+
 .login-container{
     padding: 168px 300px 0px 265px;
+}
+.content{
+	padding-top: 50px;
 }
 .login-button{
 	color: white !important;
@@ -23,6 +26,9 @@ html, body {height: 100%;}
 .alert-row{
 	display: none;
 	color:red;
+}
+.wrapper{
+	margin-top: 5%;
 }
 header{
 	background-color: #24B7E5;
@@ -188,3 +194,9 @@ a:active{
     color: #461F1F;
     margin-top: 25%;color: #FFFFFF; }
 #tooltip1 a:hover span { display: block; position: absolute; width: 200px; background: #F5F7FA; height: 50px; left: 100px; top: -10px; color: black; padding: 0 5px; }
+
+.ques-image{
+    width: 100%;
+    height: 150px;
+    background-color: #FBB03B;
+}
