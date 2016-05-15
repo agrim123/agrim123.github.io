@@ -22,8 +22,25 @@ $(document).ready(function(){
 	accordian(".head6",".head6 .col-md-1");
 	accordian(".head7",".head7 .col-md-1");
 	accordian(".head8",".head8 .col-md-1");
-
-
+	
+	$("#animation").click(function(){
+		$(this).addClass('backcolor');
+		$("#diagram,#formula").removeClass('backcolor');
+		$("#appenddata").html('');
+		$("#appenddata").html('<div class="ques-image"></div>');
+	});
+	$("#diagram").click(function(){
+		$(this).addClass('backcolor');
+		$("#animation,#formula").removeClass('backcolor');
+		$("#appenddata").html('');
+		$("#appenddata").html('<div class="ques-image"></div>');
+	});
+	$("#formula").click(function(){
+		$(this).addClass('backcolor');
+		$("#animation,#diagram").removeClass('backcolor');
+		$("#appenddata").html('');
+		$("#appenddata").html('Lorem Ipsum');
+	});
 
 
 });
