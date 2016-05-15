@@ -21,7 +21,14 @@ $(document).ready(function(){
 	accordian(".head8",".head8 .col-md-1");
 
 	$("#calc").click(function(){
-		$("#dragMe").toggle();
+		$("#dragMe").toggle(function(){
+			$("#calc").css({
+				"color":"blue"
+			});
+		});
+		$("#calc").css({
+				"color":"black"
+			});
 		
 	});
 	$('#dragMe').draggable({ containment: 'body' });
