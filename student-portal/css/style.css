@@ -207,3 +207,9 @@ a:active{
 .backcolor{
 	background-color: #F5F7FA;
 }
+.hide{
+	display: none;
+}
+.show{
+	display: block;
+}

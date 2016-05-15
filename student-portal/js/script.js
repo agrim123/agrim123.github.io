@@ -21,15 +21,19 @@ $(document).ready(function(){
 	accordian(".head8",".head8 .col-md-1");
 
 	$("#calc").click(function(){
-		$("#dragMe").toggle(function(){
+		if($("#dragMe").hasClass('hide')){
+			$("#dragMe").removeClass('hide');
+			$("#dragMe").addClass('show');
 			$("#calc").css({
 				"color":"blue"
 			});
-		});
-		$("#calc").css({
+		}else{
+			$("#dragMe").removeClass('show');
+			$("#dragMe").addClass('hide');
+			$("#calc").css({
 				"color":"black"
 			});
-		
+		}
 	});
 	$('#dragMe').draggable({ containment: 'body' });
 
