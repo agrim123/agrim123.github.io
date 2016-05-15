@@ -11,9 +11,6 @@ $(document).ready(function(){
 	$("#start").click(function(){
 		window.location = "home.html";
 	});
-	
-
-
 	accordian(".head1",".head1 .col-md-1");
 	accordian(".head2",".head2 .col-md-1");
 	accordian(".head3",".head3 .col-md-1");
@@ -22,6 +19,12 @@ $(document).ready(function(){
 	accordian(".head6",".head6 .col-md-1");
 	accordian(".head7",".head7 .col-md-1");
 	accordian(".head8",".head8 .col-md-1");
+
+	$("#calc").click(function(){
+		$("#dragMe").toggle();
+		
+	});
+	$('#dragMe').draggable({ containment: 'body' });
 
 	$("#animation").click(function(){
 		$(this).addClass('backcolor');
