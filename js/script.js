@@ -10,11 +10,11 @@ $(document).ready(function(){
 		},1500);
 		$("#info p").fadeIn(2000);
 	} },
-	{selector: 'body', offset: 1500, callback: function() {
-		$(".card-upper").fadeIn(2000);
+	{selector: 'body', offset: 1700, callback: function() {
+		$(".card-upper").toggle( "drop" );
 	} },
 	{selector: 'body', offset: 1700, callback: function() {
-		$(".card-lower").fadeIn(2000);
+		$(".card-lower").toggle( "drop" );
 	} }
 	];
 	Materialize.scrollFire(options);
