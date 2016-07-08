@@ -1,0 +1,38 @@
+@import url(https://fonts.googleapis.com/css?family=Indie+Flower);
+@import url(https://fonts.googleapis.com/css?family=Alegreya);
+.text-capitalize{
+	text-transform: capitalize;
+}
+.text-uppercase{
+	text-transform: uppercase;
+}
+
+@keyframes bounce {
+	0%{transform:translateY(0);}
+	33% {transform:translateY(-30px);}
+	66% {transform:translateY(-15px);}
+	100%{transform:translateY(0);}
+}
+.bounce {
+	animation:bounce 2s infinite;
+
+}
+.row{
+	margin-bottom: 0;
+}
+.footer{
+	background-color: #141414;
+}
+.input-field input[type=text]:focus + label {
+	color: #83CD29;
+}
+.input-field input[type=text]:focus {
+	border-bottom: none;
+	box-shadow:none;
+	color: #83CD29;
+}
+.input-field input[type=text] {
+	border-bottom: none;
+	color: #83CD29;
+	margin:0;
+}
