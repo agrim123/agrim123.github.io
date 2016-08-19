@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="js/script.js"></script>
 </head>
 <body>
+<div id="loader"><img src="img/loading.gif"></div>
 	<div class="container-fluid parallax-container" style="height:100vh;background-color:rgba(51, 64, 136, 0.23);">
 		<div class="parallax"><img src="img/1.jpg" width="1284px"></div>
 		<div class="row">
@@ -234,6 +235,10 @@ line-height: 25px;">
 </div>
 </div>
 </footer>
-
+<script type="text/javascript">
+$(function(){
+    $("#loader").fadeOut(1000);
+});
+</script>
 </body>
 </html>
