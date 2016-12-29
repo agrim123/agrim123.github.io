@@ -16,7 +16,7 @@ tagline:             'a.k.a hitman'
 description:         'Developer . Geek . Hacker'
 url:                 http://agrim123.github.io
 baseurl:             /
-paginate:            7
+paginate:            5
 
 # About/contact
 author:
