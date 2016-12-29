@@ -1,6 +1,6 @@
 ---
 title: About
-author: ariestiyansyah
+author: hitman
 layout: page
 ---
 
