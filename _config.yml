@@ -9,13 +9,14 @@ gems: [jekyll-paginate]
 #
 # Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           pretty
+relative_permalinks: true
 
 # Setup
 title:               Agrim Mittal
 tagline:             'a.k.a hitman'
 description:         'Developer . Geek . Hacker'
 url:                 http://agrim123.github.io
-baseurl:             /
+baseurl:             ''
 paginate:            5
 
 # About/contact
