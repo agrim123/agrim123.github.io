@@ -7,9 +7,7 @@ categories:
 
 This post is in continuation of previous post [Getting to know Lua (Part 2)](/lua/2018/01/21/getting-to-know-lua-2)
 
-## Session 3
-
-> Functions
+## Session 3: Functions
 
 > Functions are the main mechanism for abstraction of statements and expressions in Lua
 

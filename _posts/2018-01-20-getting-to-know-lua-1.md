@@ -5,7 +5,7 @@ categories:
 - lua
 ---
 
-I approached the `luarocks` community for GSoC'18 and they directed me to learn Lua and build some project to get acquainted with lua. This post describes my journey into the mystical world of lua.
+I recently approached the `luarocks` community for GSoC'18 and they directed me to learn Lua and build some project to get acquainted with lua. This post describes my journey into the mystical world of lua.
 
 ## First Encounter
 
@@ -51,7 +51,7 @@ end
 
 This clarified a lot of things:
 - No brackets :P
-....some more shit
+- Declarative syntax
 
 Uninitialized variables return `nil`
 

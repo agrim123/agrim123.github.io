@@ -7,9 +7,7 @@ categories:
 
 This post is in continuation of previous post [Getting to know Lua (Part 1)](/lua/2018/01/20/getting-to-know-lua-1)
 
-## Session 2
-
-> Diving into Expressions
+## Session 2: Diving into Expressions
 
 ### Relational Operators
 

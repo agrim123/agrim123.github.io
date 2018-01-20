@@ -4,6 +4,8 @@ author: hitman
 layout: page
 ---
 
+> We act as though comfort and luxury were the chief requirements of life, when all that we need to make us happy is something to be enthusiastic about. - *Einstein*
+
 Hola, my name is __Agrim Mittal__ and I’m a pre-final year undergraduate student at IIT Roorkee.
 
 I am a coding enthusiast with a keen interest in computer security.
