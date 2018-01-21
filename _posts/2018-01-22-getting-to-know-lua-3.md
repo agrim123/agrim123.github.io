@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Getting to know Lua (Part 3)
+comments: true
 categories:
 - lua
 ---
