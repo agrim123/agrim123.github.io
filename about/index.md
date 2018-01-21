@@ -6,10 +6,10 @@ layout: page
 
 > We act as though comfort and luxury were the chief requirements of life, when all that we need to make us happy is something to be enthusiastic about. - *Einstein*
 
-Hola, my name is __Agrim Mittal__ and I’m a pre-final year undergraduate student at IIT Roorkee.
+Hola, I'm __Agrim Mittal__ and welcome to my private space on the internet. I'm pre-final year undergraduate student at IIT Roorkee. 
 
 I am a coding enthusiast with a keen interest in computer security.
-I know Ruby, Javascript, NodeJS, PHP, Python and have an introductory experience in Golang, Haskell and Lua.
+I know Javascript, Node.js, ReactJS, Ruby, PHP, Python and have an introductory experience in Golang, Haskell and Lua.
 
 <a class="github-button" href="https://github.com/agrim123" aria-label="Follow @agrim123 on GitHub">Follow @agrim123</a>  
 I actively contribute to open source projects too.
