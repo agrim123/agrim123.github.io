@@ -2,6 +2,11 @@
 markdown:            kramdown
 highlighter:         rouge
 
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
+
 # Gems (for Jekyll 3.0)
 gems: [jekyll-paginate]
 
@@ -14,8 +19,9 @@ permalink:           pretty
 title:               Agrim Mittal
 tagline:             'a.k.a hitman'
 description:         'Developer . Geek . Hacker'
-url:                 http://agrim123.github.io
-baseurl:             '/'
+keywords:            iit, roorkee, hitman, agrim, mittal, developer
+url:                 https://agrim123.github.io
+baseurl:             ''
 paginate:            5
 
 # About/contact
