@@ -15,7 +15,7 @@ I visited the official [Lua](https://www.lua.org/about.html) website and there i
 > Lua is a powerful, efficient, lightweight, **embeddable scripting language**. It supports **procedural programming**, object-oriented programming, functional programming, **data-driven programming**, and data description.
 
 All those heavy words made me read this paragraph for about three times.  
-Like a good friend `google` again helped me know about these big words,
+Like a good friend [duckduckgo](https://duckduckgo.com) again helped me know about these big words,
 
 - Embeddable Scripting Language
 - [Procedural Programming](https://en.wikipedia.org/wiki/Procedural_programming)
@@ -25,7 +25,7 @@ Like a good friend `google` again helped me know about these big words,
 
 > Lua is dynamically typed.
 
-> Lua is a proven, robust language
+> Lua is a proven, robust language.
 
 These all features convinced me to move forward. So, I took upon the [Programming in Lua](https://www.lua.org/pil/) book.
 
