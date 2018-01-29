@@ -3,7 +3,7 @@ layout: post
 title: Diving Deep into JavaScript (Part 1)
 comments: true
 categories:
-- js
+- javascript
 ---
 
 I recently got acquainted with some advanced concepts in JavaScript and believe me understanding these are vital if you are developing a large scale application on JavaScript. So, this post discusses some of those concepts in detail.
