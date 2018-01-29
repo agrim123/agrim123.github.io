@@ -22,7 +22,7 @@ description:         'Developer . Geek . Hacker'
 keywords:            iit, roorkee, hitman, agrim, mittal, developer
 url:                 https://agrim123.github.io
 baseurl:             ''
-paginate:            5
+paginate:            8
 
 # About/contact
 author:
