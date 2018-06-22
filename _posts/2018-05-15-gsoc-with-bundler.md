@@ -12,17 +12,18 @@ I got selected as a Google Summer of Code student in Bundler for the project [In
 
 ```ruby
 class Achievement
-  def initialize(name, info)
+  def initialize(name, year, info)
     @name = name
+    @year = year
     @info = info
   end
 
   def display
-    "#{@name} in #{@info}. Yay!"
+    "#{@name} #{@year} in #{@info}. Yay!"
   end
 end
 
-puts Achievement.new("GSoC", "2018", "Bundler").display  
+puts Achievement.new("GSoC", "2018", "Bundler").display
 # GSoC 2018 in Bundler. Yay!
 ```
 
@@ -34,7 +35,7 @@ Here is the mandatory picture :p.
 
 > It's Awesome!! <3
 
-Google Summer of Code is a global program focused on bringing more student developers into open source software development. Students work with an open source organization on a 3 month programming project during their break from school.  
+Google Summer of Code is a global program focused on bringing more student developers into open source software development. Students work with an open source organization on a 3 month programming project during their break from school.
 More details about GSoC [here](https://summerofcode.withgoogle.com/).
 
 ## `puts Journey.to(GSoC)`
