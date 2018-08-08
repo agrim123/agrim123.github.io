@@ -58,7 +58,7 @@ My project is to migrate functionality of [bun](https://github.com/shime/bun) in
 
 ## `next`
 
-I have already started contributing to Bundler. I am planning to write a series of four blogs, this one and three others after each monthly evaluation, so stay tuned. You can check this GitHub [repository](https://github.com/bundler/bundler) for regular updates.
+I have already started contributing to Bundler. You can check this GitHub [repository](https://github.com/bundler/bundler) for regular updates.
 
 <br/>
 Let the journey begin!
