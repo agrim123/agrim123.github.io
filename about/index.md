@@ -6,13 +6,13 @@ layout: page
 
 > We act as though comfort and luxury were the chief requirements of life, when all that we need to make us happy is something to be enthusiastic about. - *Einstein*
 
-Hola, I'm __Agrim Mittal__ and welcome to my private space on the internet. I'm final year undergraduate student at IIT Roorkee. 
+Hello user, I'm __Agrim Mittal__ and welcome to my private space on the internet. I'm final year undergraduate student at IIT Roorkee. 
 
 I am a coding enthusiast with a keen interest in computer security.
 
-I am an active open source contributer.
+I am an active open source contributor.
 
-Member of [SDSLabs](https://sdslabs.co), an awesome group of students constantly trying to innovate and encouraging technical activities in our campus.
+Member of [SDSLabs](https://sdslabs.co), an awesome group of students constantly trying to innovate and encourage technical activities on campus.
 
 ## Ping me!
 
