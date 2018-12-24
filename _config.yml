@@ -28,14 +28,14 @@ paginate:            8
 author:
   name:              Agrim Mittal
   url:               https://agrim123.github.io
-  email:             agrimmittal97@gmail.com
+  email:             agrimmittal@protonmail.com
 
 # Custom vars
 version:             2.0
 
 # Social Media
 github:       http://github.com/agrim123
-disqus:       agrimmittal-me 
+disqus:       agrimmittal-me
 
 # Theme Author (Please don't edit this line cause of MIT LICENSE rules)
 theme:
