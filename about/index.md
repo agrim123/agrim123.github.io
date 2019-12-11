@@ -6,7 +6,7 @@ layout: page
 
 > We act as though comfort and luxury were the chief requirements of life, when all that we need to make us happy is something to be enthusiastic about. - *Einstein*
 
-Hello user, I'm __Agrim Mittal__ and welcome to my private space on the internet. I'm final year undergraduate student at IIT Roorkee. I am a software developer with a keen interest in network security.
+Hello user, I'm __Agrim Mittal__ and welcome to my private space on the internet. I'm an undergraduate from IIT Roorkee. I am a software developer with a keen interest in network security.
 
 I am an active open source contributor. I have successfully completed the [Google Summer of Code program](https://summerofcode.withgoogle.com/archive/) in 2018 under Ruby org contibuting to [Bundler](https://bundler.io/). You can find my work [here](https://summerofcode.withgoogle.com/archive/2018/projects/5547552766164992/).
 
