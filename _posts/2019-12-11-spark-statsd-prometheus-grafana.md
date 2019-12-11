@@ -9,6 +9,8 @@ categories:
 - statsd
 ---
 
+> Be notified before something goes wrong.
+
 ### Aim
 
 ```bash
