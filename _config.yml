@@ -17,7 +17,8 @@ permalink:           pretty
 
 # Setup
 title:               Agrim Mittal
-description:         'Developer . Geek . Hacker'
+tagline:             (Everything is a file)
+description:         Everything is a file.
 keywords:            iit, roorkee, hitman, agrim, mittal, developer
 url:                 https://agrim123.github.io
 baseurl:             ''
