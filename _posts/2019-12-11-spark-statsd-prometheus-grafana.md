@@ -39,7 +39,7 @@ Spark job pushes metrics to [statsD](https://github.com/statsd/statsd) sink (on 
 
 Spark has a configurable metrics system that allows it to report metrics to various sinks<sup>[1](#furthur-read)</sup>. The metric system can be configured via a config file, passed to spark-submit via `--files` option.
 
-In this post we are using **StatsD** Sink for reporting our metrics. Since, spark has inbuilt capibilty to report metrics to StatsD, our work is much easier (compared to if we had to push metrics directly to prometheus<sup>[2](#furthur-read)</sup>).
+In this post, we are using **StatsD** Sink for reporting our metrics. Since spark has the inbuilt capability to report metrics to StatsD, our work is much easier (compared to if we had to push metrics directly to prometheus<sup>[2](#furthur-read)</sup>).
 
 Starting off with the `metrics.properties`<sup>[3](#furthur-read)</sup> file to tell spark that it needs to send metrics to StatsD sink.
 
@@ -96,13 +96,13 @@ spark-submit \
 --class some.class /path/to/my_app.jar noob
 ```
 
-The above solution works like a charm, but a small problem arises when you need to monitor multiple jobs. Since, spark pushes metrics that have job name in them, it becomes difficult on Grafana to create different dashboards for every job. A simple solution is to extract the job name and other job related strings from the metric name and convert then to labels, which then can easily used to monitor a specific job and all work would get done in a single dashboard.
+The above solution works like a charm, but a small problem arises when you need to monitor multiple jobs. Since spark pushes metrics that have the job name in them, it becomes difficult on Grafana to create different dashboards for every job. A simple solution is to extract the job name and other job-related strings from the metric name and convert then to labels, which then can easily be used to monitor a specific job and all work would get done in a single dashboard.
 
 ### Working with legacy metric names
 
 Since spark job pushes metrics of the format `myapp_driver_metric_name`
 
-Using `metric_relabel_configs`<sup>[4](#furthur-read)</sup> config to extract the label and adjust the metric name, for making a single Grafana dashboard for mutiple spark jobs.
+Using `metric_relabel_configs`<sup>[4](#furthur-read)</sup> config to extract the label and adjust the metric name, for making a single Grafana dashboard for multiple spark jobs.
 
 Let's say that we were using a legacy system that produced metrics that looked like:
 ```bash
@@ -112,7 +112,7 @@ spark_noob_driver_LiveListenerBus_queue_executorManagement_size
 spark_noob_driver_jvm_non_heap_init
 spark_noob_driver_StreamingMetrics_streaming_retainedCompletedBatches
 ```
-The `spark` keyword is the prefix we passed in the `metrics.properties` file above, `noob` is our app name, `driver` tells that these are spark driver metrics and rest of the string is the **useful metric name common to all jobs, we need to extract this out and put rest of them into labels.
+The `spark` keyword is the prefix we passed in the `metrics.properties` the file above, `noob` is our app name, `driver` tells that these are spark driver metrics and rest of the string is the **useful metric name common to all jobs, we need to extract this out and put rest of them into labels.
 
 Modifying `prometheus.yml` a little
 ```yml
@@ -157,6 +157,6 @@ These can now be easily viewable on a single Grafana dashboard for mutiple jobs!
 ### Furthur read
 
 1. Various sinks that spark supports can be found [here](https://spark.apache.org/docs/2.3.0/monitoring.html#metrics).
-2. Banzai Cloud has done some [great work](https://github.com/banzaicloud/spark-metrics) on pushing metrics directly to prometheus.
+2. Banzai Cloud has done some [great work](https://github.com/banzaicloud/spark-metrics) on pushing metrics directly to Prometheus.
 3. A more detailed sample metrics.properties file can be found [here](https://github.com/apache/spark/blob/master/conf/metrics.properties.template)
-4. `metric_relabel_configs` are applied after the scrape.
+4. `metric_relabel_configs` is applied after the scrape.
