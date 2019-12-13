@@ -9,6 +9,7 @@ kramdown:
 
 # Gems (for Jekyll 3.0)
 gems: [jekyll-paginate]
+plugins: [jekyll-paginate]
 
 # Permalinks
 #
