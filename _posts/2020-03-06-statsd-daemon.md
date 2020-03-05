@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Extensivley monitoring spark-jobs with StatsD
+title: Extensively monitoring spark-jobs with StatsD
 comments: true
 categories:
 - spark
@@ -9,11 +9,11 @@ categories:
 - statsd
 ---
 
-This post is continuation with [Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana](/spark/monitoring/prometheus/statsd/2019/12/11/spark-statsd-prometheus-grafana/)
+This post is a continuation with [Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana](/spark/monitoring/prometheus/statsd/2019/12/11/spark-statsd-prometheus-grafana/)
 
-In the previous post, we were just running statsd on master node. Our aim here is for every node to have its own statsd sidecar and prometheus scraping metrics from all of them.
+In the previous post, we were just running statsd on the master node. Our aim here is for every node to have its statsd sidecar and prometheus scraping metrics from all of them.
 
-A high level diagram of what we are trying to do here
+A high-level diagram of what we are trying to do here
 
 ```bash
         (Executor 1)                          (Executor 2)
@@ -81,7 +81,7 @@ scrape_configs:
         target_label: instance
 ```
 
-## EC2 tag based discovery
+## EC2 tag-based discovery
 
 EC2 SD configurations allow retrieving scrape targets from AWS EC2 instances.
 
