@@ -11,8 +11,15 @@ title: Home
         {{ post.title }}
       </a>
     </h1>
-    <span class="post-date">{{ post.date | date_to_string }}</span><br>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">{{ post.date | date_to_string }}</span>
+    <ul class="category-list">
+      {% for category in post.categories %}
+      <li><a href="/categories/#{{category}}" class="category-list-element" target="_blank">{{ category }}</a></li>
+      {% endfor %}
+    </ul>
+    <br>
     <p>{{ post.excerpt | strip_html | truncate: 500 }}</p>
+    <hr style="margin: 1rem 0;"/>
   </div>
   {% endfor %}
 </div>

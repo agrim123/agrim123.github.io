@@ -17,7 +17,7 @@ plugins: [jekyll-paginate]
 permalink:           pretty
 
 # Setup
-title:               Agrim Mittal
+title:               agrim mittal
 tagline:             (Everything is a file)
 description:         Everything is a file.
 keywords:            iit, roorkee, hitman, agrim, mittal, developer
