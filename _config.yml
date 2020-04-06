@@ -23,7 +23,7 @@ description:         Everything is a file.
 keywords:            iit, roorkee, hitman, agrim, mittal, developer
 url:                 https://agrim123.github.io
 baseurl:             ''
-paginate:            6
+paginate:            7
 
 # About/contact
 author:
