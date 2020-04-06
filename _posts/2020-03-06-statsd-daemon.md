@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Extensively monitoring spark-jobs with StatsD
-comments: true
 categories:
 - spark
 - monitoring

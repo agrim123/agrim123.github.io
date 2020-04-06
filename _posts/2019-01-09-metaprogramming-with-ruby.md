@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Metaprogramming 101 with ruby
-comments: true
 categories:
 - ruby
 ---

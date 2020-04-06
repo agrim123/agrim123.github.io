@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Google Summer of Code 2018 with Bundler
-comments: true
 categories:
 - gsoc
 - ruby

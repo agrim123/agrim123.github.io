@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Wrapping up GSoC 2018 with Bundler
-comments: true
 categories:
 - gsoc
 - ruby

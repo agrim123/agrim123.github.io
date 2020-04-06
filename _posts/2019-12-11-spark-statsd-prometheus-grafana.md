@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana
-comments: true
 categories:
 - spark
 - monitoring

@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Exploring the /proc directory
-comments: true
 categories:
 - linux
 ---

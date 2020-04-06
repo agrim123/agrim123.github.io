@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Optimizing Webpack for production
-comments: true
 categories:
 - webpack
 ---

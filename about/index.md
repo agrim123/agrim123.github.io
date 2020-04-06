@@ -16,7 +16,7 @@ As a member of [SDSLabs](https://sdslabs.co), an awesome group of students const
 
 ## Ping me!
 
-If you have any questions, comments, or would just like to ping me, please don't hesitate to [send me an email](mailto:agrimmittal@protonmail.com).
+If you have any questions, comments, <u>suggestions/edits on my blogs</u> or would just like to ping me, please don't hesitate to [send me an email](mailto:agrimmittal@protonmail.com).
 
 <a href="https://github.com/agrim123"><i class="fab fa-github"></i></a>
 <a href="https://twitter.com/agrimittal"><i class="fab fa-twitter"></i></a>

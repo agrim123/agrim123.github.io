@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Diving Deep into JavaScript (Part 1)
-comments: true
 categories:
 - javascript
 ---
