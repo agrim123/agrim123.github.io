@@ -13,7 +13,7 @@ Go team has been working intensively on improving the Go's garbage collector. Th
 
 Working extensively on Go, I have been always been intimidated by its performance, so I decided to look under the hood, as to what makes Go so performant and promising, what kind of GC it uses, or how are goroutines multiplexed onto an OS thread, how to profile go programs, how exactly does the go's runtime work, etc. In this post, we are looking at what and how of Go's garbage collector.
 
-While browsing through the internet, I came across a lot of appreciation of go's garbage collector and since I only had an abstract idea as to what are garbage collectors and how they work, I began reading and discovering ans scribbled some notes [here](/garbage%20collector/notes/2020/04/07/garbage-collection/) about garbage collection. 
+While browsing through the internet, I came across a lot of appreciation of go's garbage collector and since I only had an abstract idea as to what are garbage collectors and how they work, I began reading and discovering ans scribbled some notes [here](/posts/garbage-collection.html) about garbage collection. 
 
 This blog merely is a scribble of my thoughts and conclusion that I compiled after reading a few blogs related to go's garbage collector and it's evolution over time.
 

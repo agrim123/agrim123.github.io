@@ -5,7 +5,7 @@ categories:
 - javascript
 ---
 
-This post is in continuation of the previous post [Diving Deep into JavaScript (Part 1)](/javascript/2018/01/29/diving-deep-into-javascript/)
+This post is in continuation of the previous post [Diving Deep into JavaScript (Part 1)](/posts/diving-deep-into-javascript-1.html)
 
 Continuing on my journey into the world of JavaScript, I came across some more intriguing concepts.
 

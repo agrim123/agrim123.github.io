@@ -14,7 +14,7 @@ plugins: [jekyll-paginate]
 # Permalinks
 #
 # Use of `relative_permalinks` ensures post links from the index work properly.
-permalink:           pretty
+permalink:           /posts/:title:output_ext
 
 # Setup
 title:               agrim mittal

@@ -5,7 +5,7 @@ categories:
 - lua
 ---
 
-This post is in continuation of previous post [Getting to know Lua (Part 1)](/lua/2018/01/20/getting-to-know-lua-1)
+This post is in continuation of previous post [Getting to know Lua (Part 1)](/posts/getting-to-know-lua-1.html)
 
 ## Session 2: Diving into Expressions
 

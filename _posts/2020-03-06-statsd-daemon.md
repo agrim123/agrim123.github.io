@@ -8,7 +8,7 @@ categories:
 - statsd
 ---
 
-This post is a continuation with [Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana](/spark/monitoring/prometheus/statsd/2019/12/11/spark-statsd-prometheus-grafana/)
+This post is a continuation with [Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana](/posts/spark-statsd-prometheus-grafana.html)
 
 In the previous post, we were just running statsd on the master node. Our aim here is for every node to have its statsd sidecar and prometheus scraping metrics from all of them.
 

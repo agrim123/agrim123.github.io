@@ -5,7 +5,7 @@ categories:
 - lua
 ---
 
-This post is in continuation of previous post [Getting to know Lua (Part 3)](/lua/2018/01/22/getting-to-know-lua-3)
+This post is in continuation of previous post [Getting to know Lua (Part 3)](/posts/getting-to-know-lua-3.html)
 
 ## Session 4: Coroutines
 
