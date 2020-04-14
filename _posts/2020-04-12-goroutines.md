@@ -11,7 +11,7 @@ categories:
 
 Goroutines are no doubt one of the best things Go has to offer. They are very lightweight, not like OS threads, but rather hundreds of goroutines can be multiplexed onto an OS Thread (Go has its own runtime scheduler for this) with a minimal overhead of context switching! In simple terms, goroutines are a _lightweight abstraction_ over threads.
 
-<span class="font14">You can refer here for [Goroutines vs Threads](/posts/goroutines-vs-threads.html).</span>
+<span class="font16">You can refer here for [Goroutines vs Threads](/posts/goroutines-vs-threads.html).</span>
 
 In this post, I try to describe how the goroutine scheduler works.
 

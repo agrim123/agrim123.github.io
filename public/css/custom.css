@@ -346,6 +346,10 @@ blockquote span{
   font-size: 14px;
 }
 
+.font16 {
+  font-size: 16px;
+}
+
 .underline {
   text-decoration: underline;
 }
