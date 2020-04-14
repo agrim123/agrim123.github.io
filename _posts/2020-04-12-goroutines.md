@@ -9,11 +9,15 @@ categories:
 
 > Goroutines are lightweight; have a small stack (2KB) and a fast context switch.
 
-Goroutines are no doubt one of the best things Go has to offer. They are very lightweight, not like OS threads, but rather hundreds of goroutines can be multiplexed onto an OS Thread with a minimal overhead of context switching!
+Goroutines are no doubt one of the best things Go has to offer. They are very lightweight, not like OS threads, but rather hundreds of goroutines can be multiplexed onto an OS Thread (Go has its own runtime scheduler for this) with a minimal overhead of context switching! In simple terms, goroutines are a _lightweight abstraction_ over threads.
+
+<span class="font14">You can refer here for [Goroutines vs Threads](/posts/goroutines-vs-threads.html).</span>
 
 In this post, I try to describe how the goroutine scheduler works.
 
-A goroutine is a Go structure containing information regarding the running program, such as stack, program counter, or its current OS thread.
+There are only a few universal truths, 
+
+> Concurrency is not parallelism! ([Talk](https://blog.golang.org/waza-talk))
 
 ## M, P, G orchestration
 
@@ -153,7 +157,55 @@ When system calls are used, Go does not limit the number of OS threads that can 
 
 The default value of `GOMAXPROCS` is the number of logical CPUs.
 
+## Go's runtime scheduler
+
+The Go Runtime manages scheduling, garbage collection, and the runtime environment for goroutines among other things.
+Go programs are compiled into machine code by the Go compiler infrastructure. Since Go provides high level constructs such as goroutines, channels and garbage collection, a runtime infrastructure is required to support these features. This runtime is C code that is statically linked to the compiled user code during the linking phase. Thus, a Go program appears as a standalone executable in the user space to the operating system.
+
+```bash
+                                  Go Executable
+        +-------------------------------------------------------------------+
+        | +---------------------------------------------------------------+ |
+        | |                                                               | |
+        | |                           Go Program                          | |
+        | |                                                               | |
+        | +---------------------------------------------------------------+ |
+        |              ▲               ▲               ▲                    |
+        |              |               |               |                    |
+        |            memory         channel       creation of               |
+        |           allocation    communication    goroutines               |
+        |              |               |               |                    |
+        |              ▼               ▼               ▼                    |
+        | +---------------------------------------------------------------+ |
+        | |                                                               | |
+        | |                           Runtime                             | |
+        | |                                                               | |
+        | +---------------------------------------------------------------+ |
+        +-----------------|--------------------------------|----------------+
+                          |                                |
+                       syscalls                      thread creation
+                           |                               |
+                           ▼                               ▼
+    +----------------------------------------------------------------------------+
+    |                                                                            |
+    |                                 OS Kernel                                  |
+    |                                                                            |
+    +----------------------------------------------------------------------------+
+
+```
+
+Arguably, one of the more important aspects of the Go runtime is the goroutine scheduler. The runtime keeps track of each goroutine, and will schedule them to run in turn on a pool of threads belonging to the process. Goroutines are separate from threads but rely upon them to run, and scheduling goroutines onto threads effectively is crucial for the efficient performance of Go programs. The idea behind goroutines is that they are capable of running concurrently, like threads, but are also extremely lightweight in comparison. So, while there might be multiple threads created for a process running a Go program, the ratio of goroutines to threads should be much higher than 1-to-1. Multiple threads are often necessary to ensure that goroutines are not unnecessarily blocked. When one goroutine makes a blocking call, the thread running it must block. Therefore, at least one more thread should be created by the runtime to continue the execution of other goroutines that are not in blocking calls. Multiple threads are allowed to run in parallel up to a programmer defined maximum, which is stored in the variable GOMAXPROCS.
+
+It is important to keep in mind that all the OS sees is a single user level process requesting and running multiple threads. The concept of scheduling goroutines onto these threads is merely a construct in the virtual environment of the runtime.
+
+- [Analysis of the Go runtime scheduler](http://www1.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf)
+
+Another universal truth
+
+> Do not communicate by sharing memory; instead, share memory by communicating. ([Refer](https://blog.golang.org/codelab-share))
+
 ## References
 
 - [Go: What Does a Goroutine Switch Actually Involve?](https://medium.com/a-journey-with-go/go-what-does-a-goroutine-switch-actually-involve-394c202dddb7)
 - [Scalable Go Scheduler Design Doc](https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit)
+- [from Go source code](https://github.com/golang/go/blob/master/src/runtime/HACKING.md)
