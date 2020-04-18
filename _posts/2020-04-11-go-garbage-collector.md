@@ -167,5 +167,5 @@ That sums up the Go's garbage collector. Ofcourse, this didn't include everythin
 - [Go GC: Prioritizing low latency and simplicity](https://blog.golang.org/go15gc)
 - [Why golang garbage-collector not implement Generational and Compact gc?](https://groups.google.com/forum/m/#!topic/golang-nuts/KJiyv2mV2pU)
 - [Modern garbage collection: A look at the Go GC strategy](https://blog.plan99.net/modern-garbage-collection-911ef4f8bd8e#.674yqu7mr)
-- [Golang’s Real-time GC in Theory and Practice](https://making.pusher.com/golangs-real-time-gc-in-theory-and-practice/) <span class="font14">(Good read)</span>
+- [Golang’s Real-time GC in Theory and Practice](https://making.pusher.com/golangs-real-time-gc-in-theory-and-practice/) <i class="fas fa-bolt"></i>
 - [GopherCon 2018 - Allocator Wrestling](https://about.sourcegraph.com/go/gophercon-2018-allocator-wrestling)
