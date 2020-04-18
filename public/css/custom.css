@@ -163,6 +163,8 @@ blockquote span{
     visibility: hidden;
 }
 
+
+/* <span tooltip="allows the Thread to keep track of the next instruction to execute">Up</span> */
 /* START TOOLTIP STYLES */
 [tooltip] {
     position: relative; /* opinion 1 */
@@ -197,7 +199,7 @@ blockquote span{
       but this will also keep them from being obnoxious
       */
     min-width: 3em;
-    max-width: 21em;
+    /* max-width: 21em; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -356,4 +358,26 @@ blockquote span{
 
 .center {
   text-align: center;
+}
+
+aside {
+  position: absolute;
+  right: 1%;
+  padding-top: 0.5%;
+  width: 288px;
+  font-size: 14px;
+  border-top: solid 1px #dee9ed;
+}
+
+@media only screen and (max-width: 960px) {
+  aside {
+      padding-top: 1rem;
+      position: inherit;
+      right: inherit;
+      width: inherit;
+      border-bottom: solid 1px #dee9ed;
+      margin-bottom: 1rem;
+      font-size: inherit;
+      margin-top: 1rem;
+  }
 }
