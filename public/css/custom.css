@@ -7,6 +7,11 @@ html {
     font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
 
+.header-bar {
+  border-top: 5px solid #505050;
+  position: relative;
+}
+
 .category-list {
     list-style: none;
     margin: 0;
