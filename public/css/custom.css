@@ -386,3 +386,7 @@ aside {
       margin-top: 1rem;
   }
 }
+
+.container {
+  max-width: 42rem;
+}
