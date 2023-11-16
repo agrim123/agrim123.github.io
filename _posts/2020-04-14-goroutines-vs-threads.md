@@ -2,7 +2,7 @@
 layout: post
 title: Goroutines vs Threads
 categories:
-- go
+- golang
 - goroutines
 - threads
 - os

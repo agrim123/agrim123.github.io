@@ -2,7 +2,7 @@
 layout: post
 title: 'Goroutines: M, P, G orchestration'
 categories:
-- go
+- golang
 - goroutines
 - notes
 - scheduler
