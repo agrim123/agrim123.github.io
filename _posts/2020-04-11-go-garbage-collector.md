@@ -2,7 +2,7 @@
 layout: post
 title: Go's garbage collector
 categories:
-- go
+- golang
 - garbage collector
 - notes
 ---
