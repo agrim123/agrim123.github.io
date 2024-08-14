@@ -8,9 +8,9 @@ layout: page
 
 Hello user, I'm __Agrim Mittal__ and welcome to my private space on the internet. I am a software developer with a keen interest in network security.
 
-I am an active open source contributor. I have completed the [Google Summer of Code program](https://summerofcode.withgoogle.com/archive/) in 2018 under Ruby org contributing to [Bundler](https://bundler.io/). You can find my work [here](https://summerofcode.withgoogle.com/archive/2018/projects/5547552766164992/).
+Currently, I am working as Staff Software Engineer in Mudrex, a YC W19 startup.
 
-As a member of [SDSLabs](https://sdslabs.co), an awesome group of students constantly trying to innovate and encourage technical activities on campus, I have been involved in development and shipping of several projects including [codevillage](http://codevillage.sdslabs.co), [accounts](https://accounts.sdslabs.co),  [backdoor](https://backdoor.sdslabs.co) and many more.
+I generally write about what I do or things I found interesting, you can also browse through my readings [here](https://github.com/agrim123/reading-material).
 
 ## Ping me!
 
