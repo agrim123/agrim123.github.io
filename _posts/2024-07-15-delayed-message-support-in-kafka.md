@@ -9,7 +9,9 @@ categories:
 - redis
 ---
 
-Apache Kafka is a distributed, horizontally scalable, partitioned, fault-tolerant, replicated commit log service, which works great as a queue/message broker/database for in-order retrieval. But what if you want to put a message in Kafka and do not want to consume it immediately without stopping your consumer or polling and re-pushing again and again?
+What if you want to put a message in Kafka and want to consume it after some time, without stopping your consumer or polling and re-pushing again and again?
+
+Apache Kafka is a distributed, horizontally scalable, partitioned, fault-tolerant, replicated commit log service, which works great as a queue/message broker/database for <b>in-order retrieval</b>. 
 
 There are a lot of protocols which support this functionality, for example, [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html) and even natively on brokers example, [RabbitMQ](https://www.rabbitmq.com/blog/2015/04/16/scheduling-messages-with-rabbitmq), but for Kafka there exists no such plugin/protocol.
 
@@ -17,7 +19,7 @@ In this article, we explore how we can build a system that can help us schedule 
 
 # The building blocks
 
-Let's visualize our use case once more, we want to delay a message `M` by `N` seconds which should be picked by service `S` after `N` seconds with Kafka as the underlying broker.
+Let's visualize our use case, we want to delay a message `M` by `N` seconds which should be picked by service `S` after `N` seconds with Kafka as the underlying broker.
 
 We need a black box into which you put this message `M` with a delay of `N` seconds and after `N` seconds have elapsed, this black box pushes the message to service `S`'s kafka topic.
 
