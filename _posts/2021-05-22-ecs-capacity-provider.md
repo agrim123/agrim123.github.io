@@ -119,5 +119,5 @@ Capacity provider is an awesome tool, which can be used for preferential autosca
 ## References
 
 - [AWS Cloud Containers Conference - Deep Dive on Amazon ECS Capacity Providers](https://www.youtube.com/watch?v=Vb_4wAEcfpQ)
-- https://www.youtube.com/watch?v=Fb1EwgfLbZA
-- https://www.youtube.com/watch?v=0j8D-be2J1k
+- [ECS Cluster Auto Scaling Deep Drive - AWS Online Tech Talks](https://www.youtube.com/watch?v=Fb1EwgfLbZA)
+- [Amazon ECS Cluster Auto Scaling with a Capacity Provider](https://www.youtube.com/watch?v=0j8D-be2J1k)
