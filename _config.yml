@@ -17,17 +17,16 @@ plugins: [jekyll-paginate]
 permalink:           /posts/:title:output_ext
 
 # Setup
-title:               agrim mittal
+title:               agrim
 tagline:             (Everything is a file)
 description:         Everything is a file.
-keywords:            iit, roorkee, hitman, agrim, mittal, developer
 url:                 https://agrim123.github.io
 baseurl:             ''
 paginate:            7
 
 # About/contact
 author:
-  name:              Agrim Mittal
+  name:              Agrim
   url:               https://agrim123.github.io
   email:             agrimmittal@protonmail.com
 

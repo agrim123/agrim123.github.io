@@ -6,7 +6,7 @@ layout: page
 
 > We act as though comfort and luxury were the chief requirements of life when all that we need to make us happy is something to be enthusiastic about. - *Einstein*
 
-Hello user, I'm __Agrim Mittal__ and welcome to my private space on the internet. I am a software developer with a keen interest in network security.
+Hello user, I'm __Agrim__ and welcome to my private space on the internet. I am a software developer with a keen interest in network security.
 
 Currently, I am working as Staff Software Engineer in Mudrex, a YC W19 startup.
 
