@@ -1,10 +1,10 @@
 mark {
-    color: white;
-    background-color: #303030;
+  color: white;
+  background-color: #303030;
 }
 
 html {
-    font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 .header-bar {
@@ -13,337 +13,355 @@ html {
 }
 
 .category-list {
-    list-style: none;
-    margin: 0;
-    overflow: hidden; 
-    padding: 0;
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
 }
 
 .category-list li {
-    float: left; 
-    font: 12px/1.5 "PT Sans", Helvetica, Arial, sans-serif;
+  float: left;
+  font: 12px/1.5 "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 .category-list-element {
-    background: #eee;
-    border-radius: 3px 0 0 3px;
-    color: #999;
-    display: inline-block;
-    height: 26px;
-    line-height: 26px;
-    padding: 0 20px 0 23px;
-    position: relative;
-    margin: 0 10px 10px 0;
-    text-decoration: none;
-    -webkit-transition: color 0.2s;
+  background: #eee;
+  border-radius: 3px 0 0 3px;
+  color: #999;
+  display: inline-block;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 20px 0 23px;
+  position: relative;
+  margin: 0 10px 10px 0;
+  text-decoration: none;
+  -webkit-transition: color 0.2s;
 }
 
 .category-list-element::before {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
-    content: '';
-    height: 6px;
-    left: 10px;
-    position: absolute;
-    width: 6px;
-    top: 10px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
+  content: '';
+  height: 6px;
+  left: 10px;
+  position: absolute;
+  width: 6px;
+  top: 10px;
 }
 
 .category-list-element::after {
-    background: #fff;
-    border-bottom: 13px solid transparent;
-    border-left: 10px solid #eee;
-    border-top: 13px solid transparent;
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
+  background: #fff;
+  border-bottom: 13px solid transparent;
+  border-left: 10px solid #eee;
+  border-top: 13px solid transparent;
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .category-list-element:hover {
-    background-color: #303030;
-    color: white;
-    text-decoration: none;
+  background-color: #303030;
+  color: white;
+  text-decoration: none;
 }
 
 .category-list-element:hover::after {
-    border-left-color: #303030; 
+  border-left-color: #303030;
 }
 
-.page, .post {
-    margin-bottom: 3em;
+.page,
+.post {
+  margin-bottom: 3em;
 }
 
-blockquote{
-    margin:5vh auto;
-    font-style:italic;
-    color: #555555;
-    padding:1em;
-    border-left:8px solid #303030 ;
-    position: relative;
-    background:#EDEDED;
+blockquote {
+  margin: 5vh auto;
+  font-style: italic;
+  color: #555555;
+  padding: 1em;
+  border-left: 8px solid #303030;
+  position: relative;
+  background: #EDEDED;
 }
 
-blockquote::after{
-    content: '';
+blockquote::after {
+  content: '';
 }
 
-blockquote span{
-    display:block;
-    color:#333333;
-    font-style: normal;
-    font-weight: bold;
-    margin-top:1em;
+blockquote span {
+  display: block;
+  color: #333333;
+  font-style: normal;
+  font-weight: bold;
+  margin-top: 1em;
 }
 
 .floating {
-    overflow: scroll;
-    max-height: 3%;
-    word-break: break-word;
-    max-width: 18%;
-    display: flex;
-    position: absolute;
-    right: 2%;
-    border: 1px solid;
-    padding: 0.5%;
-    align-items: flex-start;
-    margin-right: 2.5%;
+  overflow: scroll;
+  max-height: 3%;
+  word-break: break-word;
+  max-width: 18%;
+  display: flex;
+  position: absolute;
+  right: 2%;
+  border: 1px solid;
+  padding: 0.5%;
+  align-items: flex-start;
+  margin-right: 2.5%;
 }
 
 .floating-btn {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 @media screen and (max-width: 600px) {
-    .floating {
-        visibility: hidden;
-    }
-    
-    .floating-btn {
-        visibility: visible;
-        position: absolute;
-        animation-name: floating;
-        animation-duration: 3s;
-        animation-iteration-count: infinite;
-        animation-timing-function: ease-in-out;
-        right: 1%;
-        height: 40px;
-        width: 40px;
-        background: rgb(200,200,200);
-        border-radius: 100%;
-        cursor: pointer;
-    }
+  .floating {
+    visibility: hidden;
+  }
 
-    .floating-cross {
-        visibility: visible;
-    }
-    
+  .floating-btn {
+    visibility: visible;
+    position: absolute;
+    animation-name: floating;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    right: 1%;
+    height: 40px;
+    width: 40px;
+    background: rgb(200, 200, 200);
+    border-radius: 100%;
+    cursor: pointer;
+  }
+
+  .floating-cross {
+    visibility: visible;
+  }
+
 }
 
 @keyframes floating {
-    from { transform: translate(0,  0px); }
-    65%  { transform: translate(0, 15px); }
-    to   { transform: translate(0, -0px); }    
+  from {
+    transform: translate(0, 0px);
+  }
+
+  65% {
+    transform: translate(0, 15px);
+  }
+
+  to {
+    transform: translate(0, -0px);
+  }
 }
 
-.floating-show { 
-    max-width: fit-content;
-    visibility: visible;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-height: fit-content;
-    padding: 2%;
-    background: #303030;
-    color: white;
+.floating-show {
+  max-width: fit-content;
+  visibility: visible;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: fit-content;
+  padding: 2%;
+  background: #303030;
+  color: white;
 }
 
 .fade-body {
-    background-color: gray;
+  background-color: gray;
 }
 
 .floating-cross {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 
 /* <span tooltip="allows the Thread to keep track of the next instruction to execute">Up</span> */
 /* START TOOLTIP STYLES */
 [tooltip] {
-    position: relative; /* opinion 1 */
-  }
-  
-  /* Applies to all tooltips */
-  [tooltip]::before,
-  [tooltip]::after {
-    text-transform: none; /* opinion 2 */
-    font-size: .9em; /* opinion 3 */
-    line-height: 1;
-    user-select: none;
-    pointer-events: none;
-    position: absolute;
-    display: none;
-    opacity: 0;
-  }
-  [tooltip]::before {
-    content: '';
-    border: 5px solid transparent; /* opinion 4 */
-    z-index: 1001; /* absurdity 1 */
-  }
-  [tooltip]::after {
-    content: attr(tooltip); /* magic! */
-    
-    /* most of the rest of this is opinion */
-    font-family: Helvetica, sans-serif;
-    text-align: center;
-    
-    /* 
+  position: relative;
+  /* opinion 1 */
+}
+
+/* Applies to all tooltips */
+[tooltip]::before,
+[tooltip]::after {
+  text-transform: none;
+  /* opinion 2 */
+  font-size: .9em;
+  /* opinion 3 */
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  display: none;
+  opacity: 0;
+}
+
+[tooltip]::before {
+  content: '';
+  border: 5px solid transparent;
+  /* opinion 4 */
+  z-index: 1001;
+  /* absurdity 1 */
+}
+
+[tooltip]::after {
+  content: attr(tooltip);
+  /* magic! */
+
+  /* most of the rest of this is opinion */
+  font-family: Helvetica, sans-serif;
+  text-align: center;
+
+  /* 
       Let the content set the size of the tooltips 
       but this will also keep them from being obnoxious
       */
-    min-width: 3em;
-    /* max-width: 21em; */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 1ch 1.5ch;
-    border-radius: .3ch;
-    box-shadow: 0 1em 2em -.5em rgba(0, 0, 0, 0.35);
-    background: #333;
-    color: #fff;
-    z-index: 1000; /* absurdity 2 */
+  min-width: 3em;
+  /* max-width: 21em; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1ch 1.5ch;
+  border-radius: .3ch;
+  box-shadow: 0 1em 2em -.5em rgba(0, 0, 0, 0.35);
+  background: #333;
+  color: #fff;
+  z-index: 1000;
+  /* absurdity 2 */
+}
+
+/* Make the tooltips respond to hover */
+[tooltip]:hover::before,
+[tooltip]:hover::after {
+  display: block;
+}
+
+/* don't show empty tooltips */
+[tooltip='']::before,
+[tooltip='']::after {
+  display: none !important;
+}
+
+/* FLOW: UP */
+[tooltip]:not([flow])::before,
+[tooltip][flow^="up"]::before {
+  bottom: 100%;
+  border-bottom-width: 0;
+  border-top-color: #333;
+}
+
+[tooltip]:not([flow])::after,
+[tooltip][flow^="up"]::after {
+  bottom: calc(100% + 5px);
+}
+
+[tooltip]:not([flow])::before,
+[tooltip]:not([flow])::after,
+[tooltip][flow^="up"]::before,
+[tooltip][flow^="up"]::after {
+  left: 50%;
+  transform: translate(-50%, -.5em);
+}
+
+/* FLOW: DOWN */
+[tooltip][flow^="down"]::before {
+  top: 100%;
+  border-top-width: 0;
+  border-bottom-color: #333;
+}
+
+[tooltip][flow^="down"]::after {
+  top: calc(100% + 5px);
+}
+
+[tooltip][flow^="down"]::before,
+[tooltip][flow^="down"]::after {
+  left: 50%;
+  transform: translate(-50%, .5em);
+}
+
+/* FLOW: LEFT */
+[tooltip][flow^="left"]::before {
+  top: 50%;
+  border-right-width: 0;
+  border-left-color: #333;
+  left: calc(0em - 5px);
+  transform: translate(-.5em, -50%);
+}
+
+[tooltip][flow^="left"]::after {
+  top: 50%;
+  right: calc(100% + 5px);
+  transform: translate(-.5em, -50%);
+}
+
+/* FLOW: RIGHT */
+[tooltip][flow^="right"]::before {
+  top: 50%;
+  border-left-width: 0;
+  border-right-color: #333;
+  right: calc(0em - 5px);
+  transform: translate(.5em, -50%);
+}
+
+[tooltip][flow^="right"]::after {
+  top: 50%;
+  left: calc(100% + 5px);
+  transform: translate(.5em, -50%);
+}
+
+/* KEYFRAMES */
+@keyframes tooltips-vert {
+  to {
+    opacity: .9;
+    transform: translate(-50%, 0);
   }
-  
-  /* Make the tooltips respond to hover */
-  [tooltip]:hover::before,
-  [tooltip]:hover::after {
-    display: block;
+}
+
+@keyframes tooltips-horz {
+  to {
+    opacity: .9;
+    transform: translate(0, -50%);
   }
-  
-  /* don't show empty tooltips */
-  [tooltip='']::before,
-  [tooltip='']::after {
-    display: none !important;
-  }
-  
-  /* FLOW: UP */
-  [tooltip]:not([flow])::before,
-  [tooltip][flow^="up"]::before {
-    bottom: 100%;
-    border-bottom-width: 0;
-    border-top-color: #333;
-  }
-  [tooltip]:not([flow])::after,
-  [tooltip][flow^="up"]::after {
-    bottom: calc(100% + 5px);
-  }
-  [tooltip]:not([flow])::before,
-  [tooltip]:not([flow])::after,
-  [tooltip][flow^="up"]::before,
-  [tooltip][flow^="up"]::after {
-    left: 50%;
-    transform: translate(-50%, -.5em);
-  }
-  
-  /* FLOW: DOWN */
-  [tooltip][flow^="down"]::before {
-    top: 100%;
-    border-top-width: 0;
-    border-bottom-color: #333;
-  }
-  [tooltip][flow^="down"]::after {
-    top: calc(100% + 5px);
-  }
-  [tooltip][flow^="down"]::before,
-  [tooltip][flow^="down"]::after {
-    left: 50%;
-    transform: translate(-50%, .5em);
-  }
-  
-  /* FLOW: LEFT */
-  [tooltip][flow^="left"]::before {
-    top: 50%;
-    border-right-width: 0;
-    border-left-color: #333;
-    left: calc(0em - 5px);
-    transform: translate(-.5em, -50%);
-  }
-  [tooltip][flow^="left"]::after {
-    top: 50%;
-    right: calc(100% + 5px);
-    transform: translate(-.5em, -50%);
-  }
-  
-  /* FLOW: RIGHT */
-  [tooltip][flow^="right"]::before {
-    top: 50%;
-    border-left-width: 0;
-    border-right-color: #333;
-    right: calc(0em - 5px);
-    transform: translate(.5em, -50%);
-  }
-  [tooltip][flow^="right"]::after {
-    top: 50%;
-    left: calc(100% + 5px);
-    transform: translate(.5em, -50%);
-  }
-  
-  /* KEYFRAMES */
-  @keyframes tooltips-vert {
-    to {
-      opacity: .9;
-      transform: translate(-50%, 0);
-    }
-  }
-  
-  @keyframes tooltips-horz {
-    to {
-      opacity: .9;
-      transform: translate(0, -50%);
-    }
-  }
-  
-  /* FX All The Things */ 
-  [tooltip]:not([flow]):hover::before,
-  [tooltip]:not([flow]):hover::after,
-  [tooltip][flow^="up"]:hover::before,
-  [tooltip][flow^="up"]:hover::after,
-  [tooltip][flow^="down"]:hover::before,
-  [tooltip][flow^="down"]:hover::after {
-    animation: tooltips-vert 300ms ease-out forwards;
-  }
-  
-  [tooltip][flow^="left"]:hover::before,
-  [tooltip][flow^="left"]:hover::after,
-  [tooltip][flow^="right"]:hover::before,
-  [tooltip][flow^="right"]:hover::after {
-    animation: tooltips-horz 300ms ease-out forwards;
-  }
-  
-  
+}
+
+/* FX All The Things */
+[tooltip]:not([flow]):hover::before,
+[tooltip]:not([flow]):hover::after,
+[tooltip][flow^="up"]:hover::before,
+[tooltip][flow^="up"]:hover::after,
+[tooltip][flow^="down"]:hover::before,
+[tooltip][flow^="down"]:hover::after {
+  animation: tooltips-vert 300ms ease-out forwards;
+}
+
+[tooltip][flow^="left"]:hover::before,
+[tooltip][flow^="left"]:hover::after,
+[tooltip][flow^="right"]:hover::before,
+[tooltip][flow^="right"]:hover::after {
+  animation: tooltips-horz 300ms ease-out forwards;
+}
+
+
 
 .contents {
-    position: fixed;
-    left: 1%;
-    margin: 0;
-    top: 50%;
-    border: 1px solid #303030;
-    padding: 0 1%;
+  position: fixed;
+  left: 1%;
+  margin: 0;
+  top: 50%;
+  border: 1px solid #303030;
+  padding: 0 1%;
 }
 
-.contents hr {
+.contents hr {}
 
-}
+.contents .heading {}
 
-.contents .heading {
-
-}
-
-.contents .element {
-
-}
+.contents .element {}
 
 .font12 {
   font-size: 12px;
@@ -376,14 +394,14 @@ aside {
 
 @media only screen and (max-width: 960px) {
   aside {
-      padding-top: 1rem;
-      position: inherit;
-      right: inherit;
-      width: inherit;
-      border-bottom: solid 1px #dee9ed;
-      margin-bottom: 1rem;
-      font-size: inherit;
-      margin-top: 1rem;
+    padding-top: 1rem;
+    position: inherit;
+    right: inherit;
+    width: inherit;
+    border-bottom: solid 1px #dee9ed;
+    margin-bottom: 1rem;
+    font-size: inherit;
+    margin-top: 1rem;
   }
 }
 
