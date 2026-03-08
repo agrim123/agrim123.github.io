@@ -13,13 +13,27 @@ layout: default
   {% if page.toc %}
   <details>
     <summary>Table of Contents</summary>
-    {{ content | toc_only }}
+    <div id="toc"></div>
   </details>
-  {{ content | inject_anchors }}
-  {% else %}
-    {{ content }}
   {% endif %}
-</div>
+  <div class="post-content">
+    {{ content }}
+  </div>
+  <script>
+    const toc = document.getElementById('toc');
+    const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3');
+    if (toc && headings.length > 0) {
+      const ul = document.createElement('ul');
+      headings.forEach(h => {
+        if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-');
+        const li = document.createElement('li');
+        li.style.marginLeft = h.tagName === 'H3' ? '1rem' : h.tagName === 'H2' ? '0.5rem' : '0';
+        li.innerHTML = `<a href="#${h.id}">${h.textContent}</a>`;
+        ul.appendChild(li);
+      });
+      toc.appendChild(ul);
+    }
+  </script>
 
 <div class="related">
   <h2>Related Posts</h2>
