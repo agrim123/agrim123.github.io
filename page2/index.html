@@ -136,23 +136,25 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/posts/kafka-removing-zookeeper.html">
-        Why is Zookeeper being removed from Kafka?
+      <a href="/posts/goroutines-mpg.html">
+        Goroutines: M, P, G orchestration
       </a>
     </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">04 Jan 2025</span>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">18 Apr 2020</span>
     <ul class="category-list">
       
-      <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+      <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
       
-      <li><a href="/categories/#kafka" class="category-list-element" target="_blank">kafka</a></li>
+      <li><a href="/categories/#goroutines" class="category-list-element" target="_blank">goroutines</a></li>
       
-      <li><a href="/categories/#distributed-systems" class="category-list-element" target="_blank">distributed-systems</a></li>
+      <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
+      
+      <li><a href="/categories/#scheduler" class="category-list-element" target="_blank">scheduler</a></li>
       
     </ul>
     <br>
     <p>
-  If you need a primer on Apache Kafka, I recommend reading Kafka 101
+  Goroutines are lightweight; have a small stack (2KB, from v1.4) and a fast context switch.
 
 </p>
     <hr style="margin: 1rem 0;"/>
@@ -160,69 +162,49 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/posts/delayed-message-support-in-kafka.html">
-        Implementing delayed message support with Apache Kafka
+      <a href="/posts/goroutines-vs-threads.html">
+        Goroutines vs Threads
       </a>
     </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">15 Jul 2024</span>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">14 Apr 2020</span>
     <ul class="category-list">
-      
-      <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
-      
-      <li><a href="/categories/#kafka" class="category-list-element" target="_blank">kafka</a></li>
-      
-      <li><a href="/categories/#distributed-systems" class="category-list-element" target="_blank">distributed-systems</a></li>
       
       <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
       
-      <li><a href="/categories/#redis" class="category-list-element" target="_blank">redis</a></li>
+      <li><a href="/categories/#goroutines" class="category-list-element" target="_blank">goroutines</a></li>
+      
+      <li><a href="/categories/#threads" class="category-list-element" target="_blank">threads</a></li>
+      
+      <li><a href="/categories/#os" class="category-list-element" target="_blank">os</a></li>
+      
+      <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
       
     </ul>
     <br>
-    <p>What if you want to put a message in Kafka and want to consume it after some time, without stopping your consumer or polling and re-pushing again and again?
+    <p>Go uses goroutines while languages like Java use threads.
 </p>
     <hr style="margin: 1rem 0;"/>
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/posts/golang-profiling.html">
-        Finding Memory Eating Monsters in Golang
+      <a href="/posts/go-garbage-collector.html">
+        Go's garbage collector
       </a>
     </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">29 Dec 2023</span>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">11 Apr 2020</span>
     <ul class="category-list">
       
       <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
       
-      <li><a href="/categories/#profiling" class="category-list-element" target="_blank">profiling</a></li>
+      <li><a href="/categories/#garbage collector" class="category-list-element" target="_blank">garbage collector</a></li>
       
-    </ul>
-    <br>
-    <p>Sometimes, you might observe your program breaching all thresholds and taking up more memory than required. You might observe sawtooth patterns in your memory charts. This is a sign of classic Memory Leak, which eventually leads to OOM.
-</p>
-    <hr style="margin: 1rem 0;"/>
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/posts/performing-cryptographic-operations-using-aws-nitro-enclaves.html">
-        Performing cryptographic operations using AWS Nitro Enclaves
-      </a>
-    </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">25 Dec 2023</span>
-    <ul class="category-list">
-      
-      <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
-      
-      <li><a href="/categories/#nitro-enclave" class="category-list-element" target="_blank">nitro-enclave</a></li>
-      
-      <li><a href="/categories/#ecs" class="category-list-element" target="_blank">ecs</a></li>
+      <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
       
     </ul>
     <br>
     <p>
-  AWS Nitro Enclaves enables customers to create isolated compute environments to further protect and securely process highly sensitive data such as personally identifiable information (PII), healthcare, financial, and intellectual property data within their Amazon EC2 instances. - Official Docs
+  Go’s new [&gt;= v1.5] garbage collector is a concurrent, tri-color, mark-sweep collector, an idea first proposed by Dijkstra in 1978.
 
 </p>
     <hr style="margin: 1rem 0;"/>
@@ -230,78 +212,86 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/posts/scaling-aws-ecs-services-on-non-conventional-metrics.html">
-        Scaling AWS ECS Service on "non-conventional" metrics
+      <a href="/posts/garbage-collection.html">
+        Garbage collection
       </a>
     </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">16 Nov 2023</span>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">07 Apr 2020</span>
     <ul class="category-list">
       
-      <li><a href="/categories/#scaling" class="category-list-element" target="_blank">scaling</a></li>
+      <li><a href="/categories/#garbage collector" class="category-list-element" target="_blank">garbage collector</a></li>
       
-      <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+      <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
       
-      <li><a href="/categories/#ecs" class="category-list-element" target="_blank">ecs</a></li>
+    </ul>
+    <br>
+    <p>Garbage collection is the process of freeing up memory space that is not being used.
+</p>
+    <hr style="margin: 1rem 0;"/>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/posts/statsd-daemon.html">
+        Extensively monitoring spark-jobs with StatsD
+      </a>
+    </h1>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">06 Mar 2020</span>
+    <ul class="category-list">
       
-      <li><a href="/categories/#grafana" class="category-list-element" target="_blank">grafana</a></li>
+      <li><a href="/categories/#spark" class="category-list-element" target="_blank">spark</a></li>
+      
+      <li><a href="/categories/#monitoring" class="category-list-element" target="_blank">monitoring</a></li>
       
       <li><a href="/categories/#prometheus" class="category-list-element" target="_blank">prometheus</a></li>
       
-      <li><a href="/categories/#redis" class="category-list-element" target="_blank">redis</a></li>
+      <li><a href="/categories/#statsd" class="category-list-element" target="_blank">statsd</a></li>
       
     </ul>
     <br>
-    <p>AWS ECS provides CPU and Memory metrics out of the box and these can be used for creating scaling policies.
+    <p>This post is a continuation with Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana
 </p>
     <hr style="margin: 1rem 0;"/>
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/posts/postgresql-ha-setup.html">
-        Deploying self-managed highly available, scalable, and resilient TimescaleDB cluster on AWS
+      <a href="/posts/slash-proc-linux.html">
+        Exploring the /proc directory
       </a>
     </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">15 Nov 2023</span>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">05 Jan 2020</span>
     <ul class="category-list">
       
-      <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
-      
-      <li><a href="/categories/#postgresql" class="category-list-element" target="_blank">postgresql</a></li>
-      
-      <li><a href="/categories/#reliability" class="category-list-element" target="_blank">reliability</a></li>
-      
-      <li><a href="/categories/#timescaledb" class="category-list-element" target="_blank">timescaledb</a></li>
+      <li><a href="/categories/#linux" class="category-list-element" target="_blank">linux</a></li>
       
     </ul>
     <br>
-    <p>Original Article Posted here.
+    <p>
+  The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures. – linux man pages
+
 </p>
     <hr style="margin: 1rem 0;"/>
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/posts/ecs-capacity-provider.html">
-        Better ECS autoscaling with capacity providers
+      <a href="/posts/kafka-kt.html">
+        Kafka 101
       </a>
     </h1>
-    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">22 May 2021</span>
+    <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">16 Dec 2019</span>
     <ul class="category-list">
       
-      <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+      <li><a href="/categories/#kafka" class="category-list-element" target="_blank">kafka</a></li>
       
-      <li><a href="/categories/#infrastructure" class="category-list-element" target="_blank">infrastructure</a></li>
-      
-      <li><a href="/categories/#autoscaling" class="category-list-element" target="_blank">autoscaling</a></li>
-      
-      <li><a href="/categories/#ecs" class="category-list-element" target="_blank">ecs</a></li>
-      
-      <li><a href="/categories/#docker" class="category-list-element" target="_blank">docker</a></li>
+      <li><a href="/categories/#distributed-systems" class="category-list-element" target="_blank">distributed-systems</a></li>
       
     </ul>
     <br>
-    <p>What is ECS?
+    <p>
+  Kafka is a distributed, horizontally scalable, partitioned, fault-tolerant, replicated commit log service.
+
 </p>
     <hr style="margin: 1rem 0;"/>
   </div>
@@ -309,10 +299,12 @@
 </div>
 <div class="pagination">
   
-    <a class="pagination-item older" href="/page2">Older</a>
+    <a class="pagination-item older" href="/page3">Older</a>
   
   
-    <span class="pagination-item newer">Newer</span>
+    
+      <a class="pagination-item newer" href="/">Newer</a>
+    
   
 </div>
 

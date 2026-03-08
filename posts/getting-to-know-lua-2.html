@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Getting to know Lua (Part 2) &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Getting to know Lua (Part 2)</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">21 Jan 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#lua" class="category-list-element" target="_blank">lua</a></li>
+    
+  </ul>
+  
+    <p>This post is in continuation of previous post <a href="/posts/getting-to-know-lua-1.html">Getting to know Lua (Part 1)</a></p>
+
+<h2 id="session-2-diving-into-expressions">Session 2: Diving into Expressions</h2>
+
+<h3 id="relational-operators">Relational Operators</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span>   <span class="o">&gt;</span>   <span class="o">&lt;=</span>  <span class="o">&gt;=</span>  <span class="o">==</span>  <span class="o">~=</span>
+</code></pre></div></div>
+
+<p>Comparing values with different types? Careful!!</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"9"</span> <span class="o">==</span> <span class="mi">9</span>        <span class="c1">-- false</span>
+</code></pre></div></div>
+<p>Moreover,</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">4</span> <span class="o">&lt;</span> <span class="mi">20</span>          <span class="c1">-- true</span>
+<span class="s2">"4"</span> <span class="o">&lt;</span> <span class="s2">"20"</span>      <span class="c1">-- false (alphabetical order) </span>
+</code></pre></div></div>
+<p>To avoid inconsistent results, Lua raises an error when you mix strings and numbers in an order comparison, such as <code class="language-plaintext highlighter-rouge">4 &lt; "20"</code>.</p>
+
+<h3 id="logical-operators">Logical Operators</h3>
+
+<p>The family consists of <code class="language-plaintext highlighter-rouge">and</code>, <code class="language-plaintext highlighter-rouge">or</code> and <code class="language-plaintext highlighter-rouge">not</code>.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="mi">4</span> <span class="ow">and</span> <span class="mi">2</span><span class="p">)</span>               <span class="c1">-- true</span>
+<span class="nb">print</span><span class="p">(</span><span class="kc">false</span> <span class="ow">and</span> <span class="mi">1</span><span class="p">)</span>           <span class="c1">-- false</span>
+<span class="nb">print</span><span class="p">(</span><span class="kc">false</span> <span class="ow">or</span> <span class="kc">true</span><span class="p">)</span>         <span class="c1">-- true</span>
+<span class="nb">print</span><span class="p">(</span><span class="kc">nil</span> <span class="ow">and</span> <span class="mi">15</span><span class="p">)</span>            <span class="c1">-- false</span>
+<span class="nb">print</span><span class="p">(</span><span class="ow">not</span> <span class="kc">nil</span><span class="p">)</span>               <span class="c1">-- true</span>
+<span class="nb">print</span><span class="p">(</span><span class="ow">not</span> <span class="mi">4</span><span class="p">)</span>                 <span class="c1">-- false</span>
+</code></pre></div></div>
+
+<h3 id="table-constructors">Table Constructors</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mylist</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"item1"</span><span class="p">,</span> <span class="s2">"item2"</span><span class="p">,</span> <span class="s2">"item3"</span><span class="p">,</span> <span class="s2">"item4"</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>         <span class="c1">-- "item4"  (the first element has always index 1, not 0)</span>
+</code></pre></div></div>
+
+<h3 id="assignment">Assignment</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="mi">210</span>                         <span class="c1">-- a gets 210</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span>                     <span class="c1">-- a gets 4 and b 3</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span>                     <span class="c1">-- swap x and y</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>                     <span class="c1">-- a get 0 and b and c gets nil</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>               <span class="c1">-- a, b, c get 0 each</span>
+
+<span class="k">function</span> <span class="nf">f</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">f</span><span class="p">()</span>                       <span class="c1">-- a gets 0 and b 1 </span>
+</code></pre></div></div>
+
+<h3 id="local-variables-and-blocks">Local variables and blocks</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="mi">10</span>                          <span class="c1">-- global variable</span>
+<span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">20</span>                    <span class="c1">-- local variable</span>
+</code></pre></div></div>
+
+<p>Local variable have scope limited to the block where they are declared.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>              <span class="c1">-- global variable</span>
+
+<span class="k">function</span> <span class="nf">a</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>       <span class="c1">-- local to scope of a()</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>           <span class="c1">-- nil (as not available outside function block)</span>
+</code></pre></div></div>
+
+<h3 id="control-structures">Control Structures</h3>
+
+<p><code class="language-plaintext highlighter-rouge">if</code>, <code class="language-plaintext highlighter-rouge">else</code> for conditionals</p>
+
+<p><code class="language-plaintext highlighter-rouge">where</code>, <code class="language-plaintext highlighter-rouge">for</code>, <code class="language-plaintext highlighter-rouge">repeat</code> for iteration</p>
+
+<p>All control structures have an explicit terminator: <code class="language-plaintext highlighter-rouge">end</code> terminates the <code class="language-plaintext highlighter-rouge">if</code>, <code class="language-plaintext highlighter-rouge">for</code> and <code class="language-plaintext highlighter-rouge">while</code> structures; and <code class="language-plaintext highlighter-rouge">until</code> terminates the <code class="language-plaintext highlighter-rouge">repeat</code> structure.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="k">return</span> <span class="n">x</span>
+<span class="k">else</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- print the first non-empty line</span>
+<span class="k">repeat</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+<span class="k">until</span> <span class="n">line</span> <span class="o">~=</span> <span class="s2">""</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span> <span class="k">do</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

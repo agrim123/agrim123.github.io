@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Deploying self-managed highly available, scalable, and resilient TimescaleDB cluster on AWS &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Deploying self-managed highly available, scalable, and resilient TimescaleDB cluster on AWS</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">15 Nov 2023</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+    
+    <li><a href="/categories/#postgresql" class="category-list-element" target="_blank">postgresql</a></li>
+    
+    <li><a href="/categories/#reliability" class="category-list-element" target="_blank">reliability</a></li>
+    
+    <li><a href="/categories/#timescaledb" class="category-list-element" target="_blank">timescaledb</a></li>
+    
+  </ul>
+  
+    <p>Original Article Posted <a href="https://www.linkedin.com/pulse/accelerating-time-series-data-performance-deploying-timescaledb-yzgvc/">here</a>.</p>
+
+<p>Mudrex is a global crypto investment platform and since asset prices are key to every investment platform, the problem statement is to reliably store and serve real-time and historical prices. This article talks about how we solved this problem and managed to get our p99 latencies from 2-3sec down to 90ms.</p>
+
+<p>A little background on how and what data we store:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        time         |   open   |   high   |   low    |  close   |  volume
+
+---------------------+----------+----------+----------+----------+----------
+
+2022-08-17 04:01:00 | 24010.78 | 24020.64 | 24008.04 | 24013.01 | 69.44189
+
+2022-08-17 04:02:00 | 24014.11 | 24019.94 | 24010.91 | 24018.27 | 44.59802
+
+2022-08-17 04:03:00 | 24017.24 | 24020.19 |    24010 | 24016.92 |   48.663
+
+2022-08-17 04:04:00 | 24018.27 | 24025.42 | 24016.45 | 24025.09 |  47.9079       
+</code></pre></div></div>
+
+<p>We store data per minute TOHLCV (timestamp, open, high, low, close, volume).</p>
+
+<p>We have been running self-managed MongoDB (for over 2 years) as the data store, but have been facing scaling, storage, and many other issues, leading to higher downtimes and lower predictability of real-time prices.</p>
+
+<p>On exploring options, we found <a href="https://www.tigerdata.com/">TimescaleDB</a> suited our needs. Other considered options were InfluxDB and Managed MongoDB.</p>
+
+<p>As you can infer from the sample data above, we have time series data, which makes TimescaleDB best for our use case.</p>
+
+<p>In the early stages of our PoC, we explored Managed Timescale, but the costs were too high (including the running cost and data transfer). And thus we started exploring self-managed solutions.</p>
+
+<h1 id="what-is-timescaledb">What is TimescaleDB?</h1>
+
+<blockquote>
+  <p>Engineered to efficiently handle resource-intensive workloads, like time series, event, and analytics data.</p>
+</blockquote>
+
+<p>TimescaleDB is just an extension on top of native PostgreSQL. So it is very easy to enable and start using it. A simple command enables Timescale on a PostgreSQL instance <strong>(provided you have <a href="https://www.tigerdata.com/docs/self-hosted/latest/install/installation-linux">installed</a> Timescale dependencies)</strong>.</p>
+
+<p>Now let’s dive into how we deployed a 3-node TimescaleDB cluster in our system.</p>
+
+<h2 id="benefits-of-timescaledb-improvements-that-we-observed">Benefits of TimescaleDB (improvements that we observed)</h2>
+
+<ol>
+  <li>On-the-fly and real-time aggregated data.</li>
+  <li>Seconds to ~90ms p99 write latencies.</li>
+  <li>Seconds to ~30ms p99 read latencies.</li>
+</ol>
+
+<h2 id="why-a-3-node-cluster">Why a 3-node cluster?</h2>
+
+<p>A minimum of 3 nodes are required to maintain a quorum and reach the leader election. It helps in disaster recovery and thus ensures high availability and is fault tolerant.</p>
+
+<hr />
+
+<h1 id="timescaledb-infrastructure">TimescaleDB Infrastructure</h1>
+
+<p>We have deployed the cluster on AWS EC2 using Auto Scaling Groups, AWS CloudMap, and AWS Lambda.</p>
+
+<p>Here is the entire infrastructure diagram, we will dive into each component one by one:
+<img src="/images/timescale-architecture.png" alt="timescale-architecture.png" /></p>
+
+<p>There are two major components in this system:</p>
+
+<ol>
+  <li>TimescaleDB PostgreSQL instances.</li>
+  <li>Proxy to query Timescale instances to protect them from excessive load.</li>
+</ol>
+
+<h2 id="timescaledb-architecture">TimescaleDB Architecture</h2>
+<p>A typical TimescaleDB instance contains Patroni, Watchdog, and PostgreSQL with a TimescaleDB extension installed on it.</p>
+<ul>
+  <li>etcd</li>
+  <li>Patroni</li>
+  <li>Watchdog</li>
+  <li>TimescaleDB</li>
+</ul>
+
+<h3 id="etcd">etcd</h3>
+<blockquote>
+  <p>etcd is a strongly consistent, distributed key-value store that provides a reliable way to store data that needs to be accessed by a distributed system or cluster of machines. It gracefully handles leader elections during network partitions and can tolerate machine failure, even in the leader node.</p>
+</blockquote>
+
+<p>etcd is <a href="https://etcd.io/docs/v3.3/platforms/aws/">deployed</a> on AWS ECS and follows a pretty standard procedure for deploying a 3-node cluster. etcd is heavily used by Patroni for managing the cluster and is the most critical part of this entire infrastructure.</p>
+
+<h3 id="patroni">Patroni</h3>
+
+<blockquote>
+  <p>an automatic failover system for PostgreSQL. It provides automatic or manual failover and keeps all of the vital data stored in a distributed configuration store (DCS), we use etcd as DCS.</p>
+</blockquote>
+
+<p>We use Patroni to manage the Timescale cluster. Patroni offers support for failovers, switchovers, pause or resume cluster members, and manages replications between timescale nodes.</p>
+
+<p>Patroni stores cluster config in etcd. All new instances that want to join the cluster, query etcd, and discover the master for replication.</p>
+
+<p>A typical Patroni config looks like this:</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">scope</span><span class="pi">:</span> <span class="s">timescaledbcluster</span> <span class="c1"># cluster name</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">-HOSTNAME-</span>
+
+<span class="c1"># REST API</span>
+<span class="c1"># api is used by HAProxy to route read/write traffic</span>
+<span class="na">restapi</span><span class="pi">:</span>
+  <span class="na">listen</span><span class="pi">:</span> <span class="s">0.0.0.0:8008</span>
+  <span class="na">connect_address</span><span class="pi">:</span> <span class="s">-PRIVATE_IP-:8008</span>
+
+<span class="c1"># etcd (dcs)</span>
+<span class="c1"># instructs patroni to use etcd as config store</span>
+<span class="na">etcd</span><span class="pi">:</span>
+  <span class="na">host</span><span class="pi">:</span> <span class="s">-ETCD_DNS-:2379</span>
+  <span class="na">protocol</span><span class="pi">:</span> <span class="s">http</span>
+
+<span class="c1"># PostgreSQL</span>
+<span class="na">postgresql</span><span class="pi">:</span>
+  <span class="na">listen</span><span class="pi">:</span> <span class="s">0.0.0.0:5432</span>
+  <span class="na">connect_address</span><span class="pi">:</span> <span class="s">-PRIVATE_IP-:5432</span>
+  <span class="s">...</span>
+
+<span class="c1"># watchdog</span>
+<span class="na">watchdog</span><span class="pi">:</span>
+  <span class="na">mode</span><span class="pi">:</span> <span class="s">required</span>
+  <span class="na">device</span><span class="pi">:</span> <span class="s">/dev/watchdog</span>
+  <span class="na">safety_margin</span><span class="pi">:</span> <span class="m">10</span>
+</code></pre></div></div>
+
+<h3 id="watchdog">Watchdog</h3>
+
+<blockquote>
+  <p>Helpful in split brain scenarios i.e. when Patroni itself becomes unresponsive.</p>
+</blockquote>
+
+<p>Having multiple PostgreSQL servers running as master can result in transaction loss due to diverging timelines. This situation is also called a split-brain problem.</p>
+
+<p>To avoid split-brain Patroni needs to ensure PostgreSQL will not accept any transaction commits after the leader key expires in etcd. Under normal circumstances, Patroni will try to achieve this by stopping PostgreSQL when the leader lock update fails for any reason. However, this may fail to happen due to various reasons:</p>
+<ul>
+  <li>Patroni has crashed due to a bug, out-of-memory condition, or by being accidentally killed by a system administrator.</li>
+  <li>Shutting down PostgreSQL is too slow.</li>
+  <li>Patroni does not get to run due to high load on the system, the VM is paused by the hypervisor or other infrastructure issues.</li>
+</ul>
+
+<p>To guarantee correct behavior under these conditions Patroni supports watchdog devices. Watchdog devices are software or hardware mechanisms that reset the whole system when they do not get a keepalive heartbeat within a specified timeframe. This adds a layer of fail-safe in case usual Patroni split-brain protection mechanisms fail.</p>
+
+<p><a href="https://patroni.readthedocs.io/en/latest/watchdog.html">Patroni support for watchdog.</a></p>
+
+<h3 id="timescaledb">TimescaleDB</h3>
+
+<blockquote>
+  <p>TimescaleDB is the open-source relational database for time series and analytics. It is Postgres but for time series.</p>
+</blockquote>
+
+<p>We install raw <a href="https://www.devart.com/dbforge/postgresql/how-to-install-postgresql-on-linux/">PostgreSQL</a> and then manually enable the <a href="https://www.tigerdata.com/docs/self-hosted/latest/install/installation-linux">TimescaleDB</a> extension after setup.</p>
+
+<p>We set the installation script in the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html">user data script</a>.</p>
+
+<p>(User Data Script is configured in the launch template and fed to AutoScalingGroup and is run on the instance startup before anything else.)</p>
+
+<p><img src="/images/timescale-instance.png" alt="timescale-instance.png" /></p>
+
+<h3 id="timescale-proxy-architecture">Timescale Proxy Architecture</h3>
+
+<p>The timescale proxy instance has two major components running on it to provide an effective proxy and load balancing for Timescale.</p>
+
+<ol>
+  <li>HAProxy</li>
+  <li>PgBouncer</li>
+  <li>Network Load Balancer</li>
+</ol>
+
+<p>We have a proxy instance (containing PgBouncer and HAProxy) behind an <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html">AWS Network Load Balance (NLB)</a>.</p>
+
+<p><img src="/images/timescale-proxy.png" alt="timescale-proxy.png" /></p>
+
+<h4 id="why-do-we-need-a-proxy-in-front-of-timescaledb">Why do we need a proxy in front of TimescaleDB?</h4>
+
+<p>Generally, databases have limitations on how many concurrent connections they can support (this is not the same as their capacity to process concurrent queries), hence to protect the database instances from getting overloaded from clients, we put up a proxy setup in front of these databases.</p>
+
+<p>The proxy setup that we are using consists of PgBouncer and HAProxy. PgBouncer is a connection pooler i.e. for every n connection from clients it makes only m connections to the database (n » m), this way the database never gets overwhelmed, and greedy clients get stopped at PgBouncer.</p>
+
+<p>The next problem is how PgBouncer effectively balances between read traffic. The answer is, that it doesn’t. This is where HAProxy comes into play. As we already know we have <em>a single master and an even number of replicas</em> PgBouncer can forward write queries to the leader node but cannot effectively balance read queries to replicas. HAProxy provides a lightweight load balancing on these replicas. The entire setup boils down to:</p>
+<ul>
+  <li>Clients connect to PgBouncer, which in turn maintains a pool of connections with the database via HAProxy.</li>
+  <li>Read and write traffic gets split at the PgBouncer level.</li>
+</ul>
+
+<p>Now, since we have kept the proxy setup in front of databases, we can horizontally scale this setup independently from DB, and thus we keep this proxy setup behind another managed load balancer, i.e. AWS NLB which provides load balancing at OSI layer 4 (network layer).</p>
+
+<h3 id="haproxy">HAProxy</h3>
+
+<blockquote>
+  <p>HAProxy is a free, very fast, and reliable reverse proxy offering high availability, load balancing, and proxying for TCP and HTTP-based applications.</p>
+</blockquote>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Reference https://www.haproxy.com/blog/dns-service-discovery-haproxy/</span>
+<span class="c1"># This dynamically uses Multivalue answer from A record to populate the servers</span>
+<span class="s">resolvers our_local</span>
+    <span class="s">nameserver our_local -RESOLVER-:53</span>
+    <span class="s">accepted_payload_size </span><span class="m">8192</span>
+
+<span class="s">listen Standby</span>
+    <span class="s">bind *:5001</span>
+    <span class="s">balance roundrobin</span>
+    <span class="s">option httpchk OPTIONS /replica</span>
+    <span class="s">http-check expect status </span><span class="m">200</span>
+    <span class="s">default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions</span>
+    <span class="s">server-template timescale 3 -TIMESCALE_DNS-:5432 check resolvers our_local init-addr none maxconn 100 check port </span><span class="m">8008</span>
+
+<span class="s">listen Primary</span>
+    <span class="s">bind *:5000</span>
+    <span class="s">option httpchk OPTIONS /master</span>
+    <span class="s">http-check expect status </span><span class="m">200</span>
+    <span class="s">default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions</span>
+    <span class="s">server-template timescale 3 -TIMESCALE_DNS-:5432 check resolvers our_local init-addr none maxconn 100 check port 8008</span>        
+</code></pre></div></div>
+
+<p>The Standby and Primary blocks govern the read/write traffic split by querying Patroni’s API to check whether an instance is a leader or a read replica.</p>
+
+<h3 id="pgbouncer">PgBouncer</h3>
+
+<blockquote>
+  <p>PgBouncer is a lightweight connection pooler for PostgreSQL.</p>
+</blockquote>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">[</span><span class="nv">databases</span><span class="pi">]</span>
+<span class="s">read=host=haproxy port=5000 dbname=&lt;dbname&gt; user=&lt;user&gt;</span>
+<span class="s">write=host=haproxy port=5001 dbname=&lt;dbname&gt; user=&lt;user&gt;</span>
+
+<span class="pi">[</span><span class="nv">users</span><span class="pi">]</span>
+<span class="c1"># ... users list from /etc/pgbouncer/userlist.txt</span>
+
+<span class="pi">[</span><span class="nv">pgbouncer</span><span class="pi">]</span>
+<span class="s">listen_addr = 0.0.0.0</span>
+<span class="s">listen_port = </span><span class="m">6432</span>
+<span class="s">pool_mode = transaction</span>
+<span class="s">server_check_query = select </span><span class="m">1</span>
+<span class="s">server_lifetime = </span><span class="m">360</span>
+<span class="s">max_client_conn = </span><span class="m">16384</span>
+<span class="s">default_pool_size = </span><span class="m">64</span>
+<span class="s">min_pool_size = </span><span class="m">32</span>
+<span class="s">reserve_pool_size = </span><span class="m">10</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="monitoring">Monitoring</h3>
+
+<p>Monitoring is a critical part of this system. Having visibility of every component is important to be able to debug any incidents.</p>
+
+<p>We are also monitoring all the above components using Prometheus and Grafana Stack.</p>
+
+<h4 id="etcd-1">etcd</h4>
+<p>etcd exposes its metrics for Prometheus to scrape and these are then made available on Grafana.</p>
+
+<h4 id="timescale-proxy">Timescale Proxy</h4>
+<p>PgBouncer and HAProxy are monitored using sidecar containers running exporters for these components.</p>
+
+<h4 id="timescale">Timescale</h4>
+<p>Postgres exporter is running which ships the health of the Postgres instance.</p>
+
+<p>A cron is also running on all Timescale instances which sends updates to slack channel about the cluster state. This cron runs on all replicas as well but only sends alerts from the master, so even if a leader goes down, we get alerts from the newly elected leader.</p>
+
+<p>Example slack alert:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Environment: staging
+IAM: ip1 (master)
++ Cluster: timescaledbcluster ---------+---------+----+-----------+
+| Member        | Host       | Role    | State   | TL | Lag in MB |
++---------------+------------+---------+---------+----+-----------+
+| ip1           | ip1        | Leader  | running |  8 |           |
+| ip2           | ip2        | Replica | running |  8 |         0 |
+| ip3           | ip2        | Replica | running |  8 |         0 |
++---------------+------------+---------+---------+----+-----------+
+Uptime: 168 days
+</code></pre></div></div>
+<p><br />
+This completes our HA setup of TimescaleDB.
+<br /></p>
+
+<h2 id="towards-a-more-resilient-infrastructure">Towards a more resilient infrastructure</h2>
+
+<p>In the current system (what we have talked about till now), we have successfully deployed a 3-node PostgreSQL cluster on EC2 and 3 Proxy instances behind NLB.</p>
+
+<p>A few questions arise:</p>
+<ul>
+  <li>What if the master goes down? (reliability, failover)</li>
+  <li>What if I have to add a new node to the cluster? (horizontally scalable)</li>
+  <li>What if 1 node goes down? How does the new node come up fast? (resilience)</li>
+  <li>How do the dead nodes get removed from the system and DNS as ASG don’t support direct DNS record update on CloudMap? (resilience)</li>
+</ul>
+
+<p>We answer each of these questions below:</p>
+
+<h3 id="what-if-the-master-goes-down-reliability-failover">What if the master goes down? (reliability, failover)</h3>
+<p>If the master goes down (becomes unresponsive) due to any reason, Patroni elects a new master and the cluster operates normally.</p>
+
+<h3 id="what-if-i-have-to-add-a-new-node-to-the-cluster-horizontally-scalable">What if I have to add a new node to the cluster? (horizontally scalable)</h3>
+<p>On adding a new node to the cluster, the Patroni on the new node fetches cluster config from etcd and starts replicating data from the master.</p>
+
+<h3 id="what-if-1-node-goes-down-how-does-the-new-node-come-up-fast-resilience">What if 1 node goes down? How does the new node come up fast? (resilience)</h3>
+<p>We don’t use root EBS for storing data, instead, we use a separate EBS disk (aka data disk) for storing data.</p>
+
+<p>Root EBS is merely 10GB which houses the OS, config files, etc. On the other hand, the data EBS can grow up to 1TB as per the data requirement.</p>
+
+<p>Since Data EBS doesn’t have any node-specific data, it allows us to attach it to any upcoming replica or even leader, to prevent replication from 0, this saves us a lot of time and network bandwidth.</p>
+
+<p><img src="/images/ebs-lifecycle.png" alt="ebs-lifecycle.png" /></p>
+
+<p>From the above image, say Replica 1 gets terminated, the Root EBS also gets destroyed, but the Data EBS Disk 2 is kept and now becomes available. When a new replica comes up, it looks up if any of the Data EBSs are available, if yes it mounts it (already having some data), else creates a new one.</p>
+
+<p>We have a bash script in the User Data script which checks if such a disk is available in the pool, if yes it attaches that to itself, else spawns a new disk of a fixed size and attaches that.</p>
+
+<h3 id="how-do-the-dead-nodes-get-removed-from-the-system-and-dns-as-asg-dont-support-direct-dns-record-update-on-cloudmap-resilience">How do the dead nodes get removed from the system and DNS as ASG don’t support direct DNS record update on CloudMap? (resilience)</h3>
+<p>To make the timescale infra more resilient, we need to deregister bad/terminated instances from the AWS CloudMap (service discovery). This is achieved by autoscaling the group’s lifecycle policies which invokes a Lambda, which in turn has the responsibility to invoke the DeregisterInstance function for the given CloudMap service.</p>
+
+<p><img src="/images/dns-de-registration.png" alt="dns-de-registration.png" /></p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://www.tigerdata.com/">TimescaleDB</a></li>
+  <li><a href="https://www.haproxy.org/">HAProxy</a></li>
+  <li><a href="https://www.pgbouncer.org/config.html">PgBouncer</a></li>
+  <li><a href="https://etcd.io/">etcd</a></li>
+  <li><a href="https://patroni.readthedocs.io/en/latest/">Patorni</a></li>
+  <li><a href="https://www.flipkart.com/postgresql-13-cookbook/p/itm2930cc92ff793">PostgreSQL 13 Cookbook</a></li>
+  <li><a href="https://blog.cloudflare.com/performance-isolation-in-a-multi-tenant-database-environment/">Performance isolation in a multi-tenant database environment</a></li>
+  <li><a href="https://blog.cloudflare.com/open-sourcing-our-fork-of-pgbouncer/">Open sourcing our fork of PgBouncer</a></li>
+  <li><a href="https://www.tigerdata.com/blog/when-boring-is-awesome-building-a-scalable-time-series-database-on-postgresql-2900ea453ee2">When Boring is Awesome: Building a Scalable Time-Series Database on PostgreSQL</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

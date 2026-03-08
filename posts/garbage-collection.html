@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Garbage collection &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Garbage collection</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">07 Apr 2020</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#garbage collector" class="category-list-element" target="_blank">garbage collector</a></li>
+    
+    <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
+    
+  </ul>
+  
+    <p>Garbage collection is the process of freeing up memory space that is not being used.</p>
+
+<p>In other words, the garbage collector sees which objects are out of scope and cannot be referenced in the future and reclaim the resources used by them.</p>
+
+<p>The managed languages maintain the illusion of infinte memory by going behind the programmer’s back and reclaiming memory that the program no longer needs. The component that does this is called a <u>garbage collector</u>.</p>
+
+<p>GC can help in case of</p>
+<ul>
+  <li><strong>Dangling pointers bugs</strong>, when a piece of memory is freed/deallocated but there exist some pointers to it, and that pointer is dereferenced! This may lead to nil pointer errors or if the memory was assigned to something else, then it may result in unexpected results.</li>
+  <li>when a programmer tries to free up memory space that has already been freed</li>
+  <li>a program fails to free memory occupied by objects that have become unreachable, which can lead to memory exhaustion</li>
+</ul>
+
+<h2 id="how-does-a-garbage-collector-free-up-memory">How does a garbage collector free up memory?</h2>
+
+<p>In the most abstract words, a garbage collector periodically scans the program’s data structures, marking everything that is in use. It begins by scanning the program’s stack, registers, and the static segment. Every time it encounters a pointer, it marks the object that it points to. Then it scans that object for pointers to other heap objects. Once it has marked all reachable heap objects, the objects that haven’t been marked are freed.</p>
+
+<h2 id="garbage-collection-algorithms">Garbage Collection Algorithms</h2>
+
+<h3 id="cleanup-at-the-end-aka-no-gc">Cleanup At The End: aka No GC</h3>
+
+<p>One possible way of cleaning up garbage is to wait until a task is done and then dispose of everything at once. This is a useful technique, especially if you have a way of breaking up the task into pieces.</p>
+
+<p>The Apache web server, for example, creates a small pool of memory per request and throws the entire pool away when the request completes.</p>
+
+<h3 id="reference-counting-collector">Reference Counting Collector</h3>
+
+<p>Another simple solution is to keep a count of how many times a resource is used (an object in memory, in this case) and dispose of it when the count drops to zero. A very useful property of reference counting is that garbage is detected as soon as possible.</p>
+
+<p>Unfortunately, reference counting has a lot of problems. Worst of all, it can’t handle cyclic structures. These are very common, anything with a parent or reverse reference creates a cycle which will leak memory. Reference counting is an amortized algorithm (the overhead is spread over the run-time of the program), but it can’t guarantee response times.</p>
+
+<h3 id="mark-sweep-collector">Mark-Sweep Collector</h3>
+
+<p>Mark-sweep eliminates some of the problems of the reference count. It can easily handle cyclic structures and it has lower overhead since it doesn’t need to maintain counts. It gives up being able to detect garbage immediately.</p>
+
+<p>Mark-sweep requires more implementation consistency than reference counting and is more difficult to retrofit into existing systems. The mark phase requires being able to traverse all live data, even data encapsulated within an object. If an object doesn’t provide traversal, it’s probably too risky to attempt to retrofit mark-sweep into the code.</p>
+
+<p>The other weakness of mark-sweep is the fact the sweep phase must sweep over all of the memory to find garbage. For systems that do not generate much garbage, this is not an issue, but the modern functional programming style generates enormous amounts of garbage.</p>
+
+<h3 id="mark-compact-collector">Mark-Compact Collector</h3>
+
+<p>In the above algorithms, the objects never move. Once an object is allocated in memory, it stays in the same place.</p>
+
+<p>Mark-compact disposes of memory, not by just marking it free, but by moving objects down into the free space. Objects always stay in the same memory order, but gaps caused by disposing of objects will be closed up by objects moving down.</p>
+
+<p>The crazy idea of moving objects means that new objects can always just be created at the end of used memory. This is called a “bump” allocator and is as cheap as stack allocation but without the limitations of stack size.</p>
+
+<p>Another benefit is that when objects are compacted like this, programs have better memory access patterns that are friendly to modern hardware memory caches.</p>
+
+<h3 id="copying-collector">Copying Collector</h3>
+
+<p>It’s a moving collector like mark-compact, but it’s incredibly simple. It uses two memory spaces and simply copies live objects back and forth between them. In practice, there are more than two spaces and the spaces are used for different generations of objects. New objects are created in one space, get copied to another space if they survive, and finally copied to a tenured space if they are very long-lived. If you hear a garbage collector described as generational or ephemeral, it’s usually a multi-space copy collector.</p>
+
+<h2 id="why-some-languages-dont-have-garbage-collection">Why some languages don’t have garbage collection?</h2>
+
+<p>The hard part of adapting garbage collection to C/C++ is identifying pointers. Since object libraries and DLLs often lack source, you can’t examine the source for type information, and you can’t recompile. Typically, you don’t even have to debug information. The only remaining option is to relink. This isn’t as bad as it sounds since relinking lets you redefine whatever functions you like.</p>
+
+<p>Garbage collection requires data structures for tracking allocations and/or reference counting. These create overhead in memory, performance, and the complexity of the language. C++ is designed to be “close to the metal”, in other words, it takes the higher performance side of the tradeoff vs convenience features. Other languages make that trade-off differently. Reference counting to manage object lifetime is not the same as garbage collection, but it addresses many of the same kinds of issues and is a better fit with C++’s basic approach. <a href="https://softwareengineering.stackexchange.com/a/113181">Reference</a></p>
+
+<p>C does have memory management - but it just works, so people barely notice it. There are static memory, registers, and the stack. Until you start allocating out of the heap, you’re fine. It’s the heap allocation that messes things up.</p>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ol>
+  <li><a href="https://stackoverflow.com/a/2326748">Why doesn’t C++ have a garbage collector?</a></li>
+  <li><a href="https://github.com/kenfox/gc-viz">Animated visualizations of several garbage collection algorithms</a></li>
+</ol>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

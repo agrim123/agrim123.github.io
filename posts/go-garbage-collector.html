@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Go's garbage collector &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Go's garbage collector</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">11 Apr 2020</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
+    
+    <li><a href="/categories/#garbage collector" class="category-list-element" target="_blank">garbage collector</a></li>
+    
+    <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>Go’s new [&gt;= v1.5] garbage collector is a concurrent, tri-color, mark-sweep collector, an idea first proposed by <a href="https://github.com/rubinius/rubinius-website-archive/blob/cf54187d421275eec7d2db0abd5d4c059755b577/_posts/2013-06-22-concurrent-garbage-collection.markdown">Dijkstra in 1978</a>.</p>
+</blockquote>
+
+<p>Go team has been working intensively on improving the Go’s garbage collector. The whole journey with improvements from 10ms STW pauses every 50ms to two 500μs STW pauses per GC can be found <a href="https://blog.golang.org/ismmkeynote">here</a>.</p>
+
+<p>Working extensively on Go, I have been always been intimidated by its performance, so I decided to look under the hood, as to what makes Go so performant and promising, what kind of GC it uses, or how are goroutines multiplexed onto an OS thread, how to profile go programs, how exactly does the go’s runtime work, etc. In this post, we are looking at what and how of Go’s garbage collector.</p>
+
+<p>While browsing through the internet, I came across a lot of appreciation of go’s garbage collector and since I only had an abstract idea as to what are garbage collectors and how they work, I began reading and discovering ans scribbled some notes <a href="/posts/garbage-collection.html">here</a> about garbage collection.</p>
+
+<p>This blog merely is a scribble of my thoughts and conclusion that I compiled after reading a few blogs related to go’s garbage collector and it’s evolution over time.</p>
+
+<p>Soooo, let’s begin</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hold on tight buddy, it's gonna be a hell of a ride
+</code></pre></div></div>
+
+<h2 id="a-little-build-up">A little build-up</h2>
+
+<p>Go is a value-oriented language in the tradition of C-like systems languages rather than reference-oriented language in the tradition of most managed runtime languages. Value-orientation also helps with foreign function interfaces. It is probably the most important thing that differentiates Go from other GCed languages.</p>
+
+<p>Go is a memory manged language, which means most of the time you don’t have to worry about manual memory management because the runtime does a lot of work for you. However, dynamic memory allocation is not free, and a program’s allocation patterns can substantially affect its performance.</p>
+
+<blockquote>
+  <p>Go binary contains the ENTIRE runtime. And no <a href="https://en.wikipedia.org/wiki/Just-in-time_compilation">JIT recompilation</a>.</p>
+</blockquote>
+
+<p>Because if this the most basic Go binary is generally <a href="https://golang.org/doc/faq#Why_is_my_trivial_program_such_a_large_binary">huge in size</a>.</p>
+
+<h2 id="a-brief-history-of-gcs">A brief history of GC’s</h2>
+
+<p>Initial garbage collection algorithms were designed for uniprocessor machines and programs that had small heaps, and since CPU and RAM were expensive, users were OK with visible GC pauses. When GC kicked in, your program was stopped until a full mark/sweep of the heap would be done. These types of algorithms do not slow down your program when not collecting and do not add memory overhead.</p>
+
+<p>The problem with simple STW mark/sweep scales very badly, as you add cores and grow your heaps or allocation rates.</p>
+
+<h2 id="gos-concurrent-collector">Go’s concurrent collector</h2>
+
+<p>Go’s current GC is <strong>not generational</strong>. It just runs a plain old mark/sweep in the background. This has some downsides:</p>
+
+<ul>
+  <li><strong>GC Throughput</strong>: More memory your program uses, the more time it takes to free up used memory, and the more time your computer spends doing collection vs useful work.</li>
+  <li><strong>Compaction</strong>: as there’s no compaction, your program can eventually fragment its heap</li>
+  <li><strong>Program throughput</strong>: as the GC has to do a lot of work for every cycle, that steals CPU time from the program itself, slowing it down.</li>
+  <li><strong>Concurrent mode failure</strong>: This occurs when your program generates garbage faster then GC threads can clean it up. In this scenario, the runtime has no option but to stop your program and wait for GC to finish its job! <a href="https://hellokangning.github.io/en/post/what-is-the-concurrent-mode-failure/">Reference</a>.
+And to prevent this you need to ensure you have a lot of space to spare, thus adding <strong>heap overhead</strong>.</li>
+</ul>
+
+<h2 id="collector-behaviour">Collector Behaviour</h2>
+
+<blockquote>
+  <p>Garbage collection occurs concurrently in Go while the program is running.</p>
+</blockquote>
+
+<p>Enough wait, let’s look at how a collection works.</p>
+
+<p>When a collection starts, the collector runs through three phases of work. Two of these phases create Stop The World (STW) latencies and the other phase creates latencies that slow down the throughput of the application.</p>
+
+<h3 id="mark-setup-stw">Mark Setup (STW)</h3>
+
+<p>When a collection starts, the first activity that must be performed is turning on the <a href="https://en.wikipedia.org/wiki/Write_barrier">Write Barrier</a>, it allows the collector to maintain data integrity on the heap during a collection since both the collector and application goroutines will be running concurrently. To turn the Write Barrier on, every application goroutine running must be stopped. This activity is usually very quick, within 10 to 30 microseconds on average. <em>That is, as long as the application goroutines are behaving properly.</em></p>
+
+<p>Suppose four goroutines are running before the GC is about to kick in. Each of these 4 goroutines must be stopped for GC for its work. The only way to do that is for the collector to watch and wait for each goroutine to make a function call. <u>Function calls guarantee the goroutines are at a safe point to be stopped.</u> What happens if one of those goroutines doesn’t make a function call (say it is performing a <a href="https://stackoverflow.com/a/2213001">tight loop operation</a>), then what will happen?</p>
+
+<p>For example, the 4th goroutine was performing the below code</p>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">stubbornGoroutine</span><span class="p">(</span><span class="n">numbers</span> <span class="p">[]</span><span class="kt">int32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="n">r</span> <span class="kt">int32</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">numbers</span> <span class="p">{</span>
+        <span class="c">// some operation to r</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">r</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This scenario could stall a garbage collection from starting. Since other processors can’t service any other goroutines while the collector waits. So, <u> goroutines must make function calls in reasonable timeframes.</u></p>
+
+<blockquote>
+  <p>A goroutine without function calls will not be preempted, and its P will not be released before the end of the task. That will force the “Stop the World” to wait for it.</p>
+</blockquote>
+
+<h3 id="marking-concurrent">Marking (Concurrent)</h3>
+
+<p>Once the Write Barrier is turned on, the collector commences with the Marking phase.</p>
+
+<p>The first thing the collector does is take <strong>25%</strong> of the available CPU capacity for itself. The collector uses Goroutines to do the collection work and needs the same P’s and M’s the application Goroutines use.</p>
+
+<p>The marking phase consists of marking values in heap memory that are still in-use. This work starts by inspecting the stacks for all existing goroutines to find root pointers to heap memory. Then the collector must traverse the heap memory graph from those root pointers.</p>
+
+<h4 id="mark-assist">Mark assist</h4>
+
+<p>If the collector determines that it needs to slow down allocations, it will recruit the application Goroutines to assist with the Marking work. This is called a <strong>Mark Assist</strong>. The amount of time any application Goroutine will be placed in a <u>Mark Assist is proportional to the amount of data it’s adding to heap memory</u>.</p>
+
+<blockquote>
+  <p>Mark Assist helps finish the collection faster.</p>
+</blockquote>
+
+<p>One goal of the collector is to eliminate the need for Mark Assists. If any given collection ends up requiring a lot of Mark Assist, the collector can start the next garbage collection earlier. This is done in an attempt to reduce the amount of Mark Assist that will be necessary for the next collection.</p>
+
+<h3 id="mark-termination-stw">Mark Termination (STW)</h3>
+
+<p>Once the Marking work is done, the next phase is Mark Termination. This is when the Write Barrier is turned off, various clean up tasks are performed, and the next collection goal is calculated. Goroutines that find themselves in a tight loop during the Marking phase can also cause Mark Termination STW latencies to be extended.</p>
+
+<p>Once the collection is finished, every P can be used by the application Goroutines again and the application is back to full throttle.</p>
+
+<h3 id="sweeping---concurrent">Sweeping - Concurrent</h3>
+
+<p>Another activity happens after a collection is finished called Sweeping. Sweeping is when the memory associated with values in heap memory that were not marked as in-use are reclaimed. This activity occurs when application Goroutines attempt to allocate new values in heap memory. The latency of Sweeping is added to the cost of performing an allocation in heap memory and is not tied to any latencies associated with garbage collection.</p>
+
+<p><img src="/images/GC Algorithm Phases.png" alt="GC Algorithm Phases" /></p>
+<div class="font12 center">Image taken from <a href="https://talks.golang.org/2015/go-gc.pdf" target="_blank">Go GC: Latency Problem Solved</a> slide no 12</div>
+
+<h2 id="how-does-runtime-know-when-to-start-a-collection">How does runtime know when to start a collection?</h2>
+
+<p>The collector has a <strong>pacing algorithm</strong> which determines when to start a collection. Pacing is modeled like a control problem where it is trying to find the right time to trigger a GC cycle so that it hits the target heap size goal. Go’s default pacer will try to trigger a GC cycle every time the heap size doubles. It does this by setting the next heap trigger size during the mark termination phase of the current GC cycle. So after marking all the live memory, it can make the decision to trigger the next GC when the total heap size is 2x what the live set currently is. The 2x value comes from a variable <code class="language-plaintext highlighter-rouge">GOGC</code> the runtime uses to set the trigger ratio.</p>
+
+<p>One misconception is thinking that slowing down the pace of the collector is a way to improve performance. The idea being, if you can delay the start of the next collection, then you are delaying the latency it will inflict. Being sympathetic to the collector isn’t about slowing down the pace.</p>
+
+<hr />
+
+<p>Go 1.5 was released in August 2015 with the new, low-pause, concurrent garbage collector, including an implementation of the <a href="https://docs.google.com/document/d/1wmjrocXIWTr1JxU-3EQBI6BK6KgtiFArkG47XK73xIQ/edit#heading=h.4801yvqy4taz">pacing algorithm</a>.</p>
+
+<hr />
+
+<h2 id="collector-latency-costs">Collector latency costs</h2>
+
+<p>There are two types of latencies every collection inflicts on your running application.</p>
+
+<h3 id="stealing-of-cpu-capacity">Stealing of CPU capacity</h3>
+
+<p>The effect of this stolen CPU capacity means your application is not running at full throttle during the collection. The application Goroutines are now sharing P’s with the collector’s Goroutines or helping with the collection (Mark Assist).</p>
+
+<h3 id="amount-of-stw-latency">Amount of STW latency</h3>
+
+<p>The second latency that is inflicted is the amount of STW latency that occurs during the collection. The STW time is when no application Goroutines are performing any of their application work. The application is essentially stopped. STW happens twice on every collection.</p>
+
+<hr />
+
+<p>The way to reduce GC latencies is by identifying and removing unnecessary allocations from your application. Doing this will help the collector in several ways.</p>
+<ul>
+  <li>Maintain the smallest heap possible.</li>
+  <li>Find an optimal consistent pace.</li>
+  <li>Minimize the duration of every collection, STW and Mark Assist.</li>
+</ul>
+
+<h2 id="two-knobs-to-control-the-gc">Two knobs to control the GC</h2>
+
+<p>As Rick Hudson said <a href="https://blog.golang.org/ismmkeynote">here</a></p>
+<blockquote>
+  <p>We also do not intend to increase the GC API surface. We’ve had almost a decade now and we have two knobs and that feels about right. There is not an application that is important enough for us to add a new flag.</p>
+</blockquote>
+
+<h3 id="gcpercent">GCPercent</h3>
+
+<p>This adjusts how much CPU you want to use and how much memory you want to use. The default is 100 which means that half the heap is dedicated to live memory and half the heap is dedicated to allocation. This can be modified in either direction.</p>
+
+<h3 id="maxheap">MaxHeap</h3>
+
+<p>This lets the programmer set what the maximum heap size should be. Out of memory, OOMs, are tough on Go; temporary spikes in memory usage should be handled by increasing CPU costs, not by aborting. If the GC sees memory pressure it informs the application that it should shed load. Once things are back to normal the GC informs the application that it can go back to its regular load. MaxHeap also provides a lot more flexibility in scheduling. Instead of always being paranoid about how much memory is available the runtime can size the heap up to the MaxHeap.</p>
+
+<hr />
+
+<p>There is a fairly good description of Go’s GC, in the source code <a href="https://github.com/golang/go/blob/master/src/runtime/mgc.go#L5-L127">here</a>.</p>
+
+<hr />
+
+<p>That sums up the Go’s garbage collector. Ofcourse, this didn’t include everything and I may have missed out some points, but I tried to sum up everything I grasped. Below are some really good references that I came across, do have a look!</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://blog.golang.org/ismmkeynote">Getting to Go: The Journey of Go’s Garbage Collector</a></li>
+  <li><a href="https://research.google/pubs/pub40801/">The Tail at Scale</a></li>
+  <li><a href="https://github.com/golang/go/issues/10958#issue-81098230">runtime: tight loops should be preemptible</a></li>
+  <li><a href="https://blog.golang.org/go15gc">Go GC: Prioritizing low latency and simplicity</a></li>
+  <li><a href="https://groups.google.com/forum/m/#!topic/golang-nuts/KJiyv2mV2pU">Why golang garbage-collector not implement Generational and Compact gc?</a></li>
+  <li><a href="https://blog.plan99.net/modern-garbage-collection-911ef4f8bd8e#.674yqu7mr">Modern garbage collection: A look at the Go GC strategy</a></li>
+  <li><a href="https://making.pusher.com/golangs-real-time-gc-in-theory-and-practice/">Golang’s Real-time GC in Theory and Practice</a> <i class="fas fa-bolt"></i></li>
+  <li><a href="https://about.sourcegraph.com/go/gophercon-2018-allocator-wrestling">GopherCon 2018 - Allocator Wrestling</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

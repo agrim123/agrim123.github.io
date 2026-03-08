@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Finding Memory Eating Monsters in Golang &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Finding Memory Eating Monsters in Golang</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">29 Dec 2023</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
+    
+    <li><a href="/categories/#profiling" class="category-list-element" target="_blank">profiling</a></li>
+    
+  </ul>
+  
+    <p>Sometimes, you might observe your program breaching all thresholds and taking up more memory than required. You might observe <a href="https://en.wikipedia.org/wiki/Sawtooth_wave">sawtooth</a> patterns in your memory charts. This is a sign of classic Memory Leak, which eventually leads to <a href="https://en.wikipedia.org/wiki/Out_of_memory">OOM</a>.</p>
+
+<p>Enter, <strong>profiling</strong>, a set of tools and techniques to identify and debug this memory-eating code piece.</p>
+
+<blockquote>
+  <p>Identify bottlenecks, like, memory leaks, goroutine leaks or even get a trace of your function stack.</p>
+</blockquote>
+
+<p>Go provides out-of-the-box tooling for profiling, <code class="language-plaintext highlighter-rouge">pprof</code>, available in the standard pkg under <code class="language-plaintext highlighter-rouge">net/http/pprof</code>.</p>
+<aside>pprof <a href="https://github.com/google/pprof" target="_blank">Github Repo</a></aside>
+
+<center><img src="/images/golang-profiling-2.png" width="50%" /></center>
+
+<h2 id="setup-profiling">Setup profiling</h2>
+
+<ol>
+  <li>Add import in main.go. <code class="language-plaintext highlighter-rouge">import _ "net/http/pprof"</code> This indicates a shadow import in which we are importing the library but not using any of its functions.</li>
+  <li>Add the below code to start pprof server on <code class="language-plaintext highlighter-rouge">6060</code> port which exposes <code class="language-plaintext highlighter-rouge">/debug/pprof</code> endpoint
+    <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+ <span class="n">server</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">http</span><span class="o">.</span><span class="n">Server</span><span class="p">{</span>
+     <span class="n">Addr</span><span class="o">:</span> <span class="s">"0.0.0.0:6060"</span><span class="p">,</span>
+ <span class="p">}</span>
+
+ <span class="n">err</span> <span class="o">:=</span> <span class="n">server</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">()</span>
+ <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="o">&amp;&amp;</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">http</span><span class="o">.</span><span class="n">ErrServerClosed</span> <span class="p">{</span>
+     <span class="nb">panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+ <span class="p">}</span>
+<span class="p">}()</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Now when you start your application, you can visit <a href="http://localhost:6060/debug/pprof/"><code class="language-plaintext highlighter-rouge">http://localhost:6060/debug/pprof/</code></a>.
+<img src="/images/golang-profiling-1.png" alt="Golang Profiling" /></li>
+</ol>
+
+<h3 id="go-tool">go tool</h3>
+
+<p>You can leverage go tool pprof to interact with the above profiles and get some insights.</p>
+
+<p>Example: <code class="language-plaintext highlighter-rouge">go tool pprof -trim_path=/go/pkg/mod -source_path=. -source_path=vendor http://localhost:6060/debug/pprof/allocs</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>→ go tool pprof <span class="nt">-trim_path</span><span class="o">=</span>/go/pkg/mod <span class="nt">-source_path</span><span class="o">=</span><span class="nb">.</span> <span class="nt">-source_path</span><span class="o">=</span>vendor http://localhost:6060/debug/pprof/allocs
+Fetching profile over HTTP from http://localhost:6060/debug/pprof/allocs
+Saved profile <span class="k">in </span>pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.001.pb.gz
+Type: alloc_space
+Time: Dec 29, 2023 at 6:08pm <span class="o">(</span>IST<span class="o">)</span>
+Entering interactive mode <span class="o">(</span><span class="nb">type</span> <span class="s2">"help"</span> <span class="k">for </span>commands, <span class="s2">"o"</span> <span class="k">for </span>options<span class="o">)</span>
+<span class="o">(</span>pprof<span class="o">)</span> top
+Showing nodes accounting <span class="k">for </span>1927.52MB, 100% of 1928.02MB total
+Dropped 5 nodes <span class="o">(</span>cum &lt;<span class="o">=</span> 9.64MB<span class="o">)</span>
+      flat  flat%   <span class="nb">sum</span>%        cum   cum%
+ 1843.52MB 95.62% 95.62%  1927.52MB   100%  main.MemoryIntensiveFunc
+      84MB  4.36%   100%       84MB  4.36%  strconv.formatBits
+         0     0%   100%  1927.52MB   100%  main.main.func2
+         0     0%   100%       84MB  4.36%  strconv.FormatInt
+         0     0%   100%       84MB  4.36%  strconv.Itoa <span class="o">(</span>inline<span class="o">)</span>
+<span class="o">(</span>pprof<span class="o">)</span>
+</code></pre></div></div>
+
+<p>This opens up an interactive session, in which you can run some basic commands to get more insights:</p>
+
+<ol>
+  <li>top</li>
+  <li>top -cum</li>
+</ol>
+
+<p>You can also get a clean <code class="language-plaintext highlighter-rouge">web</code> view by using the web command, which opens a tab in the browser: (You will require <a href="https://www.graphviz.org/">Graphviz</a> for this)</p>
+
+<p><img src="/images/golang-profling-3.png" alt="Web mode" /></p>
+
+<p>By default, when using <code class="language-plaintext highlighter-rouge">top</code>, some nodes are dropped, you can disable this by using <code class="language-plaintext highlighter-rouge">-nodefraction=0</code>.</p>
+
+<h3 id="available-profiles">Available Profiles</h3>
+
+<ol>
+  <li>goroutine: stack traces of all <strong>current</strong> Goroutines</li>
+  <li>profile: stack traces of CPU returned by runtime</li>
+  <li>heap: a sampling of memory allocations of live objects</li>
+  <li>allocs: a sampling of all past memory allocations</li>
+  <li>thread: stack traces that led to the creation of new OS threads</li>
+  <li>block: stack traces that led to blocking on synchronization primitives</li>
+  <li>mutex: stack traces of holders of contended mutexes</li>
+  <li>trace: Trace of program execution</li>
+</ol>
+
+<h4 id="difference-bw-allocs-and-heap">Difference b/w <code class="language-plaintext highlighter-rouge">allocs</code> and <code class="language-plaintext highlighter-rouge">heap</code></h4>
+
+<p>allocs represents all the <strong>past</strong> memory allocation from the genesis of the program, including garbage collected values, but, heap represents the number of live allocated objects which <strong>does not</strong> include garbage collected bytes.</p>
+
+<h4 id="difference-bw-flat-and-cum">Difference b/w <code class="language-plaintext highlighter-rouge">flat</code> and <code class="language-plaintext highlighter-rouge">cum</code></h4>
+
+<p>Flat means resources used only by this function, while cum (cumulative) means used by this function and functions called down the stack.</p>
+
+<h4 id="getting-trace-of-the-program-execution">Getting trace of the program execution</h4>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">curl -O trace.out http://localhost:6060/debug/pprof/trace</code></li>
+  <li><code class="language-plaintext highlighter-rouge">go tool trace trace.out</code></li>
+</ol>
+
+<p>This opens a web view where you can see the raw execution trace of the program.</p>
+
+<h3 id="seeing-gos-gargbage-collector-at-work">Seeing Go’s gargbage collector at work</h3>
+
+<p>Go’s garbage collector works in the backgroud and perform a STW execution at regular intervals. We can see what the GC is doing by running program in debug mode <code class="language-plaintext highlighter-rouge">GODEBUG=gctrace=1 go run main.go</code>.</p>
+
+<p>This starts printing some information to console:
+<code class="language-plaintext highlighter-rouge">gc 32 @1.158s 2%: 0.095+10+0.053 ms clock, 0.95+4.6/13/1.7+0.53 ms cpu, 45-&gt;80-&gt;53 MB, 53 MB goal, 10 P</code></p>
+
+<h4 id="breaking-down-the-gc-debug-output">Breaking down the GC debug output</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gc 32 @1.158s 2%: 0.095+10+0.053 ms clock, 0.95+4.6/13/1.7+0.53 ms cpu, 45-&gt;80-&gt;53 MB, 53 MB goal, 10 P
+
+gc 32                        : 32 GC runs since the program started
+@1.158s                      : seconds elapsed since the program started
+2%                           : 2% of the available CPU so far has been spent <span class="k">in </span>GC
+
+// wall clock
+0.095ms                      : STW        : Write-Barrier - Wait <span class="k">for </span>all Ps to reach a GC safe-point.
+10ms                         : Concurrent : Marking
+0.053 ms                     : STW        : Mark Term     - Write Barrier off and clean up.
+
+// cpu <span class="nb">time
+</span>0.95ms                       : STW        : Write-Barrier
+4.6ms                        : Concurrent : Mark - Assist Time <span class="o">(</span>GC performed <span class="k">in </span>line with allocation<span class="o">)</span>
+13ms                         : Concurrent : Mark - Background GC <span class="nb">time
+</span>1.7ms                        : Concurrent : Mark - Idle GC <span class="nb">time
+</span>0.53ms                       : STW        : Mark Term
+
+// heap memory
+45-&gt;80-&gt;53 MB                : Heap memory <span class="k">in</span><span class="nt">-use</span> before the Marking started, Heap memory <span class="k">in</span><span class="nt">-use</span> after the Marking finished, Heap memory marked as live after the Marking finished
+53 MB goal                   : Collection goal <span class="k">for </span>heap memory <span class="k">in</span><span class="nt">-use</span> after Marking finished
+
+10 P                         : Number of logical processors or threads used to run Goroutines.
+</code></pre></div></div>
+
+<hr />
+
+<p>pprof helps in identifying the bottlenecks, program performance and behaviour and proves to be a helpful tool to have in your Go arsenal.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="https://stackoverflow.com/questions/42380784/reading-go-gctrace-output">Reading GC Traces</a></li>
+  <li><a href="https://www.ardanlabs.com/blog/2019/05/garbage-collection-in-go-part2-gctraces.html">Garbage Collection In Go : Part II - GC Traces</a></li>
+  <li><a href="https://go.dev/blog/pprof">Profiling Go Programs</a></li>
+  <li><a href="https://go.dev/doc/diagnostics">Diagnostics</a></li>
+</ol>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/performing-cryptographic-operations-using-aws-nitro-enclaves.html">
+          Performing cryptographic operations using AWS Nitro Enclaves
+          <small>25 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

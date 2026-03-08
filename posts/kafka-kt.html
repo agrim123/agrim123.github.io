@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Kafka 101 &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Kafka 101</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">16 Dec 2019</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#kafka" class="category-list-element" target="_blank">kafka</a></li>
+    
+    <li><a href="/categories/#distributed-systems" class="category-list-element" target="_blank">distributed-systems</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>Kafka is a distributed, horizontally scalable, partitioned, fault-tolerant, replicated commit log service.</p>
+</blockquote>
+
+<div>
+     <h2> Contents </h2>
+     <ul>
+          <li><a href="#the-what">The What</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#data-storage">Data Storage</a></li>
+          <li><a href="#message-processing-guarantees">Message processing guarantees</a></li>
+          <li><a href="#the-controller-broker">The Controller Broker</a></li>
+          <li><a href="#consumer-groups">Consumer groups</a></li>
+          <li><a href="#high-availability">High availability</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#rack-awareness">Rack Awareness</a></li>
+          <li><a href="#furthur-reading">Furthur Reading</a></li>
+          <li><a href="#extensive-reading">Extensive reading</a></li>
+     </ul>
+</div>
+
+<h2 id="the-what">The What</h2>
+
+<p>Kafka is used for building real-time data pipelines and streaming apps. It is horizontally scalable, fault-tolerant, blazing-fast, and runs in production in thousands of companies.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------+
+| Log Streams |----|
++-------------+    |
+                   ▼               Real-time
++-----+         +-------+      +-----------------+    +------------+
+| Web |--------►|       |      | Spark Streaming |    | Dashboards |
++-----+         |       |-----►| Flink           |---►| Analytics  |
+                |       |      | Kinesis         |    | Alerts     |
++-----+         |       |      +-----------------+    +------------+
+| App |--------►| Kafka |       Batch
++-----+         |       |      +-------------+    +--------------+
+                |       |      | Hadoop      |    | Archival     |
++---------+     |       |-----►| S3          |---►| Data Science |
+| Data    |     |       |      | Spark Batch |    | Auditing     |
+| Streams |----►|       |      +-------------+    +--------------+
++---------+     +-------+
+                    ▲
++--------------+    |
+| Service logs |----|
++--------------+
+</code></pre></div></div>
+
+<h3 id="distributed-and-fault-tolerant">Distributed and fault-tolerant</h3>
+
+<p>In a 6-node Kafka cluster, we can have it continue working even if 3 of the nodes are down.</p>
+
+<h3 id="kafka-is-a-commit-log-service">Kafka is a commit log service</h3>
+
+<p>A commit log is a persistent ordered data structure which only supports appends. We cannot modify nor delete records from it. It is read from left to right and guarantees item ordering. And that is Kafka’s storage logic (almost).</p>
+
+<center>
+<img src="/images/kafka.png" />
+</center>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p><strong>Producers</strong> (applications) send messages (<strong>records</strong>) to Kafka node (<strong>brokers</strong>), and these messages can be consumed by <strong>consumers</strong>. The records are stored in a <strong>topic</strong>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            +----------+    +----------+    +----------+
+            | producer |    | producer |    | producer |
+            +----------+    +----------+    +----------+
+                 |__________     |      _________|
+                           |     |     |
+                           ▼     ▼     ▼
+                         +---------------+
+                         | kafka cluster |
+                         +---------------+
+                           ▲     ▲     ▲
+                  _________|     |     |_________
+                 |               |               |
+            +----------+    +----------+    +----------+
+            | consumer |    | consumer |    | consumer |
+            +----------+    +----------+    +----------+
+
+</code></pre></div></div>
+
+<p>As topics can get quite big, they get split into partitions of a smaller size for better performance and scalability.</p>
+
+<p>Every partition in a Kafka topic has a <strong>write-ahead log</strong> where the messages are stored and every message has a unique offset that identifies it’s position in the partition’s log.</p>
+
+<p>And every topic partition in Kafka is replicated <u>n times</u>, where n is the replication factor of the topic. In the event of failure, this allows Kafka to failover to these replicas. Out of the n replicas, one replica is designated as the leader while others are followers. The leader takes the writes from the producer and the followers copy the leader’s log in order.</p>
+
+<p>Kafka guarantees that all messages inside a partition are ordered in the sequence they came in and can be accessed by knowing its offset (similar to an element seek operation in an array knowing its index).</p>
+
+<p>Kafka does not keep track of what records are read by the consumer and delete them but rather stores them <u>for a set amount of time or until some size threshold is met</u>. Consumers poll Kafka for new messages specifying offset they want to read from/at. This allows them to increment/decrement the offset, thus being able to replay and reprocess events.</p>
+
+<p>Producers are generally async, which means the messages are not produced immediately. The message is written into a send buffer for each active partition and transmitted on to the broker by a background thread within the Kafka client library. This makes the operation incredibly fast.</p>
+
+<h3 id="partitioning">Partitioning</h3>
+
+<p>Partitions are the primary mechanism for parallelizing consumption and scaling a topic beyond the throughput limits of a single broker instance.</p>
+
+<p>Consider an example where a topic exists with two partitions and a single consumer (with group id say <code class="language-plaintext highlighter-rouge">group_1</code>) is subscribed to this topic. In this scenario, the consumer is assigned control of the both partitions, and consumes messages from both.</p>
+
+<p>When an additional consumer is added to this topic with same group id, Kafka will reallocate one of the partitions from the first to the second consumer. Each consumer instance will then consume from a single partition.</p>
+
+<p>However, the requirements for parallelizing consumption and replaying failed messages do not go away, the responsibility for them is simply transferred from the broker to the client.</p>
+
+<h2 id="data-storage">Data Storage</h2>
+
+<h3 id="kafka-stores-data-on-disk">Kafka stores data on disk</h3>
+
+<p>What on the earth!?</p>
+
+<p>Yes, it is true. Having data ordered in sequential order makes O(1) sequential disk reads which is much faster than random reads from a disk, because linear reads/writes on a disk are fast<sup><a href="#furthur-reading">1</a></sup> and heavily optimized by the OS, via read-ahead (prefetch large block multiples) and write-behind (group small logical writes into big physical writes) techniques. Also, modern OSes cache the disk in free RAM. This is called <a href="https://en.wikipedia.org/wiki/Page_cache">page cache</a>.</p>
+
+<p>Read and writes are done in constant time knowing the record id (known as the offset in Kafka terminology). Also, the writes do not block reads or vice versa (as opposed to balanced trees).</p>
+
+<blockquote>
+  <p>This decouples data size completely from the performance. Kafka has the same performance whether we have 10KB or 10TB of data on the servers!</p>
+</blockquote>
+
+<p>Kafka has a protocol that groups messages together. This allows network requests to reduce overhead, and the server, in turn, persists chunk of messages in one go and consumer fetches large linear chunks at once.</p>
+
+<p>Since Kafka stores messages in a standardized binary format unmodified throughout the whole flow (producer -&gt; broker -&gt; consumer), it can make use of the <strong><a href="https://en.wikipedia.org/wiki/Zero-copy">zero-copy optimization</a></strong>, where the OS copies data from the page cache directly to a socket, bypassing the Kafka broker application completely!</p>
+
+<p>All of these optimizations allow Kafka to deliver messages <strong>almost at network speed</strong>.</p>
+
+<h3 id="compression">Compression</h3>
+
+<p>Kafka is extensively used for high throughput systems (in normal cases even over ~1TB/day), this large volume of data needs to transmitted faster and with minimum bandwidth. By default Kafka, uses plain text messages. This is where compression in Kafka comes into the picture.</p>
+
+<p>Compression<sup><a href="#furthur-reading">2</a> <a href="#furthur-reading">3</a></sup> becomes necessary in case of I/O intensive scenario.</p>
+
+<p>Because compression algorithms work well with large data. The more records we have in the batch, the higher the compression ratio we can expect. That is why the producer compresses all the records in the batch together (instead of compressing each record separately).</p>
+
+<p>Kafka supports GZIP, Snappy, LZ4, and ZStandard compression protocols.</p>
+
+<p>Snappy is faster but has a relatively less compression ratio.
+Gzip achieves a better compression ratio but is more CPU intensive.</p>
+
+<h2 id="message-processing-guarantees">Message processing guarantees</h2>
+
+<p>In any distributed system, where multiple producers write to messaging system over network, which persists these messages, in multiple locations for redundancy, and one or more consumers poll the messaging system over the network, receive batches of new messages and perform some action on these messages, we need some message processing guarantees, which falls under these categories:</p>
+
+<ol>
+  <li><strong>No guarantee</strong> -&gt; consumer may process message once, multiple times or never!</li>
+  <li><strong>At most once</strong> -&gt; consumer processes message exactly once or never!</li>
+  <li><strong>At least once</strong> -&gt; consumer processes messages once but may process the same message twice!</li>
+  <li><strong>Exactly once</strong> -&gt; strongest consistency, consumer processes messages ONLY once</li>
+</ol>
+
+<p>In an ideal case, <strong>Exactly once</strong> should always be the case, but in real-world, some problems may occur, like, consumer process could run out of memory or crash while writing to a downstream database, broker could run out of disk space, a network partition may form between <a href="https://zookeeper.apache.org/">ZooKeeper</a> instances, a timeout could occur publishing messages to Kafka and we could end up having any of the other three.</p>
+
+<h3 id="no-guarantee">No guarantee</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>          enable.auto.commit<span class="o">=</span><span class="nb">true</span>       +----------+
+               +----------+     |------►| Database |
++-------+      |          |     |       +----------+
+| kafka |-----►| Consumer |-----| async
++-------+      |          |     |       +----------------+
+               +----------+     |------►| Offset storage |
+                                        +----------------+
+</code></pre></div></div>
+
+<p>The consumer has <code class="language-plaintext highlighter-rouge">enable.auto.commit=true</code>, so for each batch, we asynchronously process and save progress to offset storage. If we save the messages to the database and then the application crashes before the progress is saved, we will reprocess those messages again the next run and save them twice. If progress is saved before the results being saved to the database, then the program crashes, these messages will not be reprocessed in the next run meaning we have data loss.</p>
+
+<h3 id="at-most-once-guarantee">At most once guarantee</h3>
+
+<p>This means consumer processes message exactly once or not at all.</p>
+
+<p>If the producer does not retry when an ack times out or returns an error, then the message might end up not being written to the Kafka topic, and hence not delivered to the consumer. In most cases, it will be, but to avoid the possibility of duplication, we accept that sometimes messages will not get through, thus the at most once (also known as “best-effort” semantics).</p>
+
+<h3 id="at-least-once-guarantee">At least once guarantee</h3>
+
+<p>If the producer receives an acknowledgment from the Kafka broker, it means that the message has been written exactly once to the Kafka topic. However, if a producer ack times out or receives an error, it might retry sending the message assuming that the message was not written to the Kafka topic. If the broker had failed right before it sent the ack but after the message was successfully written to the Kafka topic, this retry leads to the message being written twice and hence delivered more than once to the end consumer.</p>
+
+<p>Suppose we had <code class="language-plaintext highlighter-rouge">enable.auto.commit=false</code> on the consumer side and the consumer maintains its offset (say in a Redis). Now, the consumer has read a batch and during processing, it crashes, but has already processed half of the batch and saved the results. Because consume crashed, the offset progress was never saved, and thus on restart it reads the batch again and thus duplicating the first half of the batch!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>          enable.auto.commit<span class="o">=</span><span class="nb">false</span>      +----------+
+               +----------+     |------►| Database |
++-------+      |          |   1st       +----------+
+| kafka |-----►| Consumer |-----|
++-------+      |          |   2nd       +----------------+
+               +----------+     |--X---►| Offset storage |
+                               Progess  +----------------+
+                              not saved
+</code></pre></div></div>
+
+<p>Since in this semantic we always have the message (may it be duplicated) this is easily achievable and used mostly.</p>
+
+<h3 id="exactly-once-guarantee">Exactly once guarantee</h3>
+
+<blockquote>
+  <p>It requires strong cooperation between the messaging system itself and the application producing and consuming the messages.</p>
+</blockquote>
+
+<p>Using <a href="https://www.confluent.io/blog/transactions-apache-kafka/">Transactions in Kafka</a> and idempotent writes we can achieve exactly-once semantics <sup><a href="#extensive-reading">5</a></sup>.</p>
+
+<h2 id="the-controller-broker">The Controller Broker</h2>
+
+<p>In a distributed environment, if something happens (that affects the nodes), the rest of the nodes must react in an organized way, which means there should be someone that instructs the nodes what to do in event of a failure. Here is where, <strong>Controller Broker</strong> comes into the picture.</p>
+
+<p>The controller is a normal broker (leads partitions, has writes and reads going through it and replicates data), with some extra responsibility of keeping track of nodes in the cluster and handling nodes that leave, join or fail, including rebalancing partitions and assigning new partition leaders.</p>
+
+<blockquote>
+  <p>A Kafka cluster always has exactly <u>ONE</u> controller broker.</p>
+</blockquote>
+
+<p>A Controller is a broker that reacts to the event of another broker failing. It gets notified from a <strong><a href="https://zookeeper.apache.org/doc/r3.3.5/zookeeperProgrammers.html">ZooKeeper Watch</a></strong>. A ZooKeeper Watch is a subscription to some data in ZooKeeper, when said data changes, ZooKeeper will notify its subscribers. These watches are crucial to Kafka since they serve as input for the Controller.</p>
+
+<h3 id="scenarios">Scenarios</h3>
+
+<h4 id="when-a-node-leaves-a-cluster">When a node leaves a cluster</h4>
+
+<p>Consider a scenario, where a node becomes unavailable either due to a failure or shutdown, the partitions of which it was the leader of will become unavailable, and since <strong>clients only read from/write to partition leaders</strong>, the cluster needs to quickly find a substitute leader.</p>
+
+<p>Since every Kafka node sends a heartbeat to ZooKeeper to keep its session alive, so when a broker goes down, its session expires. The controller gets notified and decides which node should become leaders of affected partitions and then informs every associated broker that it should either become a leader of the partition or start replicating from the new leader.</p>
+
+<h4 id="when-a-node-rejoins-the-cluster">When a node rejoins the cluster</h4>
+
+<p>When a node becomes unavailable, some of the remaining nodes become the leader of more partition than they were before, this degrades the performance and health of the cluster as it increases the load on individual brokers.</p>
+
+<p>Kafka assumes that the original leader assignment (when every node was alive) is the optimal one that results in the best-balanced cluster. These are the called <strong>preferred leaders</strong> (the broker nodes which were the original leaders for their partitions).</p>
+
+<p>Kafka also supports <a href="https://issues.apache.org/jira/browse/KAFKA-1215">rack-aware leader election</a> where it tries to position partition leaders and followers on different racks to increase fault-tolerance <a href="#rack-awareness">against rack failures</a>.</p>
+
+<p>The most common broker failures are transient, they recover after a while so the metadata associated with the broker is not deleted. When a broker joins the cluster, the controller checks for broker id check if there are partitions that exist on this broker. If there are, the controller then notifies both new and existing brokers of the change. The new broker starts replicating messages from the existing leaders. Since the controller knows the past partition of the newly joined broker and also knows of which it was the leader of, the controller tries to give leadership back to the broker, but because that the rejoined node cannot immediately reclaim its past leadership, it cannot be made the leader of the partition right away!</p>
+
+<p>The newly joined brokers can become eligible to be leaders when they are <strong>in-sync</strong> with the current leader (Partition leaders themselves are responsible for keeping track of which broker is in-sync and which isn’t), so, if the current leader crashes, the eligible broker takes its place. These in-sync brokers are called <strong>in-sync replicas</strong>. Kafka’s availability and durability guarantees rely on data replication, so it is extremely important to have a sufficient amount of in-sync replicas.</p>
+
+<p>An edge case can occur where all in-sync replicas and the leader have died<sup><a href="#furthur-reading">4</a></sup>, so an out of sync replica becomes the new partition leader.
+More on is-sync replicas can be read <a href="https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity/">here</a>.</p>
+
+<h3 id="what-happens-if-the-controller-broker-dies-split-brain">What happens if the controller broker dies!? (Split-Brain)</h3>
+
+<p>If a controller broker dies, the cluster needs to elect a new controller as soon as possible else cluster health can deteriorate quickly!</p>
+
+<p>Electing a new controller is done via a race (the first broker that creates the <em>/controller</em> znode first becomes the new controller broker! Every broker receives a notification that this znode was created and now knows who the latest leader is), but generally the original controller never really dies, it just becomes unavailable for some time (maybe due to GC pause) and then comes back online thinking it is still the controller, this can make things difficult. Since, the cluster has moved on and elected a new controller, so the old controllers now become a <strong>zombie controller</strong>.</p>
+
+<p>When the old controller comes back online, nothing has changed through its eyes, it is still the controller! We now have two controllers, giving out commands in parallel which can lead to serious inconsistencies. This is solved by assigning a monotonically increasing number - <strong>epoch number</strong>, stored on ZooKeeper (it is <a href="https://bowenli86.github.io/2016/07/04/distributed%20system/zookeeper/ZooKeeper-Consistency-Guarantees/">highly consistent</a>). When a controller is elected, it is assigned a higher epoch number and thus even if an old controller rejoins the cluster, the one with the higher epoch would still be the controller.</p>
+
+<h2 id="consumer-groups">Consumer groups</h2>
+
+<p>Starting from version <strong>0.8.2.0</strong>, the offsets committed by the consumers aren’t saved in ZooKeeper but on a partitioned, replicated and compacted topic named <code class="language-plaintext highlighter-rouge">__consumer_offsets</code>, which is hosted on the Kafka brokers in the cluster. The broker sends a successful offset commit response to the consumer only after all the replicas of the offsets topic receive the offsets. In case the offsets fail to replicate within a configurable timeout, the offset commit will fail and the consumer may retry the commit after backing off.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>             +---+---+---+---+---+---+---+---+---+
+Partition 1  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | &lt;<span class="nt">-----</span> Producer
+             +---+---+---+---+---+---+---+---+---+
+                       |                   |
+                       |                   |
+                       ▼                   ▼
+                Consumer Group A     Consumer Group B
+</code></pre></div></div>
+
+<p>To use this mechanism consumers either enable automatic periodic commitment of offsets back to Kafka by setting the configuration flag <code class="language-plaintext highlighter-rouge">enable.auto.commit=true</code> or by making an explicit call to commit the offsets.</p>
+
+<blockquote>
+  <p>Every consumer in a group is mapped to a <strong>single</strong> partition to avoid reading the same message twice.</p>
+</blockquote>
+
+<p>If consumer group count exceeds the partition count, then the extra consumers remain idle. Kafka can use idle consumers for failover. If there are more partitions than consumer groups, then some consumers will read from more than one partition.</p>
+
+<p>An example where consumer explicitly commits offset</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// read offset range</span>
+<span class="nc">OffsetRange</span><span class="o">[]</span> <span class="n">offsetRanges</span> <span class="o">=</span> <span class="o">((</span><span class="nc">HasOffsetRanges</span><span class="o">)</span> <span class="n">rdd</span><span class="o">.</span><span class="na">rdd</span><span class="o">()).</span><span class="na">offsetRanges</span><span class="o">();</span>
+
+<span class="c1">// do something with rdd</span>
+
+<span class="c1">// commit the offsets to consumer group</span>
+<span class="o">((</span><span class="nc">CanCommitOffsets</span><span class="o">)</span> <span class="n">stream</span><span class="o">.</span><span class="na">inputDStream</span><span class="o">()).</span><span class="na">commitAsync</span><span class="o">(</span><span class="n">offsetRanges</span><span class="o">);</span>
+</code></pre></div></div>
+
+<h4 id="commitasync-vs-commitsync">commitAsync <code class="language-plaintext highlighter-rouge">vs</code> commitSync</h4>
+
+<p><a href="https://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#commitAsync(org.apache.kafka.clients.consumer.OffsetCommitCallback)">commitAsync</a> is an asynchronous call and will not block. Any errors encountered are either passed to the callback (if provided) or discarded.</p>
+
+<p><a href="https://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#commitSync(java.util.Map)">commitSync</a> is synchronous commit and will block until either the commit succeeds or an unrecoverable error is encountered (in which case it is thrown to the caller).</p>
+
+<h2 id="high-availability">High availability</h2>
+
+<p>Kafka is designed around horizontally scalable clusters in which all broker instances accept and distribute messages at the same time.</p>
+
+<p>This brings us back to the now-familiar performance versus reliability trade-off. Replication comes at the cost of additional time waiting for acknowledgments from followers; although as it is performed in parallel, replication to a minimum of three nodes has similar performance as that of two (ignoring the increased network bandwidth usage).</p>
+
+<p>Using this replication scheme, Kafka cleverly avoids the need to ensure that every message is physically written to disk via a sync() operation. Each message sent by a producer will be written to the partition’s log (a write to a file is initially performed into an operating system buffer). If that message is replicated to another Kafka instance and resides in its memory, loss of the leader does not mean that the message itself was lost the insync replica can take over.</p>
+
+<p>Avoiding the need to sync() means that Kafka can accept messages at the rate at which it can write into memory. Conversely, the longer it can avoid flushing its memory to disk, the better. This use of memory means that a single Kafka instance can easily operate at speeds many thousands of times faster than a traditional message broker.</p>
+
+<p>Kafka can also be configured to sync() batches of messages. As everything in Kafka is geared around batching, this actually performs quite well for many use cases and is a useful tool for users that require very strong guarantees. Much of Kafka’s raw performance comes from messages that are sent to the broker as batches, and from having those messages read from the broker in sequential blocks via zero-copy. The latter is a big win from a performance and resource perspective, and is only possible due to the use of the underlying journal data structure, which is laid out per partition.</p>
+
+<p>Much higher performance is possible across a Kafka cluster than through the use of a single Kafka broker, as a topic’s partitions may be horizontally scaled over many separate machines.</p>
+
+<h2 id="security">Security</h2>
+
+<blockquote>
+  <p>In a standard Kafka setup, any user or application can write any messages to any topic, as well as read data from any topics.</p>
+</blockquote>
+
+<p>By default, there is no encryption, authentication, or ACLs configured. Any client can communicate to Kafka brokers via the PLAINTEXT port.</p>
+
+<p>There is a need to protect user/confidential information, this is where Kafka security comes into play.</p>
+
+<p>Kafka Security has three components:</p>
+
+<h3 id="encryption-of-data-in-flight-using-ssl--tls">Encryption of data in-flight using SSL / TLS</h3>
+
+<p>Since our message travels across the internet in plaintext, any routers can read the information (<a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">MITM attack</a>). Encryption solves this problem.</p>
+
+<p>With encryption using SSL, data is encrypted and securely transmitted over the network and can only be read by the valid consumer. This encryption comes at a cost: CPU is now leveraged for both the Kafka Clients and the Kafka Brokers to encrypt and decrypt packets. SSL Security comes at the cost of performance, but it’s low to negligible.</p>
+
+<blockquote>
+  <p>Encryption is only in-flight and the data still sits un-encrypted on the broker’s disk.</p>
+</blockquote>
+
+<h3 id="authentication-using-ssl-or-sasl">Authentication using SSL or SASL</h3>
+
+<p>SSL Auth is leveraging a capability from SSL called two ways of authentication. The idea is to also issue certificates to clients, signed by a certificate authority, which will allow Kafka brokers to verify the identity of the clients.</p>
+
+<p>SASL stands for Simple Authorization Service Layer. The idea is that the authentication mechanism is separated from the Kafka protocol.</p>
+
+<h3 id="authorization-using-acls">Authorization using ACLs</h3>
+
+<p>Once the Kafka clients are authenticated, Kafka needs to be able to decide what they can and cannot do. This is where Authorization comes in, controlled by Access Control Lists (ACLs).</p>
+
+<p>ACLs are great because they can help prevent disasters, for example, consider a topic that needs to be writeable from only a subset of clients or hosts. We want to prevent our average user from writing anything to these topics, hence preventing any data corruption or deserialization errors. ACLs are also great if we have some sensitive data and we need to prove to regulators that only certain applications or users can access that data.</p>
+
+<p>More on Kafka Security <a href="https://kafka.apache.org/documentation/#security">here</a>.</p>
+
+<h2 id="rack-awareness">Rack Awareness</h2>
+
+<p>Machines in data center are sometimes grouped in racks. Racks provide isolation as each rack may be in a different physical location and has its own power source. When resources are properly replicated across racks, it provides fault tolerance in that if a rack goes down,  the remaining racks can continue to serve traffic.</p>
+
+<p>In Kafka, if there are more than one replica for a partition, it would be nice to have replicas placed in as many different racks as possible so that the partition can continue to function if a rack goes down. In addition, it makes maintenance of  Kafka cluster easier as you can take down the whole rack at a time.</p>
+
+<p>This was implemented in <a href="https://issues.apache.org/jira/browse/KAFKA-1215">Kafka 0.10.0.0</a>. More details can be found <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-36+Rack+aware+replica+assignment">here</a>.</p>
+
+<h2 id="furthur-reading">Furthur Reading</h2>
+
+<ol>
+  <li><a href="https://stackoverflow.com/a/2471684">Difference between sequential write and random write</a></li>
+  <li><a href="https://kafka.apache.org/documentation/#design_compression">End-to-end Batch Compression</a></li>
+  <li><a href="https://blog.cloudflare.com/squeezing-the-firehose/">Squeezing the firehose: getting the most from Kafka compression</a></li>
+  <li><a href="https://kafka.apache.org/documentation/#design_uncleanleader">Unclean leader election: What if they all die?</a></li>
+</ol>
+
+<h2 id="extensive-reading">Extensive reading</h2>
+
+<ol>
+  <li><a href="https://kafka.apache.org/documentation">Kafka Official documentation</a></li>
+  <li><a href="https://book.huihoo.com/pdf/confluent-kafka-definitive-guide-complete.pdf">Kafka Definite Guide</a></li>
+  <li><a href="https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying">The Log: What every software engineer should know about real-time data’s unifying abstraction</a></li>
+  <li><a href="https://blog.newrelic.com/engineering/kafka-consumer-config-auto-commit-data-loss/">How Kafka’s Consumer Auto Commit Configuration Can Lead to Potential Duplication or Data Loss</a></li>
+  <li><a href="https://docs.google.com/document/d/11Jqy_GjUGtdXJK94XGsEIK7CP1SnQGdp2eF0wSw9ra8/edit#heading=h.f0eotchjto1f">Exactly Once Delivery and Transactional Messaging in Kafka</a></li>
+  <li><a href="https://www.confluent.io/blog/enabling-exactly-once-kafka-streams/">Enabling Exactly-Once in Kafka Streams</a></li>
+  <li><a href="https://medium.com/@andy.bryant/processing-guarantees-in-kafka-12dd2e30be0e">Processing guarantees in Kafka</a></li>
+  <li><a href="https://arxiv.org/abs/1302.5657">A realistic distributed storage system: the rack model</a></li>
+</ol>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

@@ -11,7 +11,7 @@
 
   <title>
     
-    404: Page not found &middot; agrim
+    Why is Zookeeper being removed from Kafka? &middot; agrim
     
   </title>
 
@@ -132,9 +132,90 @@
       </div>
 
       <div class="container content">
-        <div class="page">
-  <h1 class="page-title">404: Page not found</h1>
-  <p class="lead">Sorry, we've misplaced that URL or it's pointing to something that doesn't exist. <a href="">Head back home</a> to try finding it again.</p>
+        <div class="post">
+  <h1 class="post-title">Why is Zookeeper being removed from Kafka?</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">04 Jan 2025</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+    
+    <li><a href="/categories/#kafka" class="category-list-element" target="_blank">kafka</a></li>
+    
+    <li><a href="/categories/#distributed-systems" class="category-list-element" target="_blank">distributed-systems</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>If you need a primer on Apache Kafka, I recommend reading <a href="/posts/kafka-kt.html">Kafka 101</a></p>
+</blockquote>
+
+<p>Kafka needed Zookeeper until the community decided to implement their self-managed solution, <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum">KIP-500</a>. The idea was to implement a self-managed metadata Quorum based on Raft protocol.</p>
+
+<p>Kafka uses ZooKeeper to store its metadata about partitions and brokers and elect a broker to be the Kafka Controller. Zookeeper had to be deployed as a three-node cluster separately to manage the main Kafka Cluster. Whenever any update in metadata needs to be transmitted from the Controller Node to other nodes, it might be possible for these changes to diverge from what is stored in Zk as compared to what is stored in the Controller’s memory.</p>
+
+<p><img src="/images/kafka-kraft-old-new.png" alt="Old-and-new" /></p>
+
+<p>In the above figure, on the left side, the orange node loads its state from Zookeeper after being elected controller. All the brokers interact with Zookeeper during their lifetime, pushing and pulling changes.</p>
+
+<p>On the right side, we see the Zookeeper nodes being replaced by 3 Kafka <strong>Controller</strong> nodes which now manage the cluster.</p>
+
+<p>Zookeeper is a separate system with entirely different deployment, configuration, and management methods. Hence, unifying the Metadata store into one will reduce mistakes and misconfigurations and greatly simplify the deployment process.</p>
+
+<p>Several KIPs discuss the Raft Protocol in great detail (as mentioned in References.).</p>
+
+<h3 id="kafka-versions-to-remove-zookeeper">Kafka Versions to Remove Zookeeper</h3>
+
+<ul>
+  <li>3.3 -&gt; KRaft mode declared production-ready</li>
+  <li>3.4 -&gt; Migration from ZK mode supported as Early Access (EA)</li>
+  <li>3.5 -&gt; ZK mode deprecated</li>
+  <li>4.0 -&gt; Only KRaft mode supported</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum">KIP-500: Replace ZooKeeper with a Self-Managed Metadata Quorum</a></li>
+  <li><a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-833%3A+Mark+KRaft+as+Production+Ready">KIP-833: Mark KRaft as Production Ready</a></li>
+  <li><a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-866+ZooKeeper+to+KRaft+Migration">KIP-866 ZooKeeper to KRaft Migration</a></li>
+  <li><a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-778%3A+KRaft+to+KRaft+Upgrades">KIP-778: KRaft to KRaft Upgrades</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/performing-cryptographic-operations-using-aws-nitro-enclaves.html">
+          Performing cryptographic operations using AWS Nitro Enclaves
+          <small>25 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
 </div>
 
       </div>

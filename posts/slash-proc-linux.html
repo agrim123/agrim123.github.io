@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Exploring the /proc directory &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Exploring the /proc directory</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">05 Jan 2020</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#linux" class="category-list-element" target="_blank">linux</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures. – linux man pages</p>
+</blockquote>
+
+<p>/proc directory is not a real filesystem, it is a <em>Virtual File System</em>. It contains information about processes and other system information. It is mapped to /proc and mounted at boot time.</p>
+
+<p>Running a <code class="language-plaintext highlighter-rouge">ls</code> in /proc lists a bunch of numbered directories and a bunch of files. The numbered directories are process PIDs and contains information related to the process.</p>
+
+<p>We can get information about what file contains <code class="language-plaintext highlighter-rouge">man 5 /proc/&lt;filename&gt;</code>.</p>
+
+<p>Quick description of some files</p>
+<ul>
+  <li>/proc/cmdline – Kernel command line information.</li>
+  <li>/proc/console – Information about current consoles including tty.</li>
+  <li>/proc/devices – Device drivers currently configured for the running kernel.</li>
+  <li>/proc/dma – Info about current DMA channels.</li>
+  <li>/proc/fb – Framebuffer devices.</li>
+  <li>/proc/filesystems – Current filesystems supported by the kernel.</li>
+  <li>/proc/iomem – Current system memory map for devices.</li>
+  <li>/proc/ioports – Registered port regions for input output communication with device.</li>
+  <li>/proc/loadavg – System load average.</li>
+  <li>/proc/locks – Files currently locked by kernel.</li>
+  <li>/proc/meminfo – Info about system memory (see above example).</li>
+  <li>/proc/misc – Miscellaneous drivers registered for miscellaneous major device.</li>
+  <li>/proc/modules – Currently loaded kernel modules.</li>
+  <li>/proc/mounts – List of all mounts in use by system.</li>
+  <li>/proc/partitions – Detailed info about partitions available to the system.</li>
+  <li>/proc/pci – Information about every PCI device.</li>
+  <li>/proc/stat – Record or various statistics kept from last reboot.</li>
+  <li>/proc/swap – Information about swap space.</li>
+  <li>/proc/uptime – Uptime information (in seconds).</li>
+  <li>/proc/version – Kernel version, gcc version, and Linux distribution installed.</li>
+</ul>
+
+<h3 id="procpid">/proc/&lt;pid&gt;</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-l</span> /proc/1
+dr-xr-xr-x 2 root root 0 Jan  3 11:46 attr
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  5 09:29 autogroup
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 auxv
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 11:46 cgroup
+<span class="nt">--w-------</span> 1 root root 0 Jan  5 09:29 clear_refs
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 22:57 cmdline
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 <span class="nb">comm</span>
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  5 09:29 coredump_filter
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 cpuset
+lrwxrwxrwx 1 root root 0 Jan  5 09:29 cwd -&gt; /
+<span class="nt">-r--------</span> 1 root root 0 Jan  3 11:46 environ
+lrwxrwxrwx 1 root root 0 Jan  3 22:57 exe -&gt; /lib/systemd/systemd
+dr-x------ 2 root root 0 Jan  3 11:46 fd
+dr-x------ 2 root root 0 Jan  3 11:46 fdinfo
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 gid_map
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 io
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 11:50 limits
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 loginuid
+dr-x------ 2 root root 0 Jan  5 09:29 map_files
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 maps
+<span class="nt">-rw-------</span> 1 root root 0 Jan  5 09:29 mem
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 11:46 mountinfo
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 mounts
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 mountstats
+dr-xr-xr-x 5 root root 0 Jan  3 11:46 net
+dr-x--x--x 2 root root 0 Jan  5 09:29 ns
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 numa_maps
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  5 09:29 oom_adj
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 oom_score
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 oom_score_adj
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 pagemap
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 patch_state
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 personality
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  5 09:29 projid_map
+lrwxrwxrwx 1 root root 0 Jan  3 11:46 root -&gt; /
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 sched
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 schedstat
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 11:46 sessionid
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 setgroups
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 smaps
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 smaps_rollup
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 stack
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 11:46 <span class="nb">stat</span>
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 12:07 statm
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  3 11:46 status
+<span class="nt">-r--------</span> 1 root root 0 Jan  5 09:29 syscall
+dr-xr-xr-x 3 root root 0 Jan  3 11:46 task
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 timers
+<span class="nt">-rw-rw-rw-</span> 1 root root 0 Jan  5 09:29 timerslack_ns
+<span class="nt">-rw-r--r--</span> 1 root root 0 Jan  3 11:46 uid_map
+<span class="nt">-r--r--r--</span> 1 root root 0 Jan  5 09:29 wchan
+</code></pre></div></div>
+
+<p>Print the contents of any file to see what it contains,</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat</span> /proc/1/status
+Name:	systemd
+State:	S <span class="o">(</span>sleeping<span class="o">)</span>
+Tgid:	1
+Ngid:	0
+Pid:	1
+PPid:	0
+TracerPid:	0
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+FDSize:	256
+...
+</code></pre></div></div>
+
+<p>We can gather that the process with PID 1 has name systemd and its current state is sleeping. The user id (Uid) and group id (Gid) are 0, which means they belong to root user.</p>
+
+<p>The most common files inside a pid directory are</p>
+<ul>
+  <li>cmdline – complete command line for the process, unless the process is a zombie</li>
+  <li>environ – environmental variables</li>
+  <li>fd      – file descriptors</li>
+  <li>limits  – displays the soft limit, hard limit, and units of measurement for each of the process’s resource limits</li>
+  <li>mounts  – related information</li>
+  <li>cwd     – symbolic link to the current working directory of the process</li>
+  <li>exe     – link to the executable of the process</li>
+  <li>root    – link to the work directory of the process</li>
+  <li>cgroup  - describes control groups to which the process/task belongs</li>
+</ul>
+
+<h3 id="reference">Reference</h3>
+
+<ul>
+  <li><a href="https://linux.die.net/man/5/proc">proc(5) - Linux man page</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

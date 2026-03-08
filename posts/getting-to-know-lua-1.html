@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Getting to know Lua (Part 1) &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Getting to know Lua (Part 1)</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">20 Jan 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#lua" class="category-list-element" target="_blank">lua</a></li>
+    
+  </ul>
+  
+    <p>I recently approached the <code class="language-plaintext highlighter-rouge">luarocks</code> community for GSoC’18 and they directed me to learn Lua and build some project to get acquainted with lua. This post describes my journey into the mystical world of lua.</p>
+
+<h2 id="first-encounter">First Encounter</h2>
+
+<p>I visited the official <a href="https://www.lua.org/about.html">Lua</a> website and there it was:</p>
+
+<blockquote>
+  <p>Lua is a powerful, efficient, lightweight, <strong>embeddable scripting language</strong>. It supports <strong>procedural programming</strong>, object-oriented programming, functional programming, <strong>data-driven programming</strong>, and data description.</p>
+</blockquote>
+
+<p>All those heavy words made me read this paragraph for about three times.<br />
+Like a good friend <a href="https://duckduckgo.com">duckduckgo</a> again helped me know about these big words,</p>
+
+<ul>
+  <li>Embeddable Scripting Language</li>
+  <li><a href="https://en.wikipedia.org/wiki/Procedural_programming">Procedural Programming</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Data-driven_programming">Data-driven programming</a></li>
+</ul>
+
+<blockquote>
+  <p>Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics.</p>
+</blockquote>
+
+<blockquote>
+  <p>Lua is dynamically typed.</p>
+</blockquote>
+
+<blockquote>
+  <p>Lua is a proven, robust language.</p>
+</blockquote>
+
+<p>These all features convinced me to move forward. So, I took upon the <a href="https://www.lua.org/pil/">Programming in Lua</a> book.</p>
+
+<h2 id="session-1">Session 1</h2>
+
+<p>As all languages start with a greeting</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="s2">"Hello World"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>No semicolons! Phew… (although optional)</p>
+
+<p>First recursion function that comes to mind when starting a new language is Fibonacci Series</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">then</span>
+    <span class="k">return</span> <span class="n">n</span>
+  <span class="k">end</span>
+
+  <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>This clarified a lot of things:</p>
+<ul>
+  <li>No brackets :P</li>
+  <li>Declarative syntax</li>
+</ul>
+
+<p>Uninitialized variables return <code class="language-plaintext highlighter-rouge">nil</code></p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>  <span class="c1">-- nil</span>
+</code></pre></div></div>
+
+<h3 id="types-in-lua">Types in lua</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s2">"Hello World"</span><span class="p">))</span>  <span class="c1">-- string</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>             <span class="c1">-- number</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="nb">print</span><span class="p">))</span>          <span class="c1">-- function</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>           <span class="c1">-- boolean</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>            <span class="c1">-- nil</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>        <span class="c1">-- string</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Variables have no predefined types; any variable may contain values of any type</p>
+</blockquote>
+
+<h4 id="mysterious-strings">Mysterious Strings</h4>
+
+<blockquote>
+  <p>Lua is eight-bit clean and so strings may contain characters with any numeric value, including embedded zeros. That means that you can store any binary data into a string.</p>
+</blockquote>
+
+<blockquote>
+  <p>Strings in Lua are immutable values</p>
+</blockquote>
+
+<p>Concatenate thou strings:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="s2">"Hello"</span> <span class="o">..</span> <span class="s2">" World"</span><span class="p">)</span>   <span class="c1">-- Hello World</span>
+<span class="nb">print</span><span class="p">(</span><span class="mi">50</span> <span class="o">..</span> <span class="mi">100</span><span class="p">)</span>             <span class="c1">-- 50100</span>
+</code></pre></div></div>
+
+<p>Converting those numbers to string can be really easy using <code class="language-plaintext highlighter-rouge">..</code></p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="mi">11</span> <span class="o">..</span> <span class="s2">""</span><span class="p">)</span>              <span class="c1">-- "11"</span>
+</code></pre></div></div>
+
+<h4 id="boolean">Boolean</h4>
+
+<p><code class="language-plaintext highlighter-rouge">False</code> and <code class="language-plaintext highlighter-rouge">True</code></p>
+
+<p>Conditionals in lua consider <code class="language-plaintext highlighter-rouge">false</code> and <code class="language-plaintext highlighter-rouge">nil</code> as <code class="language-plaintext highlighter-rouge">false</code> and rest all <code class="language-plaintext highlighter-rouge">true</code></p>
+
+<h4 id="tables">Tables</h4>
+
+<blockquote>
+  <p>Table type implements <strong>associative arrays</strong></p>
+</blockquote>
+
+<p>Now, some of you might wonder what are <strong><a href="https://en.wikipedia.org/wiki/Associative_array">associative arrays</a></strong>, just a fancy name for dictionary (for Python users), objects (for JS users). Example:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"One"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Two"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>Tables have dynamic size. Yay!</p>
+</blockquote>
+
+<blockquote>
+  <p>Tables in Lua are neither values nor variables; they are objects</p>
+</blockquote>
+
+<p>You may think of a table as a dynamically allocated object; your program only manipulates references (or pointers) to them. There are no hidden copies or creation of new tables behind the scenes. Moreover, you do not have to declare a table in Lua; in fact, there is no way to declare one. You create tables by means of a constructor expression, which in its simplest form is written as {}.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>              <span class="cm">--[[ 
+                      create a table and store its reference in `a`
+                    ]]</span><span class="c1">--</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">"y"</span><span class="p">])</span>       <span class="c1">-- nil (non existent key)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="s2">"x"</span>
+<span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>            <span class="c1">-- new entry with key="x" and value=0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">"x"</span><span class="p">])</span>       <span class="c1">-- 0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>          <span class="c1">-- 0  (much cooler!)</span>
+</code></pre></div></div>
+
+<p>A table is always anonymous. There is no fixed relationship between a variable that holds a table and the table itself:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">x</span><span class="p">[</span><span class="s2">"a"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">a</span>          <span class="c1">-- `y' refers to the same table as `x`</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s2">"a"</span><span class="p">])</span>  <span class="c1">-- 10</span>
+<span class="n">y</span><span class="p">[</span><span class="s2">"a"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">"a"</span><span class="p">])</span>  <span class="c1">-- 20</span>
+<span class="n">x</span> <span class="o">=</span> <span class="kc">nil</span>        <span class="c1">-- now only `y` still refers to the table</span>
+<span class="n">y</span> <span class="o">=</span> <span class="kc">nil</span>        <span class="c1">-- now there are no references left to the table</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>When a program has no references to a table left, Lua memory management will eventually delete the table and reuse its memory.</p>
+</blockquote>
+
+<p>Using <code class="language-plaintext highlighter-rouge">a.x</code> may arise some confusion,</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s2">"y"</span>
+<span class="n">a</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>      <span class="c1">-- 10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">"x"</span><span class="p">])</span>    <span class="c1">-- nil (or print(a.x)) (undefined)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">"y"</span><span class="p">])</span>    <span class="c1">-- 10  (or print(a.y))</span>
+</code></pre></div></div>
+
+<h4 id="functions">Functions</h4>
+
+<blockquote>
+  <p>Functions are first-class citizens in Lua</p>
+</blockquote>
+
+<p>It means that a function is a value with the same rights as conventional values like numbers and strings. Functions can be stored in variables, passed as arguments or returned as results.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">a</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>        <span class="c1">-- can be passed as arguments</span>
+    <span class="k">return</span> <span class="n">f</span>         <span class="c1">-- can be returned as results</span>
+<span class="k">end</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="k">function</span><span class="p">()</span>       <span class="c1">-- can be stored in a variable</span>
+        <span class="k">return</span> <span class="mi">3</span>
+    <span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">(</span><span class="n">c</span><span class="p">()))</span>        <span class="c1">-- 3</span>
+</code></pre></div></div>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

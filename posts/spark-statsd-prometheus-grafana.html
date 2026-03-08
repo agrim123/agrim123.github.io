@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">11 Dec 2019</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#spark" class="category-list-element" target="_blank">spark</a></li>
+    
+    <li><a href="/categories/#monitoring" class="category-list-element" target="_blank">monitoring</a></li>
+    
+    <li><a href="/categories/#prometheus" class="category-list-element" target="_blank">prometheus</a></li>
+    
+    <li><a href="/categories/#statsd" class="category-list-element" target="_blank">statsd</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>Be notified before something goes wrong.</p>
+</blockquote>
+
+<h3 id="aim">Aim</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------+           +-------------+        +--------------+
+|  Spark Job  |-- Push <span class="nt">--</span>►| StatsD Sink |-------►|   Exporter   |
++-------------+           +-------------+        +--------------+
+                                                        ▲
+                                                        |
+                                        Scrape /metrics |
+                                                        |
+                                                 +--------------+
+                                                 |  Prometheus  |
+                                                 +--------------+
+                                                        |
+                                                        |
+                                                        |
+                                                        ▼
+                                                 +--------------+
+                                                 |    Grafana   |
+                                                 +--------------+
+</code></pre></div></div>
+
+<p>Spark job pushes metrics to <a href="https://github.com/statsd/statsd">statsD</a> sink (on statsD:9125) and these metrics are available on statsD:9102 for <a href="https://prometheus.io/">prometheus</a> to scrape. Prometheus then can be added as datasource on <a href="https://grafana.com/">Grafana</a> for visualization.</p>
+
+<h3 id="how">How</h3>
+
+<p>Spark has a configurable metrics system that allows it to report metrics to various sinks<sup><a href="#furthur-read">1</a></sup>. The metric system can be configured via a config file, passed to spark-submit via <code class="language-plaintext highlighter-rouge">--files</code> option.</p>
+
+<p>In this post, we are using <strong>StatsD</strong> Sink for reporting our metrics. Since spark has the inbuilt capability to report metrics to StatsD, our work is much easier (compared to if we had to push metrics directly to prometheus<sup><a href="#furthur-read">2</a></sup>).</p>
+
+<p>Starting off with the <code class="language-plaintext highlighter-rouge">metrics.properties</code><sup><a href="#furthur-read">3</a></sup> file to tell spark that it needs to send metrics to StatsD sink.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Sample metrics.properties file</span>
+
+<span class="k">*</span>.sink.statsd.class<span class="o">=</span>org.apache.spark.metrics.sink.StatsdSink
+<span class="k">*</span>.sink.statsd.prefix<span class="o">=</span>spark
+<span class="k">*</span>.sink.statsd.host<span class="o">=</span>&lt;host&gt;
+<span class="k">*</span>.sink.statsd.port<span class="o">=</span>9125
+</code></pre></div></div>
+<blockquote>
+  <p>Note the sink class <a href="https://github.com/apache/spark/blob/master/core/src/main/scala/org/apache/spark/metrics/sink/StatsdSink.scala#L29">is</a> <code class="language-plaintext highlighter-rouge">StatsdSink</code> and not <code class="language-plaintext highlighter-rouge">StatsDSink</code>.</p>
+</blockquote>
+
+<p>Now, before running our spark job we need to set up statsD exporter. Prometheus has an <a href="https://github.com/prometheus/statsd_exporter">official</a> exporter for this job. We just need the docker image and our work is done!</p>
+
+<p>A sample docker-compose file for exporter, prometheus and grafana.</p>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3"</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">prometheus</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">prom/prometheus</span>
+    <span class="na">command</span><span class="pi">:</span> <span class="s">--config.file=/etc/prometheus/prometheus.yml</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9090:9090</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/path/to/prometheus.yml:/etc/prometheus/prometheus.yml</span>
+
+  <span class="na">grafana</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">grafana/grafana</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">3000:3000</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">GF_SECURITY_ADMIN_PASSWORD=*******</span>
+
+  <span class="na">statsd</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">prom/statsd-exporter</span>
+    <span class="na">command</span><span class="pi">:</span> <span class="s">--statsd.mapping-config=/tmp/statsd_mapping.yml</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9102:9102</span>
+      <span class="pi">-</span> <span class="s">9125:9125</span>
+      <span class="pi">-</span> <span class="s">9125:9125/udp</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/path/to/statsd_mapping.yml:/tmp/statsd_mapping.yml</span>
+</code></pre></div></div>
+<p>The config files, <code class="language-plaintext highlighter-rouge">prometheus.yml</code> and <code class="language-plaintext highlighter-rouge">statsd_mapping.yml</code> can be tuned according to the needs.</p>
+
+<p>Finally running our spark job</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spark-submit <span class="se">\</span>
+<span class="nt">--deploy-mode</span> cluster <span class="se">\</span>
+<span class="nt">--master</span> yarn <span class="se">\</span>
+<span class="nt">--conf</span> spark.metrics.conf<span class="o">=</span>metrics.properties <span class="se">\</span>
+<span class="nt">--files</span> /path/to/metrics.properties <span class="se">\</span>
+<span class="nt">--class</span> some.class /path/to/my_app.jar noob
+</code></pre></div></div>
+
+<p>The above solution works like a charm, but a small problem arises when you need to monitor multiple jobs. Since spark pushes metrics that have the job name in them, it becomes difficult on Grafana to create different dashboards for every job. A simple solution is to extract the job name and other job-related strings from the metric name and convert then to labels, which then can easily be used to monitor a specific job and all work would get done in a single dashboard.</p>
+
+<h3 id="working-with-legacy-metric-names">Working with legacy metric names</h3>
+
+<p>Since spark job pushes metrics of the format <code class="language-plaintext highlighter-rouge">myapp_driver_metric_name</code></p>
+
+<p>Using <code class="language-plaintext highlighter-rouge">metric_relabel_configs</code><sup><a href="#furthur-read">4</a></sup> config to extract the label and adjust the metric name, for making a single Grafana dashboard for multiple spark jobs.</p>
+
+<p>Let’s say that we were using a legacy system that produced metrics that looked like:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spark_noob_driver_DAGScheduler_stage_failedStages
+spark_noob_driver_ExecutorAllocationManager_executors_numberAllExecutors
+spark_noob_driver_LiveListenerBus_queue_executorManagement_size
+spark_noob_driver_jvm_non_heap_init
+spark_noob_driver_StreamingMetrics_streaming_retainedCompletedBatches
+</code></pre></div></div>
+<p>The <code class="language-plaintext highlighter-rouge">spark</code> keyword is the prefix we passed in the <code class="language-plaintext highlighter-rouge">metrics.properties</code> the file above, <code class="language-plaintext highlighter-rouge">noob</code> is our app name, <code class="language-plaintext highlighter-rouge">driver</code> tells that these are spark driver metrics and rest of the string is the **useful metric name common to all jobs, we need to extract this out and put rest of them into labels.</p>
+
+<p>Modifying <code class="language-plaintext highlighter-rouge">prometheus.yml</code> a little</p>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+    <span class="na">scrape_interval</span><span class="pi">:</span>     <span class="s">15s</span>
+    <span class="na">evaluation_interval</span><span class="pi">:</span> <span class="s">15s</span>
+
+<span class="nn">...</span>
+  <span class="na">scrape_configs</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">my_app'</span>
+      <span class="na">metric_relabel_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__name__</span><span class="pi">]</span>
+        <span class="na">regex</span><span class="pi">:</span> <span class="s1">'</span><span class="s">spark_([^_]+)_(driver)_([^_]+)_(\w+)'</span>
+        <span class="na">replacement</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${1}'</span>
+        <span class="na">target_label</span><span class="pi">:</span> <span class="s">app_name</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__name__</span><span class="pi">]</span>
+        <span class="na">regex</span><span class="pi">:</span> <span class="s1">'</span><span class="s">spark_([^_]+)_(driver)_([^_]+)_(\w+)'</span>
+        <span class="na">replacement</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${2}'</span>
+        <span class="na">target_label</span><span class="pi">:</span> <span class="s">role</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__name__</span><span class="pi">]</span>
+        <span class="na">regex</span><span class="pi">:</span> <span class="s1">'</span><span class="s">spark_([^_]+)_(driver)_([^_]+)_(\w+)'</span>
+        <span class="na">replacement</span><span class="pi">:</span> <span class="s1">'</span><span class="s">${4}'</span>
+        <span class="c1"># __name__ is the special label which contains the metric name</span>
+        <span class="na">target_label</span><span class="pi">:</span> <span class="s">__name__</span>
+      <span class="na">honor_labels</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">static_configs</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">127.0.0.1:9102</span>
+</code></pre></div></div>
+
+<p>The generated metrics now are:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DAGScheduler_stage_failedStages<span class="o">{</span><span class="nv">app_name</span><span class="o">=</span><span class="s2">"noob"</span>, <span class="nv">role</span><span class="o">=</span><span class="s2">"driver"</span><span class="o">}</span>
+ExecutorAllocationManager_executors_numberAllExecutors<span class="o">{</span><span class="nv">app_name</span><span class="o">=</span><span class="s2">"noob"</span>, <span class="nv">role</span><span class="o">=</span><span class="s2">"driver"</span><span class="o">}</span>
+LiveListenerBus_queue_executorManagement_size<span class="o">{</span><span class="nv">app_name</span><span class="o">=</span><span class="s2">"noob"</span>, <span class="nv">role</span><span class="o">=</span><span class="s2">"driver"</span><span class="o">}</span>
+jvm_non_heap_init<span class="o">{</span><span class="nv">app_name</span><span class="o">=</span><span class="s2">"noob"</span>, <span class="nv">role</span><span class="o">=</span><span class="s2">"driver"</span><span class="o">}</span>
+StreamingMetrics_streaming_retainedCompletedBatches<span class="o">{</span><span class="nv">app_name</span><span class="o">=</span><span class="s2">"noob"</span>, <span class="nv">role</span><span class="o">=</span><span class="s2">"driver"</span><span class="o">}</span>
+</code></pre></div></div>
+<p>These can now be easily viewable on a single Grafana dashboard for mutiple jobs!</p>
+
+<h3 id="furthur-read">Furthur read</h3>
+
+<ol>
+  <li>Various sinks that spark supports can be found <a href="https://spark.apache.org/docs/2.3.0/monitoring.html#metrics">here</a>.</li>
+  <li>Banzai Cloud has done some <a href="https://github.com/banzaicloud/spark-metrics">great work</a> on pushing metrics directly to Prometheus.</li>
+  <li>A more detailed sample metrics.properties file can be found <a href="https://github.com/apache/spark/blob/master/conf/metrics.properties.template">here</a></li>
+  <li><code class="language-plaintext highlighter-rouge">metric_relabel_configs</code> is applied after the scrape.</li>
+</ol>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

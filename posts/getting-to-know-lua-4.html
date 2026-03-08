@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Getting to know Lua (Part 4) &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Getting to know Lua (Part 4)</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">23 Jan 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#lua" class="category-list-element" target="_blank">lua</a></li>
+    
+  </ul>
+  
+    <p>This post is in continuation of previous post <a href="/posts/getting-to-know-lua-3.html">Getting to know Lua (Part 3)</a></p>
+
+<h2 id="session-4-coroutines">Session 4: Coroutines</h2>
+
+<p>A coroutines is like thread, with its own stack, its own local variables, and its own instruction pointer; but shares most globals and mostly anything else with other coroutines.</p>
+
+<p>The main difference between coroutines and threads is that, a program with threads runs several threads concurrently whereas coroutines are collaborative.
+A program with coroutines is, at any given time, running only one of its coroutines and this running coroutine only suspends its execution when it explicitly requests to be suspended.</p>
+
+<h3 id="basics">Basics</h3>
+
+<blockquote>
+  <p>Lua offers all its coroutine functions packed in the coroutine table</p>
+</blockquote>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">co</span> <span class="o">=</span> <span class="nb">coroutine.create</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s2">"Hello from the coroutine"</span><span class="p">)</span>
+     <span class="k">end</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>                 <span class="c1">-- thread: 0xa57670</span>
+</code></pre></div></div>
+
+<p>A coroutine table provides many methods. We can list all methods using,</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">coroutine</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>running
+create
+resume
+status
+isyieldable
+wrap
+yield
+</code></pre></div></div>
+
+<h3 id="onto-rough-waters">Onto rough waters</h3>
+
+<p>We can create a coroutine using <code class="language-plaintext highlighter-rouge">create</code> function which only creates a new coroutine and returns a handle to it but doesnot start the coroutine.</p>
+
+<p>A coroutine can be in any of the three different states:</p>
+<ul>
+  <li>Suspended</li>
+  <li>Running</li>
+  <li>Dead</li>
+</ul>
+
+<p>When we create a coroutine, it starts in the suspended state. The status of a coroutine can be checked by using <code class="language-plaintext highlighter-rouge">status</code> function,</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="nb">coroutine.status</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>     <span class="c1">-- suspended</span>
+</code></pre></div></div>
+
+<p>We can execute a coroutine by calling a <code class="language-plaintext highlighter-rouge">resume</code> function and passing a first argument as thread returned by the <code class="language-plaintext highlighter-rouge">create</code> function.<br />
+The function <code class="language-plaintext highlighter-rouge">resume</code> starts coroutine execution,</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>            <span class="c1">-- "Hello from the coroutine"</span>
+</code></pre></div></div>
+
+<p>In this state coroutine executes and leaves it in dead state</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="nb">coroutine.status</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>    <span class="c1">-- dead</span>
+</code></pre></div></div>
+
+<p>Until now, coroutines look like nothing more than a complicated way to call functions. The real power of coroutines stems from the <code class="language-plaintext highlighter-rouge">yield</code> function, which allows a <strong>running coroutine to suspend its execution so that it can be resumed later</strong>.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">co</span> <span class="o">=</span> <span class="nb">coroutine.create</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span>
+       <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span> <span class="k">do</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">"co "</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+         <span class="nb">coroutine.yield</span><span class="p">()</span>
+       <span class="k">end</span>
+     <span class="k">end</span><span class="p">)</span>
+
+<span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>           <span class="c1">-- co 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">coroutine.status</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>    <span class="c1">-- suspended</span>
+<span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>           <span class="c1">-- co   2</span>
+<span class="o">...</span>
+<span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>           <span class="c1">-- co   5</span>
+<span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>           <span class="c1">-- prints nothing</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>    <span class="c1">-- false   cannot resume dead coroutine</span>
+</code></pre></div></div>
+
+<p>When a coroutine yields, the corresponding <code class="language-plaintext highlighter-rouge">resume</code> returns immediately, even if the yield happens inside nested function calls (that is, not in the main function, but in a function directly or indirectly called by the main function). It can be demonstrated as</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">foo</span> <span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"in foo"</span><span class="p">)</span>
+    <span class="nb">coroutine.yield</span><span class="p">(</span><span class="s2">"foo coroutine yield"</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="s2">"done"</span>
+<span class="k">end</span>
+
+<span class="n">co</span> <span class="o">=</span> <span class="nb">coroutine.create</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span>
+       <span class="n">foo</span><span class="p">()</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s2">"in co body"</span><span class="p">)</span>
+     <span class="k">end</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>This outputs</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">in</span> <span class="n">foo</span>
+<span class="n">main</span>    <span class="kc">true</span>    <span class="n">foo</span> <span class="n">coroutine</span> <span class="n">yield</span>
+<span class="n">done</span>    <span class="cm">--[[
+            This print after we call the second resume because yield returned the function at an early stage
+        ]]</span><span class="c1">--</span>
+<span class="k">in</span> <span class="n">co</span> <span class="n">body</span>
+<span class="n">main</span>    <span class="kc">true</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Resume runs in protected mode. Therefore, if there is any error inside a coroutine, Lua will not show the error message, but instead will return it to the resume call.</p>
+</blockquote>
+
+<p>We can also pass extra arguments <code class="language-plaintext highlighter-rouge">resume</code> that are supplied to the coroutine main function.</p>
+
+<p>A more cool example can be taken from <a href="http://www.lua.org/manual/5.2/manual.html#2.6">Lua Manual</a>,</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">foo</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">coroutine.yield</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">co</span> <span class="o">=</span> <span class="nb">coroutine.create</span><span class="p">(</span><span class="k">function</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"co-body"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="kd">local</span> <span class="n">r</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s2">"co-body"</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+       <span class="kd">local</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">coroutine.yield</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="o">-</span><span class="n">b</span><span class="p">)</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s2">"co-body"</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+       <span class="k">return</span> <span class="n">b</span><span class="p">,</span> <span class="s2">"end"</span>
+    <span class="k">end</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>The output of this program is rather interesting and illustrates the above discussion in more detailed manner,</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">co</span><span class="o">-</span><span class="n">body</span> <span class="mi">1</span>       <span class="mi">10</span>
+<span class="n">foo</span>     <span class="mi">2</span>
+<span class="n">main</span>    <span class="kc">true</span>    <span class="mi">4</span>
+<span class="n">co</span><span class="o">-</span><span class="n">body</span> <span class="n">r</span>
+<span class="n">main</span>    <span class="kc">true</span>    <span class="mi">11</span>      <span class="o">-</span><span class="mi">9</span>
+<span class="n">co</span><span class="o">-</span><span class="n">body</span> <span class="n">x</span>       <span class="n">y</span>
+<span class="n">main</span>    <span class="kc">true</span>    <span class="mi">10</span>      <span class="k">end</span>
+<span class="n">main</span>    <span class="kc">false</span>   <span class="n">cannot</span> <span class="n">resume</span> <span class="n">dead</span> <span class="n">coroutine</span>
+</code></pre></div></div>
+
+<p>A coroutine can terminate its execution in two ways: if the main funtion returns or if there is an unexpected error. In first case, <code class="language-plaintext highlighter-rouge">resume</code> returns <code class="language-plaintext highlighter-rouge">true</code> plus the values returned by main function and in second case it return <code class="language-plaintext highlighter-rouge">false</code> along with an error message.</p>
+
+<p>A simple example</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">foo</span> <span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"in foo"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">coroutine.yield</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">co</span> <span class="o">=</span> <span class="nb">coroutine.create</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"in co-body"</span><span class="p">)</span>
+        <span class="kd">local</span> <span class="n">r</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">end</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="nb">coroutine.resume</span><span class="p">(</span><span class="n">co</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Outputs</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">in </span>co-body
+<span class="k">in </span>foo
+main    <span class="nb">false   </span>a.lua:3: attempt to perform arithmetic on a nil value <span class="o">(</span>global <span class="s1">'x'</span><span class="o">)</span>
+main    <span class="nb">false   </span>cannot resume dead coroutine
+</code></pre></div></div>
+
+<p>There is another function same as <code class="language-plaintext highlighter-rouge">create</code>, known by the name <code class="language-plaintext highlighter-rouge">wrap</code>. It also creates a coroutine, but instead of returning the coroutine, it returns a function that, when called, resumes the coroutine. Any arguments passed to this function are passed as extra arguments to <code class="language-plaintext highlighter-rouge">resume</code>. <code class="language-plaintext highlighter-rouge">wrap</code> returns all the values returned by <code class="language-plaintext highlighter-rouge">resume</code>, except the first one (the boolean error code). Unlike <code class="language-plaintext highlighter-rouge">resume</code>, <code class="language-plaintext highlighter-rouge">wrap</code> does not catch errors; any error is propagated to the caller.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">co</span> <span class="o">=</span> <span class="nb">coroutine.wrap</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span>
+        <span class="nb">coroutine.yield</span><span class="p">(</span><span class="s2">"Yay!"</span><span class="p">)</span>
+    <span class="k">end</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="n">co</span><span class="p">())</span>      <span class="c1">-- main    Yay!</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"main"</span><span class="p">,</span> <span class="n">co</span><span class="p">())</span>      <span class="c1">-- main</span>
+</code></pre></div></div>
+
+<p>Roberto writes in book,</p>
+
+<pre style="text-align: justify; word-break: normal;">
+Lua offers what I call <b>asymmetric coroutines</b>. That means that it has a function to suspend the execution of a coroutine and a different function to resume a suspended coroutine. Some other languages offer symmetric coroutines, where there is only one function to transfer control from any coroutine to another.
+</pre>
+
+<blockquote>
+  <p>Coroutines are a kind of collaborative multithreading</p>
+</blockquote>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="http://www.lua.org/manual/5.2/manual.html">Lua Manual</a></li>
+  <li><a href="https://www.lua.org/pil">Programming in Lua</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

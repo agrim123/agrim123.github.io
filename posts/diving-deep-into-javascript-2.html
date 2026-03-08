@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Diving Deep into JavaScript (Part 2) &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Diving Deep into JavaScript (Part 2)</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">11 Mar 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#javascript" class="category-list-element" target="_blank">javascript</a></li>
+    
+  </ul>
+  
+    <p>This post is in continuation of the previous post <a href="/posts/diving-deep-into-javascript-1.html">Diving Deep into JavaScript (Part 1)</a></p>
+
+<p>Continuing on my journey into the world of JavaScript, I came across some more intriguing concepts.</p>
+
+<p>Topics covered in this post:</p>
+
+<ul>
+  <li>Promises</li>
+  <li>Async/Await</li>
+</ul>
+
+<h2 id="promises">Promises</h2>
+
+<blockquote>
+  <p>A promise is object that may produce a value some time in future, either resolved or, a reason that it’s not resolved.</p>
+</blockquote>
+
+<p>A Promise is a proxy for a value not necessarily known when the promise is created. It allows you to associate handlers with an asynchronous action’s eventual success value or failure reason. This lets asynchronous methods return values like synchronous methods: instead of immediately returning the final value, the asynchronous method returns a promise to supply the value at some point in the future.</p>
+
+<p>In more simpler words,</p>
+
+<blockquote>
+  <p>A promise is an object which can be returned synchronously from an asynchronous function.</p>
+</blockquote>
+
+<p>Syntax for a promise object</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// executor code</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Promises are eager, meaning that a promise will start doing whatever task you give it as soon as the promise constructor is invoked.</p>
+</blockquote>
+
+<p>The resulting <code class="language-plaintext highlighter-rouge">promise</code> object has internal properties:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">state</code> - initially <strong>pending</strong>, then changes to either <strong>fulfilled</strong> or <strong>rejected</strong>,</li>
+  <li><code class="language-plaintext highlighter-rouge">result</code> - an arbitrary value of your choosing, initially <strong>undefined</strong>.</li>
+</ul>
+
+<p>When the executor finishes the job, it should call one of the functions that it gets as arguments:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">resolve(value)</code> - to indicate that the job finished successfully:
+    <ul>
+      <li>sets state to <strong>fulfilled</strong>,</li>
+      <li>sets result to value.</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">reject(error)</code> - to indicate that an error occurred:
+    <ul>
+      <li>sets state to <strong>rejected</strong>,</li>
+      <li>sets result to error.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/images/promise.png" alt="MDN Promises" /></p>
+
+<p>A Promise object serves as a link between the executor and the consuming functions (then and catch), which will receive the result or error.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">promise</span>
+  <span class="p">.</span><span class="nf">then</span><span class="p">(</span><span class="nx">result</span> <span class="o">=&gt;</span> <span class="p">{})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{})</span>
+</code></pre></div></div>
+
+<h2 id="asyncawait">Async/Await</h2>
+
+<p>The async/await syntax in JavaScript ES7 makes it easier to coordinate asynchronous promises.</p>
+
+<p>If you want to asynchronously fetch data from mutiple databases or APIs in a certain order, you can end up with complicated code using promises and callbacks. The <code class="language-plaintext highlighter-rouge">async/await</code> construct allows us to express such logic with more readablility and maintainable code.</p>
+
+<h3 id="async-functions">Async Functions</h3>
+
+<p>An async function is a shortcut for defining a function which returns a promise.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nf">resolve</span><span class="p">(</span><span class="dl">'</span><span class="s1">testing</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// asyncF is equivalent to f!</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">asyncF</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">'</span><span class="s1">testing</span><span class="dl">'</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The above definitions are equivalent.</p>
+
+<h3 id="await">Await</h3>
+
+<p>It can only be used with <code class="language-plaintext highlighter-rouge">async</code> functions and helps us to wait for promise synchronously.</p>
+
+<p>For example,</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">rp</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">request-promise</span><span class="dl">'</span><span class="p">)</span>
+
+<span class="c1">// With Promises</span>
+<span class="kd">const</span> <span class="nx">call1</span> <span class="o">=</span> <span class="nf">rp</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://api.example.com/</span><span class="dl">'</span><span class="p">)</span>
+
+<span class="nx">call1</span><span class="p">.</span><span class="nf">then</span><span class="p">(</span><span class="nx">result</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Executes after the first request has finished</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+
+    <span class="kd">const</span> <span class="nx">call2</span> <span class="o">=</span> <span class="nf">rp</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://api.example.com/</span><span class="dl">'</span><span class="p">)</span>
+    <span class="kd">const</span> <span class="nx">call3</span> <span class="o">=</span> <span class="nf">rp</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://api.example.com/</span><span class="dl">'</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nf">all</span><span class="p">([</span><span class="nx">call2</span><span class="p">,</span> <span class="nx">call3</span><span class="p">])</span>
+<span class="p">}).</span><span class="nf">then</span><span class="p">(</span><span class="nx">arr</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Executes after both promises have finished</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="p">})</span>
+
+<span class="c1">// With async/await</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">sol</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Wait for the first HTTP call</span>
+    <span class="c1">// and print the result</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="k">await</span> <span class="nf">rp</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://api.example.com/</span><span class="dl">'</span><span class="p">))</span>
+
+    <span class="c1">// Spawn the HTTP calls without waiting for them - run them concurrently</span>
+    <span class="kd">const</span> <span class="nx">call2</span> <span class="o">=</span> <span class="nf">rp</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://api.example.com/</span><span class="dl">'</span><span class="p">)</span>  <span class="c1">// Does not wait!</span>
+    <span class="kd">const</span> <span class="nx">call3</span> <span class="o">=</span> <span class="nf">rp</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://api.example.com/</span><span class="dl">'</span><span class="p">)</span>  <span class="c1">// Does not wait!</span>
+
+    <span class="c1">// After they are both spawn - wait for both of them</span>
+    <span class="kd">const</span> <span class="nx">response2</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">call2</span>
+    <span class="kd">const</span> <span class="nx">response3</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">call3</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">response2</span><span class="p">)</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">response3</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Call the async function</span>
+<span class="nf">sol</span><span class="p">().</span><span class="nf">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Finished</span><span class="dl">'</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>In the above snippet, we encapsulate the <code class="language-plaintext highlighter-rouge">sol</code> in an async function. This allows us to directly await for the promises, thus avoiding the need for then callbacks.</p>
+
+<p>Under the hood, await/await actually translate to promises and then callbacks. In other words, it’s syntactic sugar for working with promises. Every time we use await, the interpreter spawns a promise, and puts the rest of the operations from the async function in a then callback.</p>
+
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

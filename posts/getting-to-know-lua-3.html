@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Getting to know Lua (Part 3) &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Getting to know Lua (Part 3)</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">22 Jan 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#lua" class="category-list-element" target="_blank">lua</a></li>
+    
+  </ul>
+  
+    <p>This post is in continuation of previous post <a href="/posts/getting-to-know-lua-2.html">Getting to know Lua (Part 2)</a></p>
+
+<h2 id="session-3-functions">Session 3: Functions</h2>
+
+<blockquote>
+  <p>Functions are the main mechanism for abstraction of statements and expressions in Lua</p>
+</blockquote>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span> <span class="s2">"Hello World"</span>    <span class="o">&lt;</span><span class="c1">--&gt;   print("Hello World")</span>
+</code></pre></div></div>
+
+<h3 id="mutiple-returns">Mutiple returns</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">foo0</span> <span class="p">()</span> <span class="k">end</span>                  <span class="c1">-- returns no results</span>
+<span class="k">function</span> <span class="nf">foo1</span> <span class="p">()</span> <span class="k">return</span> <span class="s1">'a'</span> <span class="k">end</span>       <span class="c1">-- returns 1 result</span>
+<span class="k">function</span> <span class="nf">foo2</span> <span class="p">()</span> <span class="k">return</span> <span class="s1">'a'</span><span class="p">,</span><span class="s1">'b'</span> <span class="k">end</span>   <span class="c1">-- returns 2 results</span>
+</code></pre></div></div>
+
+<h3 id="variable-number-of-arguments">Variable Number of Arguments</h3>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">sum</span> <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="kd">local</span> <span class="n">arg</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">do</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">v</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">s</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sum</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>          <span class="c1">-- 34</span>
+</code></pre></div></div>
+
+<h3 id="named-arguments">Named Arguments</h3>
+
+<blockquote>
+  <p>The parameter passing mechanism in Lua is <strong>positional</strong></p>
+</blockquote>
+
+<p>One may think that passing naed arguments may be same as passing a number of arguments with names:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rename</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="s2">"old.txt"</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="s2">"new.txt"</span><span class="p">)</span>   <span class="c1">-- invalid syntax</span>
+</code></pre></div></div>
+
+<p>Lua has no direct support for this syntax. The idea here is to pack all arguments into a <code class="language-plaintext highlighter-rouge">table</code> and use that table as the only argument to the function. The special syntax that Lua provides for function calls, with just one table constructor as argument, helps the trick:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rename</span><span class="p">{</span><span class="n">old</span><span class="o">=</span><span class="s2">"old.txt"</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="s2">"new.txt"</span><span class="p">}</span>   <span class="c1">-- works</span>
+</code></pre></div></div>
+
+<h3 id="more-about-functions">More about Functions</h3>
+
+<blockquote>
+  <p>Functions in Lua are first-class citizens with proper lexical scoping.</p>
+</blockquote>
+
+<p>What does <code class="language-plaintext highlighter-rouge">first-class citizens</code> mean? It means that a function is a value with the same rights as conventional values like numbers and strings. Functions can be stored in variables, passed as arguments or returned as results.</p>
+
+<p>What does <code class="language-plaintext highlighter-rouge">proper lexical scoping</code> mean? It means that functions can access variables of its enclosing functions. (It also means that Lua contains the lambda calculus properly.)</p>
+
+<blockquote>
+  <p>A function that gets another function as an argument, is called a <strong>higher-order function</strong>.</p>
+</blockquote>
+
+<p>Taking an example from the <a href="https://www.lua.org/pil/6.html">book</a></p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">network</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"grauna"</span><span class="p">,</span>  <span class="n">IP</span> <span class="o">=</span> <span class="s2">"210.26.30.34"</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"arraial"</span><span class="p">,</span> <span class="n">IP</span> <span class="o">=</span> <span class="s2">"210.26.30.23"</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"lua"</span><span class="p">,</span>     <span class="n">IP</span> <span class="o">=</span> <span class="s2">"210.26.23.12"</span><span class="p">},</span>
+    <span class="p">{</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"derain"</span><span class="p">,</span>  <span class="n">IP</span> <span class="o">=</span> <span class="s2">"210.26.23.20"</span><span class="p">},</span>
+<span class="p">}</span>
+
+<span class="nb">table.sort</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> 
+    <span class="k">function</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Higher-order functions are a powerful programming mechanism and the use of anonymous functions to create their function arguments is a great source of flexibility. But remember that higher-order functions have no special rights; they are a simple consequence of the ability of Lua to handle functions as first-class values.</p>
+
+<h4 id="closures">Closures</h4>
+
+<p>A function written within a function has full access to local variables of the parent function; this feature is called lexical scoping.</p>
+
+<blockquote>
+  <p>Lexical scoping, plus first-class functions, is a powerful concept in a programming language, but few languages support that concept.</p>
+</blockquote>
+
+<p>Consider the following example:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">newCounter</span> <span class="p">()</span>
+    <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">"As"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">function</span> <span class="p">()</span>   <span class="c1">-- anonymous function</span>
+             <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+             <span class="k">return</span> <span class="n">i</span>
+           <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">newCounter</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">())</span>  <span class="c1">--&gt; 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">())</span>  <span class="c1">--&gt; 2</span>
+</code></pre></div></div>
+
+<p>Now this is interesting!</p>
+
+<p>Now, the anonymous function uses an upvalue, i, to keep its counter. However, by the time we call the anonymous function, i is already out of scope, because the function that created that variable (newCounter) has returned. Nevertheless, Lua handles that situation correctly, using the concept of closure. Simply put, a closure is a function plus all it needs to access its upvalues correctly.<br />
+Technically speaking, what is a value in Lua is the closure, not the function.</p>
+
+<blockquote>
+  <p>Function itself is just a prototype for closures.</p>
+</blockquote>
+
+<p>Closures provide a valuable tool in many contexts. Closures are valuable for functions that build other functions too, like the newCounter example; this mechanism allows Lua programs to incorporate fancy programming techniques from the functional world. Closures are useful for callback functions, too.</p>
+
+<blockquote>
+  <p>Because functions are stored in regular variables, we can easily redefine functions in Lua, even predefined functions.</p>
+</blockquote>
+
+<h4 id="non-global-functions">Non-Global functions</h4>
+
+<p>Beacuse functions are first-class, we can not only store functions in global variables but also in table fields and in local variables.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Math</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">sum</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="k">end</span><span class="p">,</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="k">end</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Some abnormalities arise while defining recursive local functions.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">fact</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span> <span class="k">return</span> <span class="n">n</span><span class="o">*</span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>     <span class="c1">-- buggy</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>When Lua compiles the call fact(n-1), in the function body, the local fact is not yet defined. Therefore, that expression calls a global fact, not the local one. To solve that problem, we must first define the local variable and then define the function:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">fact</span>
+<span class="n">fact</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span> <span class="k">return</span> <span class="n">n</span><span class="o">*</span><span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h4 id="proper-tail-calls">Proper Tail Calls</h4>
+
+<blockquote>
+  <p>A tail call is a kind of goto dressed as a call</p>
+</blockquote>
+
+<p>It happens when a function calls another function as its last action, and has nothing else to do.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">f</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>      <span class="c1">-- call to g is a tail call</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>In such situations, the program does not need to return to the calling function when the called function ends. Therefore, after the tail call, the program does not need to keep any information about the calling function in the stack.</p>
+
+<blockquote>
+  <p>Because a proper tail call uses no stack space, there is no limit on the number of “nested” tail calls that a program can make.</p>
+</blockquote>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">foo</span> <span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span> 
+        <span class="k">return</span> <span class="n">foo</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>     <span class="c1">-- will never overflow the stack</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The following implementation is not a tail call,</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The problem is that after calling g, f has to discard occasional results from g before returning.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>     <span class="c1">-- must do the addition, so not a tail call</span>
+</code></pre></div></div>
+
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

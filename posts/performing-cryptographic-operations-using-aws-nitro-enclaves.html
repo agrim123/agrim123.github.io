@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Performing cryptographic operations using AWS Nitro Enclaves &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Performing cryptographic operations using AWS Nitro Enclaves</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">25 Dec 2023</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+    
+    <li><a href="/categories/#nitro-enclave" class="category-list-element" target="_blank">nitro-enclave</a></li>
+    
+    <li><a href="/categories/#ecs" class="category-list-element" target="_blank">ecs</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>AWS Nitro Enclaves enables customers to create isolated compute environments to further protect and securely process highly sensitive data such as personally identifiable information (PII), healthcare, financial, and intellectual property data within their Amazon EC2 instances. - <a href="https://aws.amazon.com/ec2/nitro/nitro-enclaves/">Official Docs</a></p>
+</blockquote>
+
+<p>When dealing with highly sensitive computation, since we are always working in a shared-tenancy environment by default, the risk of information leaks arises. AWS offers Nitro Enclaves to protect these computations by abstracting out them to an isolated environment which reduces the attack surface area for most sensitive data processing applications, for example, signing a crypto transaction in which we have to load the private key of the wallet into the memory and then perform sign computation.</p>
+
+<p>We will limit the scope of this blog to deploying such an environment in which we can safely run sensitive operations and not talk about the said operations. For example, we will talk about how to setup enclaves for doing cryptographic signing but not about how the actual signing works.</p>
+
+<p>Let’s first talk about what AWS offers with Nitro Enclaves:</p>
+
+<h3 id="security-guarantees-by-aws">Security Guarantees by AWS</h3>
+
+<p>Enclaves are fully isolated virtual machines, hardened, and highly constrained. They have no persistent storage, no interactive access, and no external networking. Communication between your instance and your enclave is done using a secure local channel. Even a root user or an admin user on the instance will not be able to access or SSH into the enclave.</p>
+
+<h3 id="attestation">Attestation</h3>
+
+<p>Attestation allows you to verify the enclave’s identity and that only authorized code is running in your enclave. The attestation process is accomplished through the Nitro Hypervisor, which produces a signed attestation document for the enclave to prove its identity to another party or service. This can be done using AWS KMS integration.</p>
+
+<hr />
+
+<p>Now let’s dive into how to set up Nitro enclave and run application code inside of it.</p>
+
+<h2 id="what-is-an-enclave">What is an enclave?</h2>
+
+<p>An enclave is a virtual machine with its kernel, memory, and CPUs. It is created by partitioning memory and vCPUs from a Nitro-based parent instance.</p>
+
+<h3 id="how-is-the-application-code-run-inside-of-enclave">How is the application code run inside of Enclave?</h3>
+
+<p>Nitro Enclaves introduces <code class="language-plaintext highlighter-rouge">eif</code> (enclave image files) format files from Application Code Docker Image, which is then supplied to Enclave to be run inside of the Nitro Enclave. We will see how to create this file and how to run it in upcoming sections.</p>
+
+<h3 id="enclave-connectivity">Enclave Connectivity</h3>
+
+<p>Enclave is not reachable from anywhere not even from the same instance, but <strong>only</strong> via a single local channel which. An enclave can not talk to the outside world, expect another outgoing channel, specifically configured for a particular endpoint, for example, KMS.</p>
+
+<hr />
+
+<h2 id="architecture-of-deploying-application-code-to-enclave">Architecture of deploying application code to Enclave</h2>
+<blockquote>
+  <p>You can run up to 4 enclaves on a single EC2 instance but no two enclaves can communicate directly, they have to go via the host vsock tunnel.</p>
+</blockquote>
+
+<p>We will be deploying this application on AWS ECS backed by EC2 and AutoScaling Groups for easy scaling.</p>
+
+<p>We will delegate the EIF file creation and Nitro Enclave management to the parent container of the service.</p>
+
+<h3 id="getting-the-application-docker-image-to-aws-ecs">Getting the application Docker image to AWS ECS</h3>
+
+<p>Application code is pushed to VCS, which is picked by CI/CD, builds the docker image, pushes to AWS ECR and then triggers ECS deployment (a very basic and normal flow). Till now there is nothing much going on. The main part starts after the deployment is triggered on AWS ECS.</p>
+
+<h3 id="building-eif-on-the-parent-instance">Building EIF on the parent instance</h3>
+
+<p><img src="/images/build-eif.png" alt="Build EIF" /></p>
+
+<p>Let’s go through the prerequisites before diving into how to build the image.</p>
+
+<h4 id="nitro-cli---swiss-knife-for-enclave-management">Nitro-Cli - Swiss knife for enclave management</h4>
+
+<p>You will need to <a href="https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave-cli-install.html#install-cli">install</a> <code class="language-plaintext highlighter-rouge">nitro-cli</code> on the parent instance.</p>
+
+<p>If you have followed the above installation steps in the link, you would have noticed that we need to configure something called <code class="language-plaintext highlighter-rouge">allocator service</code>. This is required and needs to be done before actually launching an enclave.</p>
+
+<h4 id="cpu-and-memory-requirements-for-an-enclave">CPU and Memory Requirements for an Enclave</h4>
+
+<p>When choosing an instance for running Enclave, choose the one with enough CPU and memory to distribute for enclaves and the parent instance, for example, c6x.large (2 vCPU and 4GiB Memory).</p>
+
+<p>Now back to building and launching an enclave.</p>
+
+<p>We have the application docker image stored in ECR, which was fetched when deployment got triggered.</p>
+
+<h4 id="dockerfile-which-powers-the-enclave-creation">Dockerfile which powers the Enclave creation</h4>
+
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">########################################</span>
+<span class="c">## Build Stage</span>
+<span class="c">########################################</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">golang:1.20-alpine</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s">builder</span>
+
+<span class="c"># Add a label to clean up later</span>
+<span class="k">LABEL</span><span class="s"> stage=intermediate</span>
+
+<span class="k">ENV</span><span class="s"> GO111MODULE=on</span>
+
+<span class="c"># install dependencies</span>
+<span class="k">ADD</span><span class="s"> ./go.sum ./go.sum</span>
+<span class="k">ADD</span><span class="s"> ./go.mod ./go.mod</span>
+<span class="k">RUN </span>go mod download
+
+<span class="c"># Add source code</span>
+<span class="k">ADD</span><span class="s"> . .</span>
+
+<span class="c"># build the source</span>
+<span class="k">RUN </span><span class="nv">CGO_ENABLED</span><span class="o">=</span>0 <span class="nv">GOOS</span><span class="o">=</span>linux go build <span class="nt">-o</span> app
+
+<span class="c">########################################</span>
+<span class="c">## Production Stage</span>
+<span class="c">########################################</span>
+<span class="k">FROM</span><span class="s"> amazonlinux:2</span>
+
+<span class="k">RUN </span>amazon-linux-extras <span class="nb">install </span>aws-nitro-enclaves-cli <span class="o">&amp;&amp;</span> <span class="se">\
+</span>    yum update <span class="nt">-y</span> <span class="o">&amp;&amp;</span> yum <span class="nb">install </span>aws-nitro-enclaves-cli-devel docker <span class="nb">sudo </span>shadow-utils <span class="nt">-y</span>  <span class="o">&amp;&amp;</span> yum <span class="nt">-y</span> clean all  <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /var/cache
+
+<span class="k">ARG</span><span class="s"> USERNAME=ec2-user</span>
+<span class="k">ARG</span><span class="s"> USER_UID=1001</span>
+<span class="k">ARG</span><span class="s"> USER_GID=$USER_UID</span>
+
+<span class="k">RUN </span>groupadd <span class="nt">--gid</span> <span class="nv">$USER_GID</span> <span class="nv">$USERNAME</span> <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> useradd <span class="nt">--uid</span> <span class="nv">$USER_UID</span> <span class="nt">--gid</span> <span class="nv">$USER_GID</span> <span class="nt">-m</span> <span class="nv">$USERNAME</span>
+
+<span class="k">RUN </span><span class="nb">echo</span> <span class="nv">$USERNAME</span> <span class="nv">ALL</span><span class="o">=</span><span class="se">\(</span>root<span class="se">\)</span> NOPASSWD:ALL <span class="o">&gt;</span> /etc/sudoers.d/<span class="nv">$USERNAME</span> <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> <span class="nb">chmod </span>0440 /etc/sudoers.d/<span class="nv">$USERNAME</span>
+
+<span class="k">RUN </span><span class="nb">sudo </span>usermod <span class="nt">-aG</span> ne <span class="nv">$USERNAME</span>
+<span class="k">RUN </span><span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USERNAME</span>
+<span class="k">RUN </span>newgrp
+
+<span class="k">USER</span><span class="s"> $USERNAME</span>
+
+<span class="c"># set working directory</span>
+<span class="k">WORKDIR</span><span class="s"> /home/$USERNAME</span>
+
+<span class="c"># Copy required files from the builder</span>
+<span class="k">COPY</span><span class="s"> --from=builder /go/src/github.com/app ./app</span>
+
+<span class="k">CMD</span><span class="s"> ["/home/ec2-user/app"]</span>
+</code></pre></div></div>
+
+<p>The above Dockerfile has two stages</p>
+<ol>
+  <li>Building our Go service which just boils down to a binary and copied to our production stage.</li>
+  <li>Installing dependencies on the <code class="language-plaintext highlighter-rouge">amazonlinux</code> base.</li>
+</ol>
+
+<p>The second step allows the running of docker and nitro-cli commands from inside this container.</p>
+
+<h5 id="volumes-for-docker-container">Volumes for docker container</h5>
+
+<p>The running parent container requires some volumes to be mounted from the host to be able to perform, docker image building, eif building and running a nitro enclave. The following volumes are mounted to the container:</p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">/var/log/nitro_enclaves:/var/log/nitro_enclaves</code> - For viewing logs from the host container</li>
+  <li><code class="language-plaintext highlighter-rouge">/etc/nitro_enclaves:/etc/nitro_enclaves</code> - For nitro enclave configs</li>
+  <li><code class="language-plaintext highlighter-rouge">/dev/hugepages:/dev/hugepages</code> - For allocating memory for enclaves</li>
+  <li><code class="language-plaintext highlighter-rouge">/var/run/docker.sock:/var/run/docker.sock</code> - For mounting docker sock for running sibling containers/or building images.</li>
+</ol>
+
+<h4 id="running-the-parent-container">Running the parent container</h4>
+
+<p>When the parent container is deployed by the ECS agent a nitro-enabled machine, the following steps are kicked in which are run from our Go program.</p>
+<ol>
+  <li>Since the image for our enclave is the same as the parent container, (we are only changing the entry point), we get the docker image tag using <code class="language-plaintext highlighter-rouge">ECS_CONTAINER_METADATA_URI</code>.</li>
+  <li>Then we build the EIF file using this command <code class="language-plaintext highlighter-rouge">nitro-cli build-enclave --docker-uri &lt;docker-image-from-step-1&gt; --output-file output.eif</code></li>
+</ol>
+<aside>measurements - means CPU and Memory requirements of the EIF file generated.</aside>
+<ol>
+  <li>Then we describe this built <code class="language-plaintext highlighter-rouge">output.eif</code> file to get measurements.</li>
+  <li>Then we launch this eif from inside the container, making the parent container the <em>ONLY</em> one which can access this enclave. <code class="language-plaintext highlighter-rouge">"nitro-cli run-enclave--cpu-count 2 --memory 2634 --eif-path output.eif --enclave-cid enclave.cid</code>.</li>
+</ol>
+
+<p>This runs the enclave within the parent container’s context.</p>
+
+<p>We can SSH into the parent container, and then run <code class="language-plaintext highlighter-rouge">nitro-cli console --enclave-name &lt;name&gt;</code>, which will open logs for the container running inside of the nitro enclave.</p>
+
+<h3 id="connecting-to-enclave-via-parent-container">Connecting to enclave via parent container</h3>
+
+<p>Since, we want to perform cryptographic operations inside the enclave, and we want to invoke AWS KMS functions we need a bit more addition to the current setup.</p>
+
+<p>As mentioned earlier, no one can reach the enclave and the enclave can reach no one, hence, we need special provisions in place to make both of the aforementioned things happen.</p>
+
+<h4 id="api-call-from-parent-container-to-enclave">API call from parent container to enclave</h4>
+
+<p>We run a <a href="https://hub.docker.com/r/alpine/socat/"><code class="language-plaintext highlighter-rouge">socat</code></a> sidecar which can connect from the parent container on port 8888 to the enclave’s CID. The entry point of this sidecar will be <code class="language-plaintext highlighter-rouge">tcp-listen:8888,fork,reuseaddr vsock-connect:16:8888</code>.</p>
+
+<h4 id="invoking-aws-kms-operation-from-the-enclave">Invoking AWS KMS operation from the enclave</h4>
+
+<p>AWS restricts KMS operations which can be invoked from inside of an enclave as mentioned <a href="https://docs.aws.amazon.com/kms/latest/developerguide/services-nitro-enclaves.html">here</a>.</p>
+
+<p>For the enclave to invoke the, say Decrypt function of KMS, we need a <em>proxy</em>, which relays the request to KMS endpoints. 
+Fortunately, nitro cli helper packages which we installed in Dockerfile come with a <a href="https://github.com/aws/aws-nitro-enclaves-cli/blob/main/vsock_proxy/README.md"><code class="language-plaintext highlighter-rouge">vsock-proxy</code></a> binary, which allows this communication.</p>
+
+<p>We run a sidecar with the following entry point, <code class="language-plaintext highlighter-rouge">vsock-proxy 8000 kms.us-east-1.amazonaws.com 443</code>. This opens a vsock connection on the host and all the requests on the 8000 port from the enclave are forwarded to the 443 port of the public AWS KMS endpoint in the us-east-1 region.</p>
+
+<h3 id="closing-points">Closing Points</h3>
+
+<p>We have seen how to set up a simple enclave that interacts with AWS KMS and is deployed on AWS ECS.</p>
+
+<p>What we have not discussed and can be improved in the current setup are:</p>
+<ol>
+  <li>How can we attest to the docker image that is being deployed in the enclave?</li>
+  <li>IAM roles are given to enclave to be able to interact with AWS KMS.</li>
+</ol>
+
+<p>These questions are currently out of the scope of this article and will be explored in future articles.</p>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

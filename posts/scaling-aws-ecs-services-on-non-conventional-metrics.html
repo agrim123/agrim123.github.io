@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Scaling AWS ECS Service on "non-conventional" metrics &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Scaling AWS ECS Service on "non-conventional" metrics</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">16 Nov 2023</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#scaling" class="category-list-element" target="_blank">scaling</a></li>
+    
+    <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+    
+    <li><a href="/categories/#ecs" class="category-list-element" target="_blank">ecs</a></li>
+    
+    <li><a href="/categories/#grafana" class="category-list-element" target="_blank">grafana</a></li>
+    
+    <li><a href="/categories/#prometheus" class="category-list-element" target="_blank">prometheus</a></li>
+    
+    <li><a href="/categories/#redis" class="category-list-element" target="_blank">redis</a></li>
+    
+  </ul>
+  
+    <p>AWS ECS provides CPU and Memory metrics out of the box and these can be used for creating scaling policies.</p>
+
+<p><a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html">Extra</a> metrics can be enabled during cluster creation or after cluster creation. However, this will incur extra costs on Cloudwatch.</p>
+
+<p>All the above metrics, whether default or extra ones, can be used to configure scaling policies for an ECS service. There are two types of scaling policies supported by AWS ECS:</p>
+<ul>
+  <li>Target tracking</li>
+  <li>Step Scaling</li>
+</ul>
+
+<h3 id="target-tracking">Target Tracking</h3>
+
+<p>Target tracking increases or decrease the number of tasks that your service runs based on a target value for a specific metric, provided by ECS, namely CPU, Memory and ALB Request count (if registered on load balancer).</p>
+
+<p><img src="/images/ecs-scaling-target-tracking.png" alt="target-tracking-scaling-policy" /></p>
+
+<h3 id="step-scaling">Step Scaling</h3>
+
+<p>This is where things get interesting. We can use any custom (or default shipped) Cloudwatch alarms to configure scaling.</p>
+
+<p><img src="/images/ecs-scaling-step-scaling.png" alt="step-scaling-policy" /></p>
+
+<p>We can create any Cloudwatch alarm, an use that to scale an ECS service up or down.
+For a complete scaling solution, we need two alarms, one to scale the service up and another to scale it back to normal dimensions.</p>
+
+<p>Now that we have a basic understanding of how an ECS service can scale, let’s look at some non-conventional metrics, metrics that are not shipped by AWS, for example</p>
+<ul>
+  <li>scale a worker on queue length in Redis</li>
+  <li>scale on a mysql query, etc</li>
+</ul>
+
+<p>The first problem to tackle is how to ship the “metrics” from these “non-conventional” source to Cloudwatch and later we will discuss on a possible way to eliminate Cloudwatch altogether with our own custom autoscaler.</p>
+
+<h2 id="shipping-non-conventional-metrics-to-cloudwatch">Shipping “non-conventional” metrics to Cloudwatch</h2>
+
+<p><i>TLDR: A simple <code class="language-plaintext highlighter-rouge">PutMetricDataInput</code> call does the job.</i></p>
+
+<aside>We can't scale Kafka Consumers more than the number of partitions. This example is for the use case where we might be running less consumers that the partitions.</aside>
+
+<p>We can write a simple Go cron service, which queries these sources (redis, mysql, kafka, etc) to fetch the metric we are looking for, say length of a list in <u>Redis</u>, count result of a <u>SQL</u> query or lag on a <u>Kafka</u> consumer topic, etc. And then invokes the <a href="https://github.com/aws/aws-sdk-go-v2/blob/service/cloudwatch/v1.30.2/service/cloudwatch/api_op_PutMetricData.go#L49">cloudwatch.PutMetricDataInput</a> of the AWS SDK.</p>
+
+<p>Example:</p>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">svc</span><span class="o">.</span><span class="n">PutMetricData</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">cloudwatch</span><span class="o">.</span><span class="n">PutMetricDataInput</span><span class="p">{</span>
+    <span class="n">Namespace</span><span class="o">:</span>  <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"Redis/QueueLength"</span><span class="p">),</span>
+    <span class="n">MetricData</span><span class="o">:</span> <span class="p">[]</span><span class="n">types</span><span class="o">.</span><span class="n">MetricDatum</span><span class="p">{</span>
+        <span class="p">{</span>
+            <span class="n">MetricName</span><span class="o">:</span> <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"QueueLength"</span><span class="p">),</span>
+            <span class="n">Unit</span><span class="o">:</span>       <span class="n">types</span><span class="o">.</span><span class="n">StandardUnitCount</span><span class="p">,</span>
+            <span class="n">Value</span><span class="o">:</span>      <span class="n">aws</span><span class="o">.</span><span class="n">Float64</span><span class="p">(</span><span class="kt">float64</span><span class="p">(</span><span class="n">activeQueue</span><span class="o">.</span><span class="n">Messages</span><span class="p">)),</span>
+            <span class="n">Dimensions</span><span class="o">:</span> <span class="p">[]</span><span class="n">types</span><span class="o">.</span><span class="n">Dimension</span><span class="p">{</span>
+                <span class="p">{</span>
+                    <span class="n">Name</span><span class="o">:</span>  <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"QueueName"</span><span class="p">),</span>
+                    <span class="n">Value</span><span class="o">:</span> <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">activeQueue</span><span class="o">.</span><span class="n">Name</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">})</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">err</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This will publish length of queue under <code class="language-plaintext highlighter-rouge">Redis/QueueLength</code> metric in Cloudwatch and then can be used to create alarms.</p>
+
+<p>Same thing can be extended to other sources as well.</p>
+
+<h3 id="custom-autoscaler-to-replace-cloudwatch">Custom Autoscaler to replace Cloudwatch</h3>
+
+<p>Let’s explore a self-managed option.</p>
+
+<p>Disclaimer: Might not be as effective as Cloudwatch but gets the job done.</p>
+
+<p>We will use the following components to implement our own in-house autoscaler</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Metric Shipper</code> to expose metrics in prometheus format on an http endpoint.</li>
+  <li><code class="language-plaintext highlighter-rouge">Prometheus</code> to scrape the above metrics at a regulat interval.</li>
+  <li><code class="language-plaintext highlighter-rouge">Grafana</code> to visualize these metrics and trigger alerts if something breaches.</li>
+  <li><code class="language-plaintext highlighter-rouge">Autoscaler</code> which listens on alert triggers from <code class="language-plaintext highlighter-rouge">Grafana</code> and performs autoscaling operations on AWS ECS.</li>
+</ul>
+
+<p>Our architecture will look something like this:</p>
+
+<p><img src="/images/autoscaler-external.png" alt="Autoscaler Architecture" /></p>
+
+<h4 id="metrics-shipper">Metrics Shipper</h4>
+
+<p>As per our discussion above in the <u>Shipping "non-conventional" metrics to Cloudwatch</u> section, fetching logic remains same, just the destination of these metrics change. We need to expose these metrics on an endpoint.</p>
+
+<p>Prometheus community has support for golang client for doing just what we require.
+We start the <code class="language-plaintext highlighter-rouge">promhttp</code> server:</p>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">http</span><span class="o">.</span><span class="n">Handle</span><span class="p">(</span><span class="s">"/metrics"</span><span class="p">,</span> <span class="n">promhttp</span><span class="o">.</span><span class="n">Handler</span><span class="p">())</span>
+
+	<span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">ListenAndServe</span><span class="p">(</span><span class="s">":9120"</span><span class="p">,</span> <span class="no">nil</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This exposes default metrics on <code class="language-plaintext highlighter-rouge">9120</code> and is ready to be scraped by Prometheus.</p>
+
+<p>Now, lets expose some useful metrics here.</p>
+
+<p>Create a gauge type metric:</p>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gauge</span> <span class="o">:=</span> <span class="n">prometheus</span><span class="o">.</span><span class="n">NewGauge</span><span class="p">(</span> <span class="c">// registration phase</span>
+    <span class="n">prometheus</span><span class="o">.</span><span class="n">GaugeOpts</span><span class="p">{</span>
+        <span class="n">Namespace</span><span class="o">:</span> <span class="s">"queue"</span><span class="p">,</span>
+        <span class="n">Name</span><span class="o">:</span>      <span class="s">"queue_length"</span><span class="p">,</span>
+        <span class="n">Help</span><span class="o">:</span>      <span class="s">"Queue length"</span><span class="p">,</span>
+        <span class="n">ConstLabels</span><span class="o">:</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span>
+            <span class="s">"queue"</span><span class="o">:</span> <span class="n">queue</span><span class="p">,</span>
+            <span class="s">"environment"</span><span class="o">:</span> <span class="n">environment</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">gauge</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="kt">float64</span><span class="p">(</span><span class="m">10</span><span class="p">))</span> <span class="c">// push metrics</span>
+</code></pre></div></div>
+
+<p>You will start seeing the metrics in prometheus format.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl http://localhost:9120/metrics
+<span class="c"># HELP queue_queue_length Queue length</span>
+<span class="c"># TYPE queue_queue_length gauge</span>
+queue_queue_length<span class="o">{</span><span class="nv">environment</span><span class="o">=</span><span class="s2">"production"</span>,queue<span class="o">=</span><span class="s2">"some-queue"</span><span class="o">}</span> 10
+</code></pre></div></div>
+
+<h3 id="prometheus-and-grafana-stack">Prometheus and Grafana stack</h3>
+
+<aside>Docker images can be found here: <a href="https://hub.docker.com/r/prom/prometheus">Prometheus</a> and <a href="https://hub.docker.com/r/grafana/grafana">Grafana</a></aside>
+<p>We deploy Prometheus and Grafana with default configuration on Docker.</p>
+
+<p>After deploying, we configure the Prometheus data store and create a dashboard with that metric.</p>
+
+<p>Add an alert on the panel with destination as our autoscaler’s endpoint.</p>
+
+<h3 id="autoscaler">Autoscaler</h3>
+
+<p>We listen on alerts triggered by Grafana, parse them to get the exact value at which alert got triggered and the kick off our scaling logic.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if alert is ringing {
+    if alert.Value &gt; threshold {
+        scaleup
+    } else {
+        scaledown
+    }
+} else if alert is ok {
+    scaledown
+}
+</code></pre></div></div>
+
+<p>For scale up/down, we need to add/remove tasks from ECS service, this can be done using <a href="https://github.com/aws/aws-sdk-go-v2/blob/service/ecs/v1.33.1/service/ecs/api_op_UpdateService.go#L99">UpdateService</a> sdk call:</p>
+<div class="language-golang highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ecs</span><span class="o">.</span><span class="n">UpdateService</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ecsLib</span><span class="o">.</span><span class="n">UpdateServiceInput</span><span class="p">{</span>
+    <span class="n">Service</span><span class="o">:</span>      <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">service_name</span><span class="p">),</span>
+    <span class="n">Cluster</span><span class="o">:</span>      <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">service_luster</span><span class="p">),</span>
+    <span class="n">DesiredCount</span><span class="o">:</span> <span class="n">aws</span><span class="o">.</span><span class="n">Int32</span><span class="p">(</span><span class="n">taskCount</span><span class="p">),</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>The logic to determine how many tasks to add or remove can either be linear or exponential, with jitter or fixed. Everything now become configurable via code.</p>
+
+<h2 id="closing-notes">Closing notes</h2>
+
+<p>I have been using this approach with some modifications for quite some time now in production, and the results are good. We are able to scale up very fast in burst scenarios and then scale down at same rate. You can have target tracking and step scaling both in the custom autoscaler.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-stepscaling.html">AWS Autoscaling - Step Scaling</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

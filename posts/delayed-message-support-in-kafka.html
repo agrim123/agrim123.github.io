@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Implementing delayed message support with Apache Kafka &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Implementing delayed message support with Apache Kafka</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">15 Jul 2024</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#aws" class="category-list-element" target="_blank">aws</a></li>
+    
+    <li><a href="/categories/#kafka" class="category-list-element" target="_blank">kafka</a></li>
+    
+    <li><a href="/categories/#distributed-systems" class="category-list-element" target="_blank">distributed-systems</a></li>
+    
+    <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
+    
+    <li><a href="/categories/#redis" class="category-list-element" target="_blank">redis</a></li>
+    
+  </ul>
+  
+  <details>
+    <summary>Table of Contents</summary>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#the-building-blocks">The building blocks</a></li>
+<li class="toc-entry toc-h1"><a href="#inside-the-black-box">Inside the black box</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#message-m">Message M</a></li>
+<li class="toc-entry toc-h2"><a href="#scheduler-and-zadd">Scheduler and zadd</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#redis-sorted-sets">Redis Sorted Sets</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#cron-and-zrange">Cron and zrange</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#a-few-optimizations">A few optimizations</a></li>
+<li class="toc-entry toc-h1"><a href="#references">References</a></li>
+</ul>
+  </details>
+  <p>What if you want to put a message in Kafka and want to consume it after some time, without stopping your consumer or polling and re-pushing again and again?</p>
+
+<p>Apache Kafka is a distributed, horizontally scalable, partitioned, fault-tolerant, replicated commit log service, which works great as a queue/message broker/database for <b>in-order retrieval</b>.</p>
+
+<p>There are a lot of protocols which support this functionality, for example, <a href="https://docs.celeryq.dev/en/stable/getting-started/introduction.html">Celery</a> and even natively on brokers example, <a href="https://www.rabbitmq.com/blog/2015/04/16/scheduling-messages-with-rabbitmq">RabbitMQ</a>, but for Kafka there exists no such plugin/protocol.</p>
+
+<p>In this article, we explore how we can build a system that can help us schedule a job at a later time (or delayed by a few seconds/minutes/hours). This can be the use case for retries in a system, backoffs, and many more.</p>
+
+<h1 id="the-building-blocks">
+<a class="anchor" href="#the-building-blocks" aria-hidden="true"><span class="octicon octicon-link"></span></a>The building blocks</h1>
+
+<p>Let’s visualize our use case, we want to delay a message <code class="language-plaintext highlighter-rouge">M</code> by <code class="language-plaintext highlighter-rouge">N</code> seconds which should be picked by service <code class="language-plaintext highlighter-rouge">S</code> after <code class="language-plaintext highlighter-rouge">N</code> seconds with Kafka as the underlying broker.</p>
+
+<p>We need a black box into which you put this message <code class="language-plaintext highlighter-rouge">M</code> with a delay of <code class="language-plaintext highlighter-rouge">N</code> seconds and after <code class="language-plaintext highlighter-rouge">N</code> seconds have elapsed, this black box pushes the message to service <code class="language-plaintext highlighter-rouge">S</code>’s kafka topic.</p>
+
+<p><img src="/images/delayed-blackbox.png" alt="blackbox-image"></p>
+
+<h1 id="inside-the-black-box">
+<a class="anchor" href="#inside-the-black-box" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inside the black box</h1>
+
+<p>For Blackbox to work we need a scheduler with a backing store that can store jobs and survive restarts. We leverage Redis for this, specifically <a href="https://redis.io/glossary/redis-sorted-sets/">Redis Sorted Sets</a>.</p>
+
+<p>The flow comes out to be, the service <code class="language-plaintext highlighter-rouge">S</code> pushes the message <code class="language-plaintext highlighter-rouge">M</code> that it wants to schedule later <code class="language-plaintext highlighter-rouge">t</code> to a topic of this black box, <code class="language-plaintext highlighter-rouge">TB</code>, consumed by our black box service <code class="language-plaintext highlighter-rouge">B</code>. This message is pushed to a sorted set in Redis which is inspected at regular intervals to get messages that are ready to be triggered, and then <code class="language-plaintext highlighter-rouge">B</code> pushes this <code class="language-plaintext highlighter-rouge">M</code> to Service’s <code class="language-plaintext highlighter-rouge">S</code> topic <code class="language-plaintext highlighter-rouge">T</code>, thus achieving our goal. We will go into detail about this Redis key works, and how we poll this in a while, first let’s visualize the flow for better understanding.</p>
+
+<p><img src="/images/blackbox-redis.png" alt="blackbox-redis"></p>
+
+<h2 id="message-m">
+<a class="anchor" href="#message-m" aria-hidden="true"><span class="octicon octicon-link"></span></a>Message <code class="language-plaintext highlighter-rouge">M</code>
+</h2>
+
+<p>The service <code class="language-plaintext highlighter-rouge">S</code> pushes the following message <code class="language-plaintext highlighter-rouge">M</code> to the black box service’s topic <code class="language-plaintext highlighter-rouge">TB</code></p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"topic"</span><span class="p">:</span><span class="w"> </span><span class="s2">"T"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;message body&gt;"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"countdown"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="err">seconds</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>and the following headers for better tracking</p>
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CALLER_SERVICE</span>=<span class="n">S</span>
+</code></pre></div></div>
+
+<p>The message body includes the topic <code class="language-plaintext highlighter-rouge">T</code> where the message with ultimately go. The message contains the body that needs to be sent on the topic <code class="language-plaintext highlighter-rouge">T</code> after <code class="language-plaintext highlighter-rouge">countdown</code> seconds.</p>
+
+<h2 id="scheduler-and-zadd">
+<a class="anchor" href="#scheduler-and-zadd" aria-hidden="true"><span class="octicon octicon-link"></span></a>Scheduler and zadd</h2>
+
+<p>The scheduler is a kafka consumer on the topic <code class="language-plaintext highlighter-rouge">TB</code> which parses the message <code class="language-plaintext highlighter-rouge">M</code>. It generates a unique UUID for this message, say <code class="language-plaintext highlighter-rouge">U</code>.</p>
+
+<p>Then sets a key in Redis,</p>
+<pre><code class="language-redis">SET U '{"topic": "T", "message": "&lt;message body&gt;"}'
+</code></pre>
+<p>This will come into the picture when the message is ready to be pushed.</p>
+
+<p>Now comes the most important part, the set we have been talking about for a while.</p>
+
+<p>A quick detour to understand how Redis Sorted Sets work.</p>
+
+<hr>
+
+<h3 id="redis-sorted-sets">
+<a class="anchor" href="#redis-sorted-sets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis Sorted Sets</h3>
+
+<blockquote>
+  <p>Sorted sets in Redis are a powerful data structure that combines the features of sets and sorted lists. They allow you to store a collection of unique elements while assigning a score or rank to each element. This score is used to determine the order of elements in the set, making sorted sets an excellent choice for applications that require ordered data.</p>
+</blockquote>
+
+<aside><p>Redis uses a skip list and a hash table to implement sorted sets, ensuring that operations such as insertion, deletion, and range queries are performed in logarithmic time complexity, <b>O(log N)</b>.</p></aside>
+
+<pre><code class="language-redis">localhost:6379&gt; zadd blackbox-delay-key 2 uuid1
+(integer) 1
+localhost:6379&gt; zadd blackbox-delay-key 1 uuid2
+(integer) 1
+localhost:6379&gt; zadd blackbox-delay-key 3 uuid3
+(integer) 1
+localhost:6379&gt; zrange blackbox-delay-key 0 2 BYSCORE limit 0 10
+1) "uuid2"
+2) "uuid1"
+</code></pre>
+
+<p>We add a key uuid1 with a score of <code class="language-plaintext highlighter-rouge">2</code> and similarly all the rest keys. We can then query this set using a range which returns us the desired result.</p>
+
+<hr>
+
+<p>Now that we understand how redis sets work, let’s get back to our service.</p>
+
+<p>We push the message UUID to our global set of this black box,</p>
+<pre><code class="language-redis">zadd blackbox-delay-key NX time.Now()+countdown U
+</code></pre>
+
+<h2 id="cron-and-zrange">
+<a class="anchor" href="#cron-and-zrange" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cron and zrange</h2>
+
+<p>Now that our message is pushed to our “scheduling” queue, we have an in-memory cron in our scheduler which runs every 1 second and polls <code class="language-plaintext highlighter-rouge">blackbox-delay-key</code>, using</p>
+<pre><code class="language-redis">zrange delay-key 0 times.Now() BYSCORE limit 0 10
+</code></pre>
+<p>this returns all the keys lying in the range.</p>
+
+<p>If you note the range we have specified, we query all keys in range 0 up to the current time, which gives us all keys that are ready to be run.</p>
+
+<p>We fetch all the key data from the data we stored in the earlier step</p>
+<pre><code class="language-redis">GET U
+</code></pre>
+<p>and push the message to Kafka topics set in the message.</p>
+
+<p>At last, to clean up the used keys, we delete from blackbox-delay-key set</p>
+<pre><code class="language-redis">zrem [keys...]
+</code></pre>
+
+<p>This completes our delayed implementation of kafka messages.</p>
+
+<h1 id="a-few-optimizations">
+<a class="anchor" href="#a-few-optimizations" aria-hidden="true"><span class="octicon octicon-link"></span></a>A few optimizations</h1>
+
+<ol>
+  <li>Over time the keys in Redis might accumulate if not cleared. We can set expiry while setting a message in Redis
+    <pre><code class="language-redis">SET U '{"topic": "T", "message": "&lt;message body&gt;"}' EX coutdown+900
+</code></pre>
+    <p>(900 is an arbitrary number). This ensures that all keys set will be deleted if not triggered after 15 minutes of the expected trigger point.</p>
+  </li>
+  <li>
+    <p>After we have triggered the task/message, we can explicitly call <code class="language-plaintext highlighter-rouge">DEL U</code> to remove the key data, thus preventing any orphan keys in Redis.</p>
+  </li>
+  <li>
+    <p>While fetching messages to be scheduled we have given a limit of 10, which can be tweaked according to the use case.</p>
+  </li>
+  <li>Currently our solution polls the Redis at 1-second intervals, which means we support minimum 1-second accuracy, we can easily extend it to a few hundred milliseconds according to the use case.</li>
+</ol>
+
+<h1 id="references">
+<a class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h1>
+
+<ol>
+  <li><a href="https://redis.io/glossary/redis-sorted-sets/">Redis Sorted Sets</a></li>
+  <li><a href="https://redis.io/docs/latest/commands/zrange/">zrange</a></li>
+  <li><a href="https://redis.io/docs/latest/commands/zrem/">zrem</a></li>
+</ol>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/performing-cryptographic-operations-using-aws-nitro-enclaves.html">
+          Performing cryptographic operations using AWS Nitro Enclaves
+          <small>25 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

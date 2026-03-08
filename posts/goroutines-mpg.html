@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Goroutines: M, P, G orchestration &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Goroutines: M, P, G orchestration</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">18 Apr 2020</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#golang" class="category-list-element" target="_blank">golang</a></li>
+    
+    <li><a href="/categories/#goroutines" class="category-list-element" target="_blank">goroutines</a></li>
+    
+    <li><a href="/categories/#notes" class="category-list-element" target="_blank">notes</a></li>
+    
+    <li><a href="/categories/#scheduler" class="category-list-element" target="_blank">scheduler</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>Goroutines are lightweight; have a small stack (2KB, from v1.4) and a fast context switch.</p>
+</blockquote>
+
+<aside name="goroutines-vs-threads">
+    Refer <a href="/posts/goroutines-vs-threads.html">here</a> for how Goroutines are different from Threads.
+</aside>
+
+<p>Goroutines are no doubt one of the best things Go has to offer. They are very lightweight, not like OS threads, but rather hundreds of goroutines can be multiplexed onto an OS Thread (Go has its runtime scheduler for this) with a minimal overhead of context switching! In simple terms, goroutines are a <em>lightweight abstraction</em> over threads.</p>
+
+<p>In this post, I try to describe how this goroutine scheduler works.</p>
+
+<h2 id="scheduler">Scheduler</h2>
+
+<p>The goroutine scheduler keeps track of each goroutine and will schedule them to run in turn on a pool of threads belonging to the process. Multiple threads are often necessary to ensure that goroutines are not unnecessarily blocked. When one goroutine makes a blocking call, <em>the thread running it must block</em>. Therefore, at least one more thread should be created by the runtime to continue the execution of other goroutines that are not in blocking calls.</p>
+
+<p>Let’s see how this is done!</p>
+
+<h2 id="m-p-g-orchestration">M, P, G orchestration</h2>
+
+<p>Go schedules an arbitrary number of goroutines onto an arbitrary number of OS threads. This gives us quick context switches and advantage of all the cores in our system. The main disadvantage of this approach is the complexity it adds to the scheduler.</p>
+
+<aside><p>Explained in the source code <a href="https://golang.org/src/runtime/proc.go">itself</a>.</p></aside>
+<blockquote>
+  <p>The scheduler’s job is to distribute ready-to-run goroutines over worker threads.</p>
+</blockquote>
+
+<p>Let’s see how does the scheduler do this.</p>
+
+<p>The scheduler defines three main concepts:</p>
+
+<p><strong>G</strong> - <em>goroutine</em><br />
+<strong>M</strong> - <em>worker thread, or machine.</em><br />
+<strong>P</strong> - <em>logical processor, a resource that is required to execute the Go code.</em> <i><u>M must have an associated P to execute Go code</u></i></p>
+
+<aside><p>In <a href="https://en.wikipedia.org/wiki/Hyper-threading">Hyper Threading</a>, one core can have multiple hardware threads.</p></aside>
+<p>When a Go program boots up, it is given a <code class="language-plaintext highlighter-rouge">P</code> for every virtual core on the host machine.</p>
+
+<p>A basic diagram of <code class="language-plaintext highlighter-rouge">P</code>, <code class="language-plaintext highlighter-rouge">M</code>, <code class="language-plaintext highlighter-rouge">G</code> model</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># P, M, G diagram</span>
+
+P0 <span class="nt">---</span> M0 <span class="nt">---</span> G <span class="nt">----</span> running code  P2 <span class="nt">---</span> M2 <span class="nt">---</span> G <span class="nt">----</span> running code
+
+P2 <span class="nt">---</span> M2 <span class="nt">---</span> G <span class="nt">----</span> running code  P4 <span class="nt">---</span> M4 <span class="nt">---</span> G <span class="nt">----</span> running code
+</code></pre></div></div>
+
+<blockquote>
+  <p>Each goroutine(G) runs on an OS thread(M) that is assigned to logical CPU(P).</p>
+</blockquote>
+
+<p>Now let’s see how Go manages these,</p>
+
+<p>Go will first create the different <code class="language-plaintext highlighter-rouge">P</code> based on the number of logical CPUs of the machine and store them in a list of idle <code class="language-plaintext highlighter-rouge">P</code>. (say, we have total 4 cores available, as visible to Go program)</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># P initialization</span>
+
+P0 <span class="nt">---</span> M0 <span class="nt">---</span> G <span class="nt">----</span> main<span class="o">()</span>
+
++--------+
+| idle P |   P1 <span class="nt">---</span>► P2 <span class="nt">---</span>► P3
++--------+
+</code></pre></div></div>
+
+<p>Our main func is also a goroutine, and is assigned a <code class="language-plaintext highlighter-rouge">P</code> and <code class="language-plaintext highlighter-rouge">M</code>.</p>
+
+<p>When a new goroutine is ready to run, it will wake up a <code class="language-plaintext highlighter-rouge">P</code> to distribute the work better. This <code class="language-plaintext highlighter-rouge">P</code> will create a <code class="language-plaintext highlighter-rouge">M</code> with the associated OS thread.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># OS thread creation</span>
+
+P0 <span class="nt">---</span> M0 <span class="nt">---</span> G <span class="nt">----</span> main<span class="o">()</span>
+    
+       <span class="nt">------</span> os thread
+       |
+P3 <span class="nt">---</span> M3 <span class="nt">---</span> G1
+▲
+|
+|_____________________________
+                              |
+                              |
++--------+                    |
+| idle P |   P1 <span class="nt">---</span>► P2 <span class="nt">--</span>/-► P3
++--------+
+</code></pre></div></div>
+
+<p>When <code class="language-plaintext highlighter-rouge">G1</code> has done its work, like a <code class="language-plaintext highlighter-rouge">P</code>, a <code class="language-plaintext highlighter-rouge">M</code> with no work i.e. no goroutine waiting to run, or returning from a syscall, or even forced to be stopped by the garbage collector, goes to an idle list.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># M and P idle list</span>
+
+P0 <span class="nt">---</span> M0 <span class="nt">---</span> G <span class="nt">----</span> main<span class="o">()</span>
+    
+P3 <span class="nt">---</span> M3
+|      |
+|      |_________________________
+|___________________________     |
+                            |    |
++--------+                  ▼    | 
+| idle P |  P1 <span class="nt">---</span>► P2 <span class="nt">---</span>► P3   |
++--------+                       |
+                                 |                
+    +--------+                   ▼    
+    | idle M |   M1 <span class="nt">---</span>► M2 <span class="nt">---</span>► M3
+    +--------+
+</code></pre></div></div>
+
+<p>During the bootstrap of the program, Go already creates some OS threads and associated <code class="language-plaintext highlighter-rouge">M</code>.</p>
+
+<h2 id="blocking">Blocking</h2>
+
+<p>In Go, <strong>every I/O is blocking</strong>. The idea is to write against a blocking interface and then handle concurrency through goroutines and channels rather than callbacks and futures.</p>
+
+<h3 id="what-happens-if-goroutine-makes-a-syscall">What happens if goroutine makes a syscall?</h3>
+
+<p>So, what will happen if a goroutine makes a syscall? we know that syscall is blocking, does this mean that the <code class="language-plaintext highlighter-rouge">P</code> will be blocked for the entire duration? No!</p>
+
+<p>Go gets around this problem by using the asynchronous interfaces that the OS provides, but blocking the goroutines that are performing I/O. It optimizes the syscalls (whether it is blocking or not), by wrapping them up in the runtime. This wrapper will automatically disconnect the <code class="language-plaintext highlighter-rouge">P</code> from the thread <code class="language-plaintext highlighter-rouge">M</code> and allow another thread to run on it. But <code class="language-plaintext highlighter-rouge">M</code> is still blocked here as the goroutine is blocking.</p>
+
+<p>Say, for example, we instruct the program to open a file (a syscall),</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Syscall releases P</span>
+
+P0 <span class="nt">----</span> M0 <span class="nt">----</span> G <span class="nt">----</span> os.Open<span class="o">()</span> <span class="nt">---</span> syscall<span class="o">()</span>
+
+P0      M0 <span class="nt">----</span> G
+|
+|___________________________________
+                                    |
++--------+                          ▼
+| idle P |  P1 <span class="nt">---</span>► P2 <span class="nt">---</span>► P3 <span class="nt">---</span>► P0
++--------+
+</code></pre></div></div>
+
+<p>So when <code class="language-plaintext highlighter-rouge">G</code> makes a blocking syscall,</p>
+<ul>
+  <li>The <code class="language-plaintext highlighter-rouge">M0</code> and the <code class="language-plaintext highlighter-rouge">G</code> that made the blocking call are detached from the <code class="language-plaintext highlighter-rouge">P0</code> and this <code class="language-plaintext highlighter-rouge">P0</code> now has no <code class="language-plaintext highlighter-rouge">M</code>. (goes back to idle <code class="language-plaintext highlighter-rouge">P</code> list)</li>
+  <li>The Go scheduler creates a new <code class="language-plaintext highlighter-rouge">M</code>, and attaches it to the <code class="language-plaintext highlighter-rouge">P0</code>. The remaining goroutines that were attached to the <code class="language-plaintext highlighter-rouge">P0</code>, now continue to run.</li>
+  <li>The detached goroutine and the <code class="language-plaintext highlighter-rouge">M</code> it is associated with continue to block, waiting for the syscall to return.</li>
+  <li>Once the syscall exits, the following rules are applied until one can be satisfied:
+    <ul>
+      <li>try to acquire the same <code class="language-plaintext highlighter-rouge">P0</code> and resume the execution</li>
+      <li>try to acquire a <code class="language-plaintext highlighter-rouge">P</code> in the idle list and resume the execution</li>
+      <li>put the goroutine in the global queue and put the associated <code class="language-plaintext highlighter-rouge">M</code> back to the idle list</li>
+    </ul>
+  </li>
+  <li>The <code class="language-plaintext highlighter-rouge">M0</code> is “put aside for future use”</li>
+</ul>
+
+<h3 id="what-if-a-goroutine-make-a-network-call">What if a goroutine make a network call?</h3>
+
+<p>Network calls are handled slightly different from syscalls, the goroutine is detached from the <code class="language-plaintext highlighter-rouge">P</code>, and is moved to <strong>network poller</strong>, this is called <em>parking the goroutine</em>.</p>
+
+<h4 id="netpoller">Netpoller</h4>
+
+<p>The part that converts asynchronous I/O into blocking I/O is called the <em>netpoller</em>. It sits in its own thread, receiving events from goroutines wanting to do network I/O.</p>
+
+<p>For example, the below code makes a network call</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func main<span class="o">()</span> <span class="o">{</span>
+    HTTP.Get<span class="o">(</span><span class="s2">"http://example.com"</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>When we open or accept a connection in Go, the file descriptor that backs it is set to non-blocking mode. This means that if we try to do I/O on it and the file descriptor isn’t ready yet, it will return an error code saying so.</p>
+
+<p>Whenever a goroutine tries to read or write to a connection, the networking code will do the operation until it receives such an error, then call into the netpoller, telling it to notify the goroutine when it is ready to perform I/O again.</p>
+
+<p>The goroutine is then scheduled out of the thread it’s running on and another goroutine is run in its place.</p>
+
+<p>In this case, the thread <code class="language-plaintext highlighter-rouge">M</code> <strong>will not be blocked</strong> (as opposed to the case of syscall):</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Network poller waiting for the resource</span>
+<span class="c"># frees up M</span>
+
+P0     M0 <span class="nt">----</span> G     syscall<span class="o">()</span>
+
+P0 <span class="nt">---</span> M0 <span class="nt">----</span> G     syscall <span class="nb">exit
+
+</span>P0 <span class="nt">---</span> M0      G <span class="nt">-------</span>► G 
+                     Network poller
+</code></pre></div></div>
+
+<p>When the netpoller receives notification from the OS that it can perform I/O on a file descriptor, it will look for goroutines that are blocked on that file and notify them. The goroutine can then retry the I/O operation that caused it to block and succeed in doing so. If more than one goroutines are ready, then extra ones go the global runnable queue and will be scheduled later.</p>
+
+<h2 id="gomaxprocs">GOMAXPROCS</h2>
+
+<blockquote>
+  <p>At any time, <code class="language-plaintext highlighter-rouge">M</code> goroutines need to be scheduled on <code class="language-plaintext highlighter-rouge">N</code> OS threads that runs on at most <code class="language-plaintext highlighter-rouge">GOMAXPROCS</code> numbers of processors.</p>
+</blockquote>
+
+<p>When system calls are used, Go does not limit the number of OS threads that can be blocked, as explained in code:</p>
+
+<blockquote>
+  <p>The GOMAXPROCS variable limits the number of operating system threads that can execute user-level Go code simultaneously. There is no limit to the number of threads that can be blocked in system calls on behalf of Go code; those do not count against the GOMAXPROCS limit. This package’s GOMAXPROCS function queries and changes the limit.</p>
+</blockquote>
+
+<p>The default value of <code class="language-plaintext highlighter-rouge">GOMAXPROCS</code> is the number of logical CPUs.</p>
+
+<h2 id="work-stealing-in-go-scheduler">Work stealing in Go Scheduler</h2>
+
+<aside><p><a href="https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit">Scalable Go Scheduler Design Doc</a> by Dmitry Vyukov</p></aside>
+<p>Go has a work-stealing scheduler since 1.1, contributed by Dmitry Vyukov.</p>
+
+<h3 id="goroutines-queues">Goroutines queues</h3>
+
+<aside><p>Each local queue has a maximum capacity of 256, and any new incoming goroutine is pushed to the global queue after that.</p></aside>
+<p>Go manages goroutines at two levels, <em>local queues</em> and <em>global queues</em>. Local queues are attached to each <code class="language-plaintext highlighter-rouge">P</code> while global queue is common.</p>
+
+<p>Goroutines do not go in the global queue only when the local queue is full, they are also pushed in it when Go injects a list of goroutines to the scheduler, e.g. from the network poller or goroutines asleep during the garbage collection.</p>
+
+<h3 id="work-stealing">Work-stealing</h3>
+
+<p>When a <code class="language-plaintext highlighter-rouge">P</code> does not have any work it applies the following rules until one can be satisfied:</p>
+<ul>
+  <li>pull work from local queue</li>
+  <li>pull work from global queue</li>
+  <li>pull work from network poller</li>
+  <li>steal work from the other P’s local queues</li>
+</ul>
+
+<p>Since a processor can pull work from the global queue when it is running out of task, the first available P will run the goroutine. This behavior explains why a goroutine runs on different P and shows how Go optimizes the system call with letting other goroutines running when a resource is free.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://medium.com/a-journey-with-go/go-what-does-a-goroutine-switch-actually-involve-394c202dddb7">Go: What Does a Goroutine Switch Actually Involve?</a></li>
+  <li><a href="https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit">Scalable Go Scheduler Design Doc</a></li>
+  <li><a href="https://github.com/golang/go/blob/master/src/runtime/HACKING.md">from Go source code</a></li>
+  <li><a href="http://www1.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf">Analysis of the Go runtime scheduler</a></li>
+  <li><a href="https://morsmachine.dk/netpoller">The Go netpoller</a></li>
+  <li><a href="http://morsmachine.dk/go-scheduler">The Go scheduler</a></li>
+  <li><a href="https://rakyll.org/scheduler/">Go’s work-stealing scheduler</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

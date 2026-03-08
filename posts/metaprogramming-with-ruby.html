@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Metaprogramming 101 with ruby &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Metaprogramming 101 with ruby</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">09 Jan 2019</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#ruby" class="category-list-element" target="_blank">ruby</a></li>
+    
+  </ul>
+  
+    <blockquote>
+  <p>Metaprogramming is writing code that writes code</p>
+</blockquote>
+
+<p>One of the most impressive aspects of Ruby is its metaprogramming capabilities.</p>
+
+<p>Being a dynamic language, Ruby gives you the freedom to define classes and methods at runtime! Awesome!</p>
+
+<p>Using Metaprogramming, we can reopen and modify classes, catch methods that do not exist, write code that is <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a> and many more.</p>
+
+<p>A problem may arise with opening a class at runtime and adding a method when the method created already exists is overwritten by the new definition. This is not intended! This process of editing classes in ruby is called <strong>Monkeypatching</strong>.</p>
+
+<blockquote>
+  <p>In Ruby, <strong>everything</strong> is an <em>object</em>.</p>
+</blockquote>
+
+<h2 id="ruby-object-model">Ruby Object Model</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
++---------------+
+|               |
+|  BasicObject  |
+|               |
++---------------+
+       ^
+       |
+       |  Superclass
+       |
++---------------+                           +---------------+
+|               |          Superclass       |               |
+|    Object     | &lt;<span class="nt">------------------------</span> |    Module     |
+|               | <span class="nt">--------------</span>            |               |
++---------------+               |           +---------------+
+        ^                       | Class             ^
+        |                       <span class="nt">----------------</span>    |
+        | Superclass                            |   | Superclass
+        |                                      <span class="se">\ </span>/  |
++---------------+                            +---------------+
+|               |          Class             |               |
+|    MyClass    | <span class="nt">-------------------------</span><span class="o">&gt;</span> |     Class     |&lt;<span class="nt">------</span>
+|               |                            |               |      |
+<span class="nt">----------------</span>+                            +---------------+      |
+       ^                                             |              |
+       |                                             |______________|
+       |  Class                                             Class
+       |
++---------------+
+|               |
+|     obj       |
+|               |
++---------------+
+
+</code></pre></div></div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyClass</span>
+    <span class="vi">@a</span>
+
+    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="vi">@a</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">get</span>
+        <span class="vi">@a</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="p">.</span><span class="nf">new</span>
+
+<span class="c1"># Ancestor Chain</span>
+<span class="nb">p</span> <span class="n">obj</span><span class="p">.</span><span class="nf">class</span>                              <span class="c1"># MyClass</span>
+<span class="nb">p</span> <span class="n">obj</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">class</span>                        <span class="c1"># Class</span>
+<span class="nb">p</span> <span class="n">obj</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">superclass</span>             <span class="c1"># Module</span>
+<span class="nb">p</span> <span class="n">obj</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">superclass</span><span class="p">.</span><span class="nf">superclass</span>  <span class="c1"># Object</span>
+<span class="nb">p</span> <span class="n">obj</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">superclass</span>                   <span class="c1"># Object</span>
+<span class="nb">p</span> <span class="n">obj</span><span class="p">.</span><span class="nf">class</span><span class="p">.</span><span class="nf">superclass</span><span class="p">.</span><span class="nf">superclass</span>        <span class="c1"># BasicObject - The absolute parent of every object in Ruby.</span>
+</code></pre></div></div>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="dynamically-defining-methods">Dynamically Defining Methods</h3>
+
+<p>Consider the following snippet</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">a</span>
+  <span class="nb">puts</span> <span class="s2">"in a"</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">b</span>
+  <span class="nb">puts</span> <span class="s2">"in b"</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">c</span>
+  <span class="nb">puts</span> <span class="s2">"in c"</span>
+<span class="k">end</span>
+
+<span class="n">a</span>
+<span class="n">b</span>
+<span class="n">c</span>
+
+<span class="c1"># =&gt; in a</span>
+<span class="c1"># =&gt; in b</span>
+<span class="c1"># =&gt; in c</span>
+</code></pre></div></div>
+
+<p>We can remove the above redundancy by using Metaprogramming</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="sx">%w(a b c)</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+  <span class="n">define_method</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s2">"in </span><span class="si">#{</span><span class="n">s</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">a</span>
+<span class="n">b</span>
+<span class="n">c</span>
+
+<span class="c1"># =&gt; in a</span>
+<span class="c1"># =&gt; in b</span>
+<span class="c1"># =&gt; in c</span>
+</code></pre></div></div>
+
+<p>You can find more about <strong>Module#define_method</strong> <a href="https://ruby-doc.org/core-2.2.0/Module.html#method-i-define_method">here</a>.</p>
+
+<p>The <a href="https://guides.rubyonrails.org/active_record_basics.html">ActiveRecord</a> code base is a prime example of how you can use metaprogramming to the max.</p>
+
+<h3 id="dynamically-calling-methods">Dynamically Calling Methods</h3>
+
+<p>Dynamically calling methods or attributes is a form of <a href="https://en.wikipedia.org/wiki/Reflection_(computer_programming)">reflective</a> property.</p>
+
+<p>An example of how to call a method by either the string or symbol name of that method in ruby:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="sx">%w(a1 a2 a3)</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+  <span class="n">define_method</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">s</span><span class="si">}</span><span class="s2"> was called"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="p">).</span><span class="nf">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="nb">send</span><span class="p">(</span><span class="s2">"a</span><span class="si">#{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="c1"># =&gt; a1 was called</span>
+<span class="c1"># =&gt; a2 was called</span>
+<span class="c1"># =&gt; a3 was called</span>
+</code></pre></div></div>
+
+<p>The <a href="http://ruby-doc.org/core-2.2.2/Object.html#method-i-send">Object#send</a> method is how we can dynamically call methods.</p>
+
+<p>Because every object in Ruby inherits from Object, you can also call send as a method on any object to access one of its other methods or attributes. <code class="language-plaintext highlighter-rouge">Object#send</code> even allows you to call private methods! Maybe you want to use <a href="http://ruby-doc.org/core-2.2.2/Object.html#method-i-public_send">Object#public_send</a>.</p>
+
+<h3 id="ghost-methods">Ghost Methods</h3>
+
+<p>What if I call a method that does not exists? Surely a <code class="language-plaintext highlighter-rouge">NoMethodError</code> would be thrown. We can avoid this error by using <a href="https://ruby-doc.org/core-2.1.0/BasicObject.html#method-i-method_missing">BasicObject#method_missing </a>.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+    <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">"You called: </span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="no">A</span><span class="p">.</span><span class="nf">new</span>
+
+<span class="n">a</span><span class="p">.</span><span class="nf">alphabet</span>
+<span class="n">a</span><span class="p">.</span><span class="nf">alphabet</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">)</span> <span class="p">{</span> <span class="s2">"foo"</span> <span class="p">}</span>
+
+<span class="c1"># =&gt; You called: alphabet()</span>
+<span class="c1"># =&gt; You called alphabet(a, b)</span>
+<span class="c1"># =&gt; (You also passed it a block)</span>
+</code></pre></div></div>
+
+<p>It takes extra time to hit the method_missing handler because you traverse the Ancestor Chain.</p>
+
+<hr />
+
+<p>A few more powerful concepts that you can add to your ruby arsenal.</p>
+
+<h2 id="closures">Closures</h2>
+
+<p>Scope in ruby shifts at 3 major spots:</p>
+<ul>
+  <li>Module Definition</li>
+  <li>Class Definition</li>
+  <li>Methods</li>
+</ul>
+
+<p>Something like this is impossible</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">v</span> <span class="o">=</span> <span class="s2">"Hello"</span>
+
+<span class="k">class</span> <span class="nc">A</span>
+  <span class="c1"># print v here</span>
+
+  <span class="k">def</span> <span class="nf">hello</span>
+    <span class="c1"># and here</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>This can be achieved by defining class and methods dynamically.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">v</span> <span class="o">=</span> <span class="s2">"Hello"</span>
+
+<span class="n">my_class</span> <span class="o">=</span> <span class="no">Class</span><span class="p">.</span><span class="nf">new</span> <span class="k">do</span>
+  <span class="s2">"</span><span class="si">#{</span><span class="n">v</span><span class="si">}</span><span class="s2"> in class definition"</span>
+
+  <span class="n">define_method</span> <span class="ss">:hello</span> <span class="k">do</span>
+    <span class="s2">"</span><span class="si">#{</span><span class="n">v</span><span class="si">}</span><span class="s2"> in method definition"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="n">my_class</span><span class="p">.</span><span class="nf">new</span><span class="p">.</span><span class="nf">hello</span>
+
+<span class="c1"># =&gt; Hello in method definition</span>
+</code></pre></div></div>
+
+<p>This seemingly “scopeless” process is called a <strong>Flat Scope</strong>.</p>
+
+<h2 id="evals">Evals</h2>
+
+<p>In ruby, there are 3 main types of evals:</p>
+
+<ul>
+  <li>Instance Eval</li>
+  <li>Class Eval</li>
+  <li>Eval</li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

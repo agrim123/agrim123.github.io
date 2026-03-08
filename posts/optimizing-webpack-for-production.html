@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Optimizing Webpack for production &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Optimizing Webpack for production</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">22 Jan 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#webpack" class="category-list-element" target="_blank">webpack</a></li>
+    
+  </ul>
+  
+    <p>I had been involved in building the official website of <a href="https://cognizance.org.in">Cognizance</a>, The Annual Technical Festival of IIT Roorkee. It is also Asia’s second largest tech fest.</p>
+
+<h3 id="brief-background">Brief Background</h3>
+
+<p>The website is built on <a href="https://reactjs.org/">ReactJS</a> and <a href="https://nodejs.org">Node.js</a> It is a typical end to end application.</p>
+
+<p>I will focus on the react part of the application which is one of the client of our Node API.</p>
+
+<h3 id="n00b-steps">n00b steps</h3>
+
+<p>Now, as you might know, when webpack does its <strong>magic</strong> on the code, it generates a single huge bundle file, that contains all the code required for front-end function. Because we are working with single page applications here, this means that browser will fetch all code at once which can lead to slower page loads which can be a bad experience for end users.</p>
+
+<p>Being 4 months into the development, we now have 3 different react apps served on three different namespaced routes, almost complete, but wait, bundled size of all three of them in production is around 900 KB, woot, not feasible for deployment.</p>
+
+<p><img src="/images/webpack-1.png" alt="Webpack 1" /></p>
+
+<p>From the above production build, we had three apps with average size of 1 MB.</p>
+
+<p>Over 60% of our user base are mobile users and around 40% of them are using degraded internet (around 70 kbps) and we could not afford to make them wait 10 seconds. <strong>We needed to reduce bundle size.</strong></p>
+
+<h3 id="correcting-some-mistakes">Correcting some mistakes</h3>
+
+<p>First step was to remove unnecessary npm modules (or unused). Doing a thorough investigation of <code class="language-plaintext highlighter-rouge">package.json</code> and the codebase and removing unnecessary imports and corresponding packages was another tiresome job but it proved to be fruitful. <code class="language-plaintext highlighter-rouge">package.json</code> can get get dirty when you blindly install some packages for testing and then forget to remove them from dependecies. However, it took us one full day to remove those unwanted packages.</p>
+
+<p>This reduced the bundle sizes by around <code class="language-plaintext highlighter-rouge">120 KB</code>.</p>
+
+<h4 id="the-introduction-of-async-await"><em>The introduction of async await</em></h4>
+
+<p>Stumbling upon reducing bundle size, I came across the concept of async await.</p>
+
+<h4 id="asyncawait-101">Async/Await 101</h4>
+
+<p>It is a new way to write asynchronous code. Previous available options were Promises and callbacks. They are non blocking just like promises.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">async </span><span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="cm">/* console.log will wait till b resolves */</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="k">await</span> <span class="nf">b</span><span class="p">())</span>
+
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">Done</span><span class="dl">"</span>
+<span class="p">}</span>
+
+<span class="nf">a</span><span class="p">()</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>An async function returns a promise implicitly, and the resolved value of the promise will be whatever we return from the function.</p>
+</blockquote>
+
+<p><a href="https://hackernoon.com/6-reasons-why-javascripts-async-await-blows-promises-away-tutorial-c7ec10518dd9">More Details</a></p>
+
+<h4 id="back-on-track">Back on track</h4>
+
+<p>The main idea is to first break the components into finer components and then load these components when needed.</p>
+
+<p>First step was to create a wrapper that would take a component, and return another component. These wrappers are called <a href="https://reactjs.org/docs/higher-order-components.html">Higher-Order Components (HOC)</a>.</p>
+
+<p>Our HOC was an async container:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AsyncContainer.jsx</span>
+
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nf">asyncContainer</span><span class="p">(</span><span class="nx">importComponent</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">class</span> <span class="nc">AsyncContainer</span> <span class="kd">extends</span> <span class="nc">Component</span> <span class="p">{</span>
+    <span class="nf">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">component</span><span class="p">:</span> <span class="kc">null</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">async</span> <span class="nf">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="p">{</span> <span class="na">default</span><span class="p">:</span> <span class="nx">component</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">importComponent</span><span class="p">()</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nf">setState</span><span class="p">({</span>
+        <span class="na">component</span><span class="p">:</span> <span class="nx">component</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+
+    <span class="nf">render</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">A</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">component</span>
+
+      <span class="k">return</span> <span class="nx">A</span> <span class="p">?</span> <span class="o">&lt;</span><span class="nx">A</span> <span class="p">{...</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">}</span> <span class="sr">/&gt; : nul</span><span class="err">l
+</span>    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">AsyncContainer</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>The <code class="language-plaintext highlighter-rouge">asyncContainer</code> function takes a component as input and renders it when the <code class="language-plaintext highlighter-rouge">importComponent</code> resolves. This can be implemented in routes as:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// routes.js</span>
+
+<span class="p">...</span>
+<span class="k">import</span> <span class="nx">asyncContainer</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Containers/AsyncContainer</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">Base</span> <span class="o">=</span> <span class="nf">asyncContainer</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./Components/Base</span><span class="dl">'</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">WelcomeContainer</span> <span class="o">=</span> <span class="nf">asyncContainer</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./Containers/WelcomeContainer</span><span class="dl">'</span><span class="p">))</span>
+
+<span class="kd">const</span> <span class="nx">routes</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">component</span><span class="p">:</span> <span class="nx">Base</span><span class="p">,</span>
+  <span class="na">childRoutes</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">component</span><span class="p">:</span> <span class="nx">WelcomeContainer</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">...</span>
+  <span class="p">],</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Everytime the <code class="language-plaintext highlighter-rouge">asyncContainer</code> is called, it will dynamicaly import the passed container. In other words, when we visit <code class="language-plaintext highlighter-rouge">/</code> route, then a chuck file is loaded dynamically containing the <code class="language-plaintext highlighter-rouge">WelcomeContainer</code>.</p>
+
+<p>This concept can be extended to individual components too. Suppose we have an header that can be split into two components <code class="language-plaintext highlighter-rouge">RightHeader</code> and <code class="language-plaintext highlighter-rouge">LeftHeader</code>. So, previously when header was mounted, both of these components used to come within the <code class="language-plaintext highlighter-rouge">Header</code> chunk, but now walking on our new path we can make them mount dynamically thus separating the view blocking components.</p>
+
+<p>An example of how header is rendered</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Header.jsx</span>
+
+<span class="p">...</span>
+<span class="k">async</span> <span class="nf">componentDidMount</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="na">default</span><span class="p">:</span> <span class="nx">RightHeader</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./RightHeader</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="na">default</span><span class="p">:</span> <span class="nx">LeftHeader</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">./LeftHeader</span><span class="dl">'</span><span class="p">)</span>
+  <span class="k">this</span><span class="p">.</span><span class="nf">setState</span><span class="p">({</span>
+    <span class="na">RightHeader</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">RightHeader</span> <span class="o">/&gt;</span><span class="p">,</span>
+    <span class="na">LeftHeader</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">LeftHeader</span> <span class="nx">loading</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span> <span class="sr">/&gt;</span><span class="err">,
+</span>  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We implemented this on every route, login/signup modal, headers, various containers and many more small components.</p>
+
+<h3 id="the-mighty-webpack-config">The mighty webpack config</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">path</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">path</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">webpack</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">webpack</span><span class="dl">'</span>
+
+<span class="k">import</span> <span class="nx">UglifyJSPlugin</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">uglifyjs-webpack-plugin</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">app1</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./src/app1</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">...</span>
+  <span class="p">},</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">js/[name].bundle.js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">chunkFilename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">js/[chunkHash].[name].bundle.js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="p">...</span>
+  <span class="p">},</span>
+  <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">rules</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">...</span>
+    <span class="p">],</span>
+  <span class="p">},</span>
+  <span class="na">resolve</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">extensions</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">.js</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">.jsx</span><span class="dl">'</span><span class="p">],</span>
+  <span class="p">},</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">optimize</span><span class="p">.</span><span class="nc">CommonsChunkPlugin</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nc">DefinePlugin</span><span class="p">({</span>
+      <span class="dl">'</span><span class="s1">process.env</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">'</span><span class="s1">NODE_ENV</span><span class="dl">'</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="dl">'</span><span class="s1">production</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}),</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">optimize</span><span class="p">.</span><span class="nc">OccurrenceOrderPlugin</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nc">NamedModulesPlugin</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nc">NoEmitOnErrorsPlugin</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nc">UglifyJSPlugin</span><span class="p">(),</span>   <span class="c1">// This further reduced the bundle size</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nc">IgnorePlugin</span><span class="p">(</span><span class="sr">/^</span><span class="se">\.\/</span><span class="sr">locale$/</span><span class="p">,</span> <span class="sr">/moment$/</span><span class="p">),</span>  <span class="c1">// If you are using moment</span>
+  <span class="p">],</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Now on running</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>cross-env <span class="nv">NODE_ENV</span><span class="o">=</span>production webpack <span class="nt">-p</span> <span class="nt">--progress</span> <span class="nt">--config</span> webpack.prod.config.babel.js 
+</code></pre></div></div>
+
+<p><img src="/images/webpack-2.png" alt="Webpack 2" /></p>
+
+<p>Production build webpack created around 40 chunks (because of use of async/await), that <strong>will be</strong> dynamically loaded when needed.</p>
+
+<p>This practice greatly reduced the main bundle size and we were under 100KB for app1 (our landing page), this meant max 2 second for landing page loading (<strong>Achievement Unlocked</strong>).</p>
+
+<p>You also have to include <a href="https://babeljs.io/docs/usage/polyfill/">babel-pollyfill</a> because <code class="language-plaintext highlighter-rouge">async/await</code> are not included in browser by default.</p>
+
+<h3 id="final-production-deployment">Final Production Deployment</h3>
+
+<blockquote>
+  <p>It’s not at all important to get it right the first time. It’s vitally important to get it right the last time.</p>
+</blockquote>
+
+<p>When served with gzip the bundle futher compresses from <code class="language-plaintext highlighter-rouge">383 KB</code> to <code class="language-plaintext highlighter-rouge">87.2 KB</code>. Yay!</p>
+
+<p><img src="/images/network-1.png" alt="Network" /></p>
+
+<p>After applying all the above techniques, we were able to reduce the page load time to 4 seconds and first visible button at 2.1 seconds. These stats were acceptable for the time being.</p>
+
+<h3 id="final-problem">Final Problem</h3>
+
+<p>Now, after the successful deployment, the next major problem is the build time. With current config the build time was around <strong>93 seconds</strong>, too much!!. We are still working on improving the build speed, but its on hold because of other feature addition to the application.</p>
+
+<p>I will post about how to reduce the build time in future. Till then,</p>
+
+<blockquote>
+  <p>Patience is a conquering virtue.     - <em>Geoffrey Chaucer</em></p>
+</blockquote>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

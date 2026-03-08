@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Extensively monitoring spark-jobs with StatsD &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Extensively monitoring spark-jobs with StatsD</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">06 Mar 2020</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#spark" class="category-list-element" target="_blank">spark</a></li>
+    
+    <li><a href="/categories/#monitoring" class="category-list-element" target="_blank">monitoring</a></li>
+    
+    <li><a href="/categories/#prometheus" class="category-list-element" target="_blank">prometheus</a></li>
+    
+    <li><a href="/categories/#statsd" class="category-list-element" target="_blank">statsd</a></li>
+    
+  </ul>
+  
+    <p>This post is a continuation with <a href="/posts/spark-statsd-prometheus-grafana.html">Monitoring Spark jobs with Prometheus StatsD Exporter and Grafana</a></p>
+
+<p>In the previous post, we were just running statsd on the master node. Our aim here is for every node to have its statsd sidecar and prometheus scraping metrics from all of them.</p>
+
+<p>A high-level diagram of what we are trying to do here</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="o">(</span>Executor 1<span class="o">)</span>                          <span class="o">(</span>Executor 2<span class="o">)</span>
+ <span class="o">[</span>Service -&gt; StatsdSink over UDP]    <span class="o">[</span>Service -&gt; StatsdSink over UDP]
+             |                                     |
+             ▼                                     ▼
+ <span class="o">[</span>StatsD Prometheus Exporter]          <span class="o">[</span>StatsD Prometheus Exporter]
+             |                                     |
+             |                    _________________|
+             |                    |
+             ▼                    ▼
+        +----------------------------+    
+        |    Prometheus Scraper      |        +----------+  
+        |         using EC2          |-------►|  Grafana |
+        |     service discovery      |        +----------+
+        +----------------------------+
+             ▲                    ▲
+             |                    |________________
+             |                                     |
+             |                                     |
+ <span class="o">[</span>StatsD Prometheus Exporter]          <span class="o">[</span>StatsD Prometheus Exporter]
+             ▲                                     ▲
+             |                                     |
+ <span class="o">[</span>Service -&gt; StatsdSink over UDP]    <span class="o">[</span>Service -&gt; StatsdSink over UDP]
+        <span class="o">(</span>Executor 3<span class="o">)</span>                          <span class="o">(</span>Executor 4<span class="o">)</span>
+</code></pre></div></div>
+
+<p>We need statsd daemon on every executor.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull prom/statsd-exporter:v0.14.1
+docker run <span class="nt">-d</span> <span class="nt">-p</span> 9102:9102 <span class="nt">-p</span> 9125:9125 <span class="nt">-p</span> 9125:9125/udp <span class="nt">--name</span> statsd prom/statsd-exporter:v0.14.1
+</code></pre></div></div>
+
+<h2 id="metricsproperties">metrics.properties</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>.sink.statsd.class<span class="o">=</span>org.apache.spark.metrics.sink.StatsdSink
+<span class="k">*</span>.sink.statsd.prefix<span class="o">=</span>spark
+<span class="k">*</span>.sink.statsd.host<span class="o">=</span>127.0.0.1
+<span class="k">*</span>.sink.statsd.port<span class="o">=</span>9125
+</code></pre></div></div>
+
+<h2 id="prometheusyml">prometheus.yml</h2>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">scrape_interval</span><span class="pi">:</span> <span class="s">15s</span>
+  <span class="na">evaluation_interval</span><span class="pi">:</span> <span class="s">15s</span>
+  <span class="na">scrape_timeout</span><span class="pi">:</span> <span class="s">15s</span>
+
+<span class="na">scrape_configs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">my-job"</span>
+    <span class="na">metrics_path</span><span class="pi">:</span> <span class="s">/metrics</span>
+    <span class="na">params</span><span class="pi">:</span>
+      <span class="na">format</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">prometheus"</span><span class="pi">]</span>
+    <span class="na">ec2_sd_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">region</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&lt;aws-region&gt;"</span>
+        <span class="na">port</span><span class="pi">:</span> <span class="m">9102</span>
+        <span class="na">refresh_interval</span><span class="pi">:</span> <span class="s">15m</span>
+    <span class="na">relabel_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span> <span class="nv">__meta_ec2_tag_Name</span> <span class="pi">]</span>
+        <span class="na">regex</span><span class="pi">:</span> <span class="s">my-job</span>
+        <span class="na">action</span><span class="pi">:</span> <span class="s">keep</span>
+      <span class="pi">-</span> <span class="na">source_labels</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">__meta_ec2_tag_Name</span><span class="pi">]</span>
+        <span class="na">target_label</span><span class="pi">:</span> <span class="s">instance</span>
+</code></pre></div></div>
+
+<h2 id="ec2-tag-based-discovery">EC2 tag-based discovery</h2>
+
+<p>EC2 SD configurations allow retrieving scrape targets from AWS EC2 instances.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#ec2_sd_config">ec2_sd_config</a></li>
+  <li><a href="https://medium.com/investing-in-tech/automatic-monitoring-for-all-new-aws-instances-using-prometheus-service-discovery-97d37a5b2ea2">Automatic Monitoring for new aws instances</a></li>
+</ul>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

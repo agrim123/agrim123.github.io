@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Google Summer of Code 2018 with Bundler &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Google Summer of Code 2018 with Bundler</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">15 May 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#gsoc" class="category-list-element" target="_blank">gsoc</a></li>
+    
+    <li><a href="/categories/#ruby" class="category-list-element" target="_blank">ruby</a></li>
+    
+    <li><a href="/categories/#bundler" class="category-list-element" target="_blank">bundler</a></li>
+    
+  </ul>
+  
+    <p>I got selected as a Google Summer of Code student in Bundler for the project <a href="https://github.com/rubygsoc/rubygsoc/wiki/Ideas-for-Bundler#integrate-functionality-from-bun-into-bundler">Integrate functionality from bun into Bundler</a>. Results came out on April 23 09:30 P.M. IST, couldn’t sleep the night out of excitement.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Achievement</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+    <span class="vi">@year</span> <span class="o">=</span> <span class="n">year</span>
+    <span class="vi">@info</span> <span class="o">=</span> <span class="n">info</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display</span>
+    <span class="s2">"</span><span class="si">#{</span><span class="vi">@name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@year</span><span class="si">}</span><span class="s2"> in </span><span class="si">#{</span><span class="vi">@info</span><span class="si">}</span><span class="s2">. Yay!"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="no">Achievement</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"GSoC"</span><span class="p">,</span> <span class="s2">"2018"</span><span class="p">,</span> <span class="s2">"Bundler"</span><span class="p">).</span><span class="nf">display</span>
+<span class="c1"># GSoC 2018 in Bundler. Yay!</span>
+</code></pre></div></div>
+
+<p>Here is the mandatory picture :p.</p>
+
+<p><img src="/images/GSoC.png" alt="GSoC" /></p>
+
+<h2 id="gsocinspect"><code class="language-plaintext highlighter-rouge">GSoC.inspect</code></h2>
+
+<blockquote>
+  <p>It’s Awesome!! &lt;3</p>
+</blockquote>
+
+<p>Google Summer of Code is a global program focused on bringing more student developers into open source software development. Students work with an open source organization on a 3 month programming project during their break from school.
+More details about GSoC <a href="https://summerofcode.withgoogle.com/">here</a>.</p>
+
+<h2 id="puts-journeytogsoc"><code class="language-plaintext highlighter-rouge">puts Journey.to(GSoC)</code></h2>
+
+<p>I am an active member of <a href="https://sdslabs.co/">SDSLabs</a>, a group of really awesome people who are always exploring and building softwares to spread and improve technical culture in our campus.</p>
+
+<p>It all started when I approached my senior for bundler, who was a past GSoC’er at Bundler. Consistency and hunger of knowledge are some of things I learned from him. He guided me throughtout the “selection phase” of GSoC.</p>
+
+<p>Also being a part of <a href="https://cognizance.org.in/">Cognizance</a>, I have been introduced to some really awesome people. From this year’s web team three people were selected for GSoC (from a team of 6!). A very good senior and a reliable junior. They were a constant help and I really owe it to them.</p>
+
+<p>Having a little experience in Ruby and having used bundler I knew it’s power and this led me to contrinute to bundler. I had been contributing solemnly to Bundler, not that I was sure of selection, but because it was love working on the project and with the team.</p>
+
+<h2 id="gsocproject"><code class="language-plaintext highlighter-rouge">GSoC.project</code></h2>
+
+<p><img src="https://avatars0.githubusercontent.com/u/1137638?s=150&amp;v=4" alt="Bundler" /></p>
+
+<p><a href="https://bundler.io/">Bundler</a> is no doubt one of the most active open source project used by millions of developers daily. The maintainers are some of the best ruby developers and equally helpful. Bundler has a rich list of <a href="https://bundler.io/contributors.html">contributors</a> too, developers wanting to improve bundler.</p>
+
+<p>My project is to migrate functionality of <a href="https://github.com/shime/bun">bun</a> into <a href="https://github.com/bundler/bundler">Bundler</a>. This tool is really powerful when it comes to editing Gemfile from command line and intergrating it into Bundler would make Bundler more powerful. My project also includes adding more functionalities to previous commands to increase flexibilty.</p>
+
+<h2 id="next"><code class="language-plaintext highlighter-rouge">next</code></h2>
+
+<p>I have already started contributing to Bundler. You can check this GitHub <a href="https://github.com/bundler/bundler">repository</a> for regular updates.</p>
+
+<p><br />
+Let the journey begin!</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Journey</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"Bundler"</span><span class="p">).</span><span class="nf">begin</span>
+</code></pre></div></div>
+
+<p>See you soon user.</p>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>

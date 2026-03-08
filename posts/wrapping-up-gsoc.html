@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Wrapping up GSoC 2018 with Bundler &middot; agrim
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/lanyon.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/custom.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="/public/favicon.ico">
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+  <link rel="alternate" type="application/rss+xml" title="Mozilla RSS" href="feed.category.xml">
+</head>
+
+
+  <body class="layout-reverse sidebar-overlay">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+      <!-- <img alt="hitman" src="/images/profile.jpeg"> -->
+    <p>Everything is a file.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/about/">About</a>
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/archives/">Archives</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/categories/">Category Index</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/quotes/">Quotes</a>
+        
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item" style="display: flex; justify-content: space-around;font-size: 1rem;padding-bottom: 0;">
+    <a href="https://github.com/agrim123" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://twitter.com/agrimittal" target="_blank"><i class="fab fa-twitter"></i></a>
+  <a href="https://www.linkedin.com/in/agrimmittal/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+  </div>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2026. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="header-bar"></div>
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">agrim</a>
+            <small>(Everything is a file)</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Wrapping up GSoC 2018 with Bundler</h1>
+  <span class="post-date" style="margin-bottom: 0.5rem; font-size: 15px;">08 Aug 2018</span>
+  <ul class="category-list" style="margin-bottom: 1rem;">
+    
+    <li><a href="/categories/#gsoc" class="category-list-element" target="_blank">gsoc</a></li>
+    
+    <li><a href="/categories/#ruby" class="category-list-element" target="_blank">ruby</a></li>
+    
+    <li><a href="/categories/#bundler" class="category-list-element" target="_blank">bundler</a></li>
+    
+  </ul>
+  
+    <p>This blog is a summary of my journey throughout GSoC 2018 with Bundler.</p>
+
+<p>Past four months have been exciting. I think I can safely say I have learned a lot about bundler and about ruby overall. Now is the time to wrap up all the work but this is not the end. The community has been more than helping and mentors have been very cooperating (I seldom ask stupid doubts :P).</p>
+
+<p>All the work was thoroughly reviewed and regularly iterated upon until perfection.</p>
+
+<h2 id="major-tasks">Major tasks</h2>
+
+<p>My major task was to integrate functionality from <a href="https://github.com/shime/bun">bun</a> into bundler. In simpler words, make editing of Gemfile from command line easier. To achieve this goal, a couple of new commands have been introduced:</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">bundle remove</code></li>
+</ol>
+
+<blockquote>
+  <p>Removes a gem from Gemfile.</p>
+</blockquote>
+
+<p>Implementing this feature was the toughest because special care has to be taken when removing something from a user’s Gemfile.</p>
+
+<p>The one major hurdle was that Gemfile can contain <strong>any arbitrary ruby code</strong>. This opened a huge possibilities of how a Gemfile might look. Since we could not consider all possible cases, so we went ahead with it being able to properly handle a basic Gemfile.</p>
+
+<p>Internally, this command looks for regex matching the gem to be removed and then removes that line.</p>
+
+<p>Using regex was a fair choice but we soon realized we have bigger problems. This caused some other gems to be removed in some cases, like</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Gemfile</span>
+<span class="o">...</span>
+
+<span class="n">gem</span> <span class="s2">"rack"</span><span class="p">;</span> <span class="n">gem</span> <span class="s2">"rails"</span><span class="p">;</span>
+<span class="o">...</span>
+</code></pre></div></div>
+<p>On running,</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bundle remove rack
+</code></pre></div></div>
+<p>This whole line got removed. This was not desirable, so we came up with a solution to check which gems were removed after this operation and then cross-check whether the removed ones were requested or not. If not, then the Gemfile was reverted back to original gemfile (stored in <a href="https://github.com/bundler/bundler/blob/5dcfc318f2f58d81875880533a65c8b58cda5622/lib/bundler/injector.rb#L129">memory</a>). This gave us a fail-safe for edge cases.</p>
+
+<p>A few other cases, including <code class="language-plaintext highlighter-rouge">eval_gemfile</code>, multiple gemfiles etc were also handled. The implementation can be found <a href="https://github.com/bundler/bundler/blob/5dcfc318f2f58d81875880533a65c8b58cda5622/lib/bundler/injector.rb">here</a>.</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">bundle change</code></li>
+</ol>
+
+<blockquote>
+  <p>Change properties of a gem.</p>
+</blockquote>
+
+<p>Next big thing was to build a way to be able to change properties of a gem (including group, version etc.) from the command line.</p>
+
+<p>We came up with a solution to not inline edit the gem but first remove it from gemfile and then a new update gem to the Gemfile.</p>
+
+<p>At a very abstract level, this command is a combined effort of <code class="language-plaintext highlighter-rouge">add</code> and <code class="language-plaintext highlighter-rouge">remove</code> commands. This decision highly relied on proper working of both of these commands. <code class="language-plaintext highlighter-rouge">add</code> was already rigorously tested but <code class="language-plaintext highlighter-rouge">remove</code> was a new member so it was a tough journey.</p>
+
+<p>The initial draft was a piece of cake but things became hard when properties other than group, version, and source came into the picture including env, git, platforms etc. As <code class="language-plaintext highlighter-rouge">add</code> commands did not support these so we were bound to throw an exception for these options and possibly we would add support for these inherently to <code class="language-plaintext highlighter-rouge">add</code> command.</p>
+
+<p>Apart from these two commands, I worked on some problems faced and some features requested by users. <em>No doubt an open source is a happy place :)</em>.</p>
+
+<h2 id="overall-work">Overall Work</h2>
+
+<p>Following pull requests summarize my five month work:</p>
+
+<ul>
+  <li><a href="https://github.com/bundler/bundler/pull/6309">Add config variable and check for platform warnings</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6447">Update error message on bundle add in case of duplication</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6513">Add <code class="language-plaintext highlighter-rouge">bundle remove</code></a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6517">Add –skip-install flag to bundle add</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6547">Add mutiple gems by names</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6556">[bundle add] Add version prefix flexibility</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6572">[bundle list] add <code class="language-plaintext highlighter-rouge">--without-group</code> and <code class="language-plaintext highlighter-rouge">--only-group</code></a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6627">Fix singular groups on injecting gem</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6597">[Feature] bundle change</a></li>
+  <li><a href="https://github.com/bundler/bundler/pull/6623">[Feature] bundle canonical</a></li>
+</ul>
+
+<p>This list of PRs includes the work directly related to GSoC project and some supplement work that was required to fulfill the main goal. These also include some user requested features and problem fixes.</p>
+
+<p>Related issues can be found <a href="https://github.com/bundler/bundler/issues/created_by/agrim123">here</a></p>
+
+<p><strong>Into new waters, mate.</strong> See you soon user.</p>
+
+  
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+    <li>
+      <h3>
+        <a href="/posts/kafka-removing-zookeeper.html">
+          Why is Zookeeper being removed from Kafka?
+          <small>04 Jan 2025</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/delayed-message-support-in-kafka.html">
+          Implementing delayed message support with Apache Kafka
+          <small>15 Jul 2024</small>
+        </a>
+      </h3>
+    </li>
+    
+    <li>
+      <h3>
+        <a href="/posts/golang-profiling.html">
+          Finding Memory Eating Monsters in Golang
+          <small>29 Dec 2023</small>
+        </a>
+      </h3>
+    </li>
+    
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+    <footer style="position: relative;padding: 5px;font-size: 13px;text-align: center;">
+	<hr/>
+	<div class="container">
+	</div>
+	<section style="width: 100%;display: block;">Did I write something wrong? Please consider <a href="https://github.com/agrim123/agrim123.github.io/pulls" target="_blank">raising a pull request</a></section>
+	<section style="width: 100%;display: block;">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/ariestiyansyah/naringu">Naringu</a></section>
+</footer>
+
+  </body>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T0JTWTZD96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T0JTWTZD96');
+</script>
+</html>
