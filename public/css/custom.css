@@ -390,3 +390,29 @@ aside {
 .container {
   max-width: 42rem;
 }
+
+#toc li:empty {
+  display: none;
+}
+
+#toc ul, #toc ol {
+  margin-bottom: 0;
+}
+
+details {
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.25rem 0;
+  user-select: none;
+}
+
+details[open] summary {
+  margin-bottom: 0.5rem;
+}

@@ -7,6 +7,7 @@ categories:
 - distributed-systems
 - golang
 - redis
+toc: true
 ---
 
 What if you want to put a message in Kafka and want to consume it after some time, without stopping your consumer or polling and re-pushing again and again?
