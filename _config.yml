@@ -9,7 +9,21 @@ kramdown:
 
 # Gems (for Jekyll 3.0)
 gems: [jekyll-paginate]
-plugins: [jekyll-paginate]
+# plugins: [jekyll-paginate]
+
+plugins:
+  - jekyll-toc
+  - jekyll-paginate
+toc:
+  min_level: 1
+  max_level: 3
+  ordered_list: false
+  no_toc_section_class: no_toc_section
+  list_id: toc
+  list_class: section-nav
+  sublist_class: ''
+  item_class: toc-entry
+  item_prefix: toc-
 
 # Permalinks
 #
