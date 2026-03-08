@@ -1,11 +1,11 @@
 ---
 layout: post
 title: Your logs are lying to you
+toc: true
 categories:
 - infrastructure
 - reliability
 - logging
-
 ---
 
 <b>Not intentionally</b>.
