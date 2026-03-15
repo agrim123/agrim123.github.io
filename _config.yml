@@ -22,7 +22,7 @@ tagline:             (Everything is a file)
 description:         Everything is a file.
 url:                 https://agrim123.github.io
 baseurl:             ''
-paginate:            7
+paginate:            5
 
 # About/contact
 author:
