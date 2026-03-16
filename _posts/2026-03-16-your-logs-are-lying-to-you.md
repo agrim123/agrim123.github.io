@@ -8,21 +8,31 @@ categories:
 - logging
 ---
 
-<b>Not intentionally</b>.
+<b>Well, not intentionally</b>.
 
 But when you have hundreds of services writing freeform strings to stdout, the signal gets buried, and you end up debugging the logging system instead of the actual problem.
 
 <hr/>
 
-Every service your team ships generates logs. The auth service logs token validations. The payment service logs charge attempts. The background worker logs job completions. Your API gateway logs every request in and out. By the time you have a handful of services in production, you’re looking at millions of log lines a day, and most of them are noise.
+Every service your team ships generates logs.
 
-The problem isn’t volume. The problem is that logs were never designed to be queried across a distributed system. They were designed for a world that no longer exists.
+The auth service logs token validations.
+
+The payment service logs charge attempts.
+
+The background worker logs job completions.
+
+Your API gateway logs every request in and out.
+
+By the time you have a handful of services in production, you’re looking at millions of log lines a day, and <b>most of them are noise</b>.
+
+The problem isn’t volume, but that the logs were never designed to be queried across a distributed system. They were designed for a world that no longer exists.
 
 ## What your system is actually generating
 
 Open any application log in production, and you’ll typically see something like this:
 
-<aside>You might have JSON logs, still the problem remains the same</aside>
+<aside>You might have JSON logs, still the problem remains the same.</aside>
 
 ```
 2025-03-04T11:22:07.341Z INFO  user session resumed uid=u_9f3c ip=10.0.4.17 region=ap-south-1
@@ -44,29 +54,29 @@ Logging, as a concept, was originally designed for monolithic applications. When
 
 Then we broke the monolith. We distributed our systems across tens and then hundreds of microservices, each running multiple instances, each writing to its own log stream. The timestamp stopped being enough. A request that enters your system might touch eight services before it resolves, and the logs from those eight services are sitting in eight different places, written in eight slightly different formats, with no shared identifier tying them together.
 
-> When something breaks at 2am, you’re not searching for truth — you’re searching for a needle in eight different haystacks.
+> When something breaks at 2am, you’re not searching for truth, you’re searching for a needle in eight different haystacks.
 
-A single-string search across unstructured logs exacerbates the issue. Grepping for user_id=abc123 across your log aggregator will return results <b>but inconsistently</b>. Services that log userId or uid won’t show up. You’ll build a mental model of the failure that’s actually missing half the picture.
+A single-string search across unstructured logs exacerbates the issue. Grepping for `user_id=abc123` across your log aggregator will return results <b>but inconsistently</b>. Services that log `userId` or `uid` won’t show up. <i>You’ll build a mental model of the failure that’s actually missing half the picture</i>.
 
 ## The volume problem nobody talks about honestly
 
-I worked at Mudrex (a Crypto Platform for all your financial needs), we used to run dozens of internal and public-facing services that together produced a volume of log data that had to be stored for years, not just for debugging, but for regulatory compliance. Our honest account of self-hosted ELK stack experience is instructive: it worked fine until traffic scaled significantly post-2021, at which point we eventually had to rethink our logging provider and our practices.
+I used to run dozens of internal and public-facing services that together produced a volume of log data that had to be stored for years, not just for debugging, but for regulatory compliance. My honest account of self-hosted ELK stack experience is instructive: it worked fine until traffic scaled significantly post-2021, at which point eventually had to rethink the logging provider and practices.
 
 Teams start with a seemingly adequate log aggregator, only to scale past it and spend months migrating. The migration improves storage and query performance but not the core issue: poorly structured logs that no storage engine can fix.
 
 ## What correlation actually requires
 
-APM — Application Performance Monitoring — gets closer to solving the right problem. The key insight is trace IDs: a single identifier generated at the edge of your system that propagates through every service call for the lifetime of a request. Every log line emitted during that request carries the trace ID. Now, instead of grepping across unstructured text, you query by trace ID and get the full story which services were involved, in what order, with what latencies, and where things went wrong.
+APM (Application Performance Monitoring) gets closer to solving the right problem. The key insight is `trace IDs`: a single identifier generated at the edge of your system that propagates through every service call for the lifetime of a request. Every log line emitted during that request carries the trace ID. Now, instead of grepping across unstructured text, you query by trace ID and get the full story which services were involved, in what order, with what latencies, and where things went wrong.
 
 This is what structured logging is actually trying to do. Not just pretty-printing key-value pairs, but enforcing a shared schema across services so that your observability layer can group events by user, by session, by request, by feature, or whatever logical unit matters to you when something goes wrong.
 
 <aside><b>Cardinality</b> is the number of unique values a field can have. `transaction_id` has high cardinality whereas `http_method` has low cardinality.</aside>
 
-We at Mudrex, achieved by standardizing our logging library which unified what the services were logging, a few low cardinality fields, timestamp format and enforced all services to propagate contexts.
+We achieved this by standardizing our logging library which unified what the services were logging, a few low cardinality fields, timestamp format and enforced all services to propagate contexts.
 
 ## The cost nobody budgets for
 
-<aside> At a point we were paying ~35% for our logging infrastructure, not metrics, not alerts, JUST logs.</aside>
+<aside> At a point we were paying ~35% of our cloud budget for logs, not metrics, not alerts, JUST logs.</aside>
 
 Here’s the thing that bites teams slowly: log costs don’t scale linearly with traffic. They scale faster. More users mean more requests. More requests mean more services touched per request. More services mean more log lines per event. Add verbose debug logging that someone turned on during an incident and forgot to turn off, and suddenly your Elasticsearch or Datadog or CloudWatch bill has doubled quarter-over-quarter with no obvious culprit.
 
