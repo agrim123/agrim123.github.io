@@ -455,3 +455,35 @@ details[open] summary {
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #e8e0d0;
 }
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  html {
+    font-size: 15px;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .site-header {
+    padding: 1.5rem 0 1rem;
+  }
+
+  .site-name {
+    font-size: 1.3rem;
+  }
+
+  .post-title {
+    font-size: 1.25rem;
+  }
+
+  .post .post-title {
+    font-size: 1.7rem;
+  }
+
+  pre {
+    font-size: 0.78rem;
+    padding: 0.75rem 1rem;
+  }
+}
