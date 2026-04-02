@@ -154,3 +154,65 @@ th {
   font-family: 'Playfair Display', Georgia, serif;
   color: #2c2416;
 }
+
+/* === Header === */
+.site-header {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 1px solid #e8e0d0;
+  margin-bottom: 2.5rem;
+}
+
+.site-header-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.site-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c2416;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.site-name:hover {
+  text-decoration: none;
+  color: #2c2416;
+}
+
+.site-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: #9e8e7a;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.site-nav a {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: #7a6a5a;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+}
+
+.site-nav a:hover {
+  color: #c0603a;
+  text-decoration: none;
+}
+
+.site-nav a.active {
+  color: #c0603a;
+  border-bottom: 1px solid #c0603a;
+  padding-bottom: 1px;
+}
