@@ -216,3 +216,135 @@ th {
   border-bottom: 1px solid #c0603a;
   padding-bottom: 1px;
 }
+
+/* === Post List (Homepage) === */
+.posts {
+  margin: 0;
+}
+
+.posts .post {
+  margin-bottom: 0;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e8e0d0;
+  margin-bottom: 2rem;
+}
+
+.posts .post:last-child {
+  border-bottom: none;
+}
+
+.post-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: #b09070;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.post-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c2416;
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+.post-title a {
+  color: #2c2416;
+  text-decoration: none;
+}
+
+.post-title a:hover {
+  color: #c0603a;
+  text-decoration: none;
+}
+
+/* Category tag pills */
+.category-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.category-list li {
+  float: none;
+  font: inherit;
+}
+
+.category-list-element {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  background: #f8ece7;
+  color: #c0603a;
+  border-radius: 3px;
+  padding: 0.15rem 0.6rem;
+  text-decoration: none;
+  display: inline-block;
+  height: auto;
+  line-height: 1.6;
+  position: static;
+  margin: 0;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s;
+}
+
+.category-list-element::before,
+.category-list-element::after {
+  display: none;
+}
+
+.category-list-element:hover {
+  background: #c0603a;
+  color: #fff;
+  text-decoration: none;
+}
+
+.post-excerpt {
+  font-family: 'Inter', sans-serif;
+  color: #5a4a3a;
+  margin-bottom: 0.75rem;
+}
+
+.read-more {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: #c0603a;
+  text-decoration: none;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* === Pagination === */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8e0d0;
+}
+
+.pagination-item {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #c0603a;
+  text-decoration: none;
+}
+
+.pagination-item:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+span.pagination-item {
+  color: #c0c0b0;
+  cursor: default;
+}
