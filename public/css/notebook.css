@@ -1,0 +1,38 @@
+/* notebook.css — Warm Notebook theme for agrim123.github.io */
+
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+html {
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+body {
+  background-color: #f5f3ef;
+  color: #5a4a3a;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* === Layout === */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Main content wrapper */
+.wrap {
+  background: #faf8f4;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
